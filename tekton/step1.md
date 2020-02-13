@@ -8,7 +8,7 @@ cd tekton-labs/lab-1
 Install by using the `kubectl` command line
 ```
 kubectl apply -f release-0.10.1.yaml
-```{execute}
+```{{execute}}
 <br>
 
 View the custom resources that were installed
@@ -22,3 +22,7 @@ Now let's view the tasks installed in your cluster.
 ```
 tkn task list
 ```{{execute}}
+
+No tasks are found because we have not yet created them. 
+In the next step, we will create a 'hello world' task and run it.
+
