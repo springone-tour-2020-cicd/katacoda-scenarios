@@ -6,9 +6,9 @@
   "details": {
     "steps": [
       {
-        "title": "Validating the Kubernetes Cluster"
+        "title": "Validating the Kubernetes Cluster",
         "text": "step0.md"
-      }
+      },
       {
         "title": "Installing Tekton",
         "text": "step1.md"
