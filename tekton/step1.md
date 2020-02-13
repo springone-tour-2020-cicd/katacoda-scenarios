@@ -1,19 +1,3 @@
-First validate that the Kubernetes cluster is up and running.
-
-```
-minikube status`
-```{{execute}}
-<br>
-
-You should see no errors in the output.
-```
-host: Running
-kubelet: Running
-apiserver: Running
-kubeconfig: Configured
-```
-<br>
-
 Let's begin by installing Tekton's Custom Resource Definitions. 
 
 ```

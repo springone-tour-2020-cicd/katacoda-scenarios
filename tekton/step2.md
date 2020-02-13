@@ -3,6 +3,7 @@ View the echo Task that will simply print 'hello world' to the console.
 ```
 cat echo-task.yaml
 ```{{execute}}
+You can also navigate to this file in the editor that is above the terminal.
 <br>
 
 Now install this task definition into the cluster.
@@ -31,10 +32,12 @@ Look at the `echo-taskrun.yaml` file.
 ```
 cat echo-taskrun.yaml
 ```{{execute}}
+You can also navigate to this file in the editor that is above the terminal.
 <br>
 
+
 There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
-You can view the other configuration options for a `TaskRun` in the [reference documentation](https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/taskruns.md)
+You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/taskruns.md)
 
 ```
 kubectl apply -f echo-taskrun.yaml
@@ -49,7 +52,9 @@ tkn taskrun describe echo-hello-world-task-run
 <br>
 
 After a few moments, you should see that the Status is `COMPLETED`.
-No look at the output of `TaskRun`
+Keep executing the previous command until you see the final status.
+
+Now look at the output of `TaskRun`
 
 ```
 tkn taskrun logs echo-hello-world-task-run
