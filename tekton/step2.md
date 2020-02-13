@@ -24,7 +24,17 @@ tkn tasks describe echo-hello-world
 ```{{execute}}
 <br>
 
-To execute this task directly, we can use the `tkn` CLI or create a `TaskRun` resource in a YAML file.  We will create the `TaskRun` resource using a YAML file
+To execute this task directly, we can use the `tkn` CLI or create a `TaskRun` resource in a YAML file.
+We will create the `TaskRun` resource using a YAML file.
+Look at the `echo-taskrun.yaml` file.
+
+```
+cat echo-taskrun.yaml
+```{{execute}}
+<br>
+
+There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
+You can view the other configuration options for a `TaskRun` in the [reference documentation](https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/taskruns.md)
 
 ```
 kubectl apply -f echo-taskrun.yaml
@@ -38,9 +48,14 @@ tkn taskrun describe echo-hello-world-task-run
 ```{{execute}}
 <br>
 
-You should see that the Status is `COMPLETED`.
-Look at the output of `TaskRun`
+After a few moments, you should see that the Status is `COMPLETED`.
+No look at the output of `TaskRun`
 
 ```
 tkn taskrun logs echo-hello-world-task-run
 ```{{execute}}
+<br>
+
+Hello Tekton!
+
+
