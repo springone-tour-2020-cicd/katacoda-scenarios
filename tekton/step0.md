@@ -2,7 +2,7 @@ First validate that the Kubernetes cluster is up and running.
 Wait for the progress spinner to complete and then execute
 
 ```
-minikube status`
+minikube status
 ```{{execute}}
 <br>
 
