@@ -2,15 +2,15 @@
   "title": "Getting Started with Tekton",
   "description": "Use Tekton to build a container image",
   "difficulty": "Beginner",
-  "time": "30",
+  "time": "30 minutes",
   "details": {
     "steps": [
       {
-        "title": "Step 1",
+        "title": "Installing Tekton",
         "text": "step1.md"
       },
       {
-        "title": "Step 2",
+        "title": "Executing a simple Task",
         "text": "step2.md"
       },
       {
