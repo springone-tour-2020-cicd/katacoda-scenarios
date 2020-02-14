@@ -6,15 +6,15 @@
   "details": {
     "steps": [
       {
-        "title": "Create GitHub Account",
+        "title": "Setting up your GitHub environment",
         "text": "step1.md"
       },
       {
-        "title": "Create Repository and upload content",
+        "title": "Make a change and commit to GitHub",
         "text": "step2.md"
       },
       {
-        "title": "Make a change and commit to GitHub",
+        "title": "Step 3",
         "text": "step3.md"
       },
       {
