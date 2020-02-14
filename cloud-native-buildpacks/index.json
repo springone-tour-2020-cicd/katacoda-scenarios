@@ -1,0 +1,45 @@
+{
+  "title": "Getting Started with Cloud Native Buildpacks",
+  "description": "Use Cloud Native Buildpacks to build a container image",
+  "difficulty": "Beginner",
+  "time": "30 minutes",
+  "details": {
+    "steps": [
+      {
+        "title": "Validating Docker installation",
+        "text": "step0.md"
+      },
+      {
+        "title": "Spring Boot integration with Cloud Native Buildpacks",
+        "text": "step1.md"
+      },
+      {
+        "title": "pack CLI for Cloud Native Buildpacks",
+        "text": "step2.md"
+      },
+      {
+        "title": "Step 3",
+        "text": "step3.md"
+      }
+    ],
+    "assets": {
+      "host01": [
+        {"file": "wait.sh", "target": "/usr/local/bin/", "chmod": "+x"}
+      ]  
+    },
+    "intro": {
+      "text": "intro.md",
+      "courseData": "intro-background.sh",
+      "code": "intro-foreground.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "environment": {
+    "uilayout": "editor-terminal"
+  },
+  "backend": {
+    "imageid": "minikube-running"
+  }
+}
