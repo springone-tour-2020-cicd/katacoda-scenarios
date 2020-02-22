@@ -6,26 +6,22 @@ Open the file `/root/spring-sample-app/src/main/java/com/example/springsampleapp
 
 Change the `hello, world` message 
 
-<pre>
+```
 	@RequestMapping("/")
 	public String hello() {
 		return "hello, world.  " + toString();
 	}
-</pre>
+```
 
 returned by Spring Controller to something other than `hello, world.`
 
-The shell prompt shows that the master branch has been changed, showing
-<pre color="#800080" >
-(master *)
-</pre>
+The shell prompt shows that the master branch has been changed, showing `(master *)`
 
 ## Compile and run
 
 Use the Spring Maven plugin to compile and run the application.
 
 ```
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ./mvnw spring-boot:run
 ```{{execute}}
 
