@@ -22,7 +22,7 @@ Type git clone, and then paste the URL you copied earlier. It will look like thi
 $ git clone https://github.com/YOUR-USERNAME/spring-sample-app
 ```
 
-Now you have a local copy that you can `cd ./spring-sample-app`{{execute}} into.
+Now you have a local copy that you can `cd ./spring-sample-app`{{execute}} into and poke around.  `ls -l`{{execute}}
 
 
 
