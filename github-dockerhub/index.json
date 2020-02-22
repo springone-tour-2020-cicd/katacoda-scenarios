@@ -22,9 +22,15 @@
         "text": "step4.md"
       }
     ],
+    "assets": {
+      "host01": [
+        {"file": "init-env", "target": "/usr/local/bin/", "chmod": "+x"}
+      ]
+    },
     "intro": {
       "text": "intro.md",
-      "courseData": "intro-background.sh"
+      "courseData": "intro-background.sh",
+      "code": "intro-foreground.sh"
     },
     "finish": {
       "text": "finish.md"
