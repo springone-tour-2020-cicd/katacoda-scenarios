@@ -2,9 +2,27 @@ We will now make a change to the Controller.
 
 Open the file `/root/spring-sample-app/src/main/java/com/example/springsampleapp/HelloController.java`{{open}}
 
-Change the `hello, world` message returned by Spring Controller.
+**NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
 
-Now compile and run your changes.
+Change the `hello, world` message 
+
+<pre>
+	@RequestMapping("/")
+	public String hello() {
+		return "hello, world.  " + toString();
+	}
+</pre>
+
+returned by Spring Controller to something other than `hello, world.`
+
+The shell prompt shows that the master branch has been changed, showing
+<pre color="#800080" >
+(master *)
+</pre>
+
+## Compile and run
+
+Use the Spring Maven plugin to compile and run the application.
 
 ```
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
@@ -18,10 +36,7 @@ curl localhost:8080
 
 Press `# Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.
 
-The shell prompt shows that the master branch has been changed, showing
-<pre class="file" color="#800080" >
-(master *)
-</pre>
+## Add, Commit and push to GitHub
 
 Executing `git status`{{execute}} and `git diff`{{execute}} will show you the changes to the code.
 

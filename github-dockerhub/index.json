@@ -14,7 +14,7 @@
         "text": "step2.md"
       },
       {
-        "title": "Create a container image and push to DockerHub",
+        "title": "Create a container image and push to Docker Hub",
         "text": "step3.md"
       }
     ],
