@@ -11,12 +11,12 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ./mvnw spring-boot:run
 ```{{execute}}
 
-Send a request to the app:
+Send a request to the app (will execute in a another terminal window)
 ```
 curl localhost:8080
 ```{{execute T2}}
 
-`Send Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.
+Press `# Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.
 
 The shell prompt shows that the master branch has been changed, showing
 <pre class="file" color="#800080" >

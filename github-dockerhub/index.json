@@ -14,17 +14,14 @@
         "text": "step2.md"
       },
       {
-        "title": "Step 3",
-        "text": "step3.md"
-      },
-      {
         "title": "Create a container image and push to DockerHub",
-        "text": "step4.md"
+        "text": "step3.md"
       }
     ],
     "assets": {
       "host01": [
         {"file": "init-env", "target": "/usr/local/bin/", "chmod": "+x"}
+        {"file": "images/clone-or-download.png", "target": "assets/images"}
       ]
     },
     "intro": {
