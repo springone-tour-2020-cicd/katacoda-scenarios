@@ -55,6 +55,14 @@ Open the file `/root/tekton-labs/lab-2/jib-maven-task.yaml`{{open}} and take a l
 
 **NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
 
+Now, install the `jib-maven` task
+
+```
+kubectl apply -f jib-maven-task.yaml
+```{{execute}}
+<br>
+
+
 The task is using the container image
 
 ```
@@ -65,23 +73,20 @@ that has maven installed on it.
 The command that is running executes the jib plugin using command line arguments.
 
 ```
-command:
-- mvn
-- compile
-- com.google.cloud.tools:jib-maven-plugin:build
-- -Duser.home=/builder/home
-- -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
-- -Dimage=$(outputs.resources.image.url)
+steps:
+- name: build-and-push
+  image: gcr.io/cloud-builders/mvn
+  command:
+  - mvn
+  - -B
+  - compile
+  - com.google.cloud.tools:jib-maven-plugin:build
+  - -Duser.home=/tekton/home
+  - -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
+  - -Djib.to.image=$(outputs.resources.image.url)
 ```
 
 The property `image` will be set when we create the TaskRun resource that references this Task.
-
-Now, install the `jib-maven` task
-
-```
-kubectl apply -f jib-maven-task.yaml
-```{{execute}}
-<br>
 
 With these prerequisites installed in the cluster, we can now run the Task by creating a TaskRun resource in the next step.
 

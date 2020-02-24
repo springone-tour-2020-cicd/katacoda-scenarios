@@ -1,4 +1,4 @@
-In this step we will create a container image of a Spring Boot application and publish it to Docker Hub.
+bIn this step we will create a container image of a Spring Boot application and publish it to Docker Hub.
 
 Open the file `/root/tekton-labs/lab-2/jib-maven-taskrun.yaml`{{open}} and take a look around.
 
@@ -54,7 +54,7 @@ tkn taskrun describe jib-maven-taskrun
 To view the logs
 
 ```
-tkn taskrun logs jib-maven-taskrun
+tkn taskrun logs --follow jib-maven-taskrun
 ```{{execute}}
 <br>
 
@@ -62,7 +62,14 @@ You should see many log entries for the downloading of maven artifacts and at th
 
 
 ```
-logs go here
+[build-and-push] [INFO] Built and pushed image as markpollack/spring-sample-app:1.0.0
+[build-and-push] [INFO] 
+[build-and-push] [INFO] ------------------------------------------------------------------------
+[build-and-push] [INFO] BUILD SUCCESS
+[build-and-push] [INFO] ------------------------------------------------------------------------
+[build-and-push] [INFO] Total time:  5.269 s
+[build-and-push] [INFO] Finished at: 2020-02-15T23:05:09Z
+[build-and-push] [INFO] ------------------------------------------------------------------------
 ```
 
 
