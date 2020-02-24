@@ -18,15 +18,15 @@
         "text": "step2.md"
       },
       {
-        "title": "Step 3",
+        "title": "Install prerequisites for running a jib-maven task",
         "text": "step3.md"
       },
       {
-        "title": "Step 4",
+        "title": "Run the jib-maven task",
         "text": "step4.md"
       },
       {
-        "title": "Step 5",
+        "title": "Run a Tekton Pipeline",
         "text": "step5.md"
       }
     ],
