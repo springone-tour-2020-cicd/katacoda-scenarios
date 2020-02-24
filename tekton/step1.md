@@ -1,11 +1,11 @@
-Let's begin by installing Tekton's Custom Resource Definitions. 
+Let's begin by installing Tekton's Custom Resource Definitions (CRDs). 
 
 ```
 cd tekton-labs/lab-1
 ```{{execute}}
 <br>
 
-Install by using the `kubectl` command line
+Install the CRDs using the `kubectl` command line
 ```
 kubectl apply -f release-0.10.1.yaml
 ```{{execute}}

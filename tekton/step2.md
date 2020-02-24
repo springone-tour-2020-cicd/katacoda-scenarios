@@ -3,10 +3,18 @@ View the echo Task that will simply print 'hello world' to the console.
 ```
 cat echo-task.yaml
 ```{{execute}}
-You can also navigate to this file in the editor that is above the terminal.
 <br>
 
-Now install this task definition into the cluster.
+Or open the file in the editor
+Open the file `/root/tekton-labs/lab-1/echo-task.yaml`{{open}}
+
+**NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
+
+<br>
+
+## Install the task definition
+
+Use `kubectl` to install the task definition into the cluster.
 
 ```
 kubectl apply -f echo-task.yaml

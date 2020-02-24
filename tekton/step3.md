@@ -1,19 +1,20 @@
 We will now create and run a Task that will build a container containing the Spring Boot sample applications and push it to Docker Hub.
 
 Tekton has a [catalog of pre-built tasks](https://github.com/tektoncd/catalog) that cover common cases in a CI system.  
+
 We will use the `jib-maven` task as the means to create the image and push it to Docker Hub.
 To use the `jib-maven` task there are a few things we need to setup in the Kubernetes cluster.
 
-#. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the .m2 cache will available when new Pods are created to execute the build.
-#. Create a secret that contains your Docker Hub credentials.
-#. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
+1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the .m2 cache will available when new Pods are created to execute the build.
+1. Create a secret that contains your Docker Hub credentials.
+1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
 
-## Setup `jib-maven` task prerequisites
+## Install `jib-maven` task prerequisites
 
-Change to the `lab-2` directory and execute a few `kubectl` commands.
+Let's change to the `lab-2` directory and execute a few `kubectl` commands to install the task prerequisites.
 
 ```
-cd /root/tekton-labs/lab-1
+cd /root/tekton-labs/lab-2
 ```{{execute}}
 <br>
 
@@ -54,17 +55,23 @@ Open the file `/root/tekton-labs/lab-2/jib-maven-task.yaml`{{open}} and take a l
 
 **NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
 
-The task is using the container image `gcr.io/cloud-builders/mvn` that has maven installed on it.
+The task is using the container image
+
+```
+gcr.io/cloud-builders/mvn
+``` 
+
+that has maven installed on it.
 The command that is running executes the jib plugin using command line arguments.
 
 ```
-    command:
-    - mvn
-    - compile
-    - com.google.cloud.tools:jib-maven-plugin:build
-    - -Duser.home=/builder/home
-    - -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
-    - -Dimage=$(outputs.resources.image.url)
+command:
+- mvn
+- compile
+- com.google.cloud.tools:jib-maven-plugin:build
+- -Duser.home=/builder/home
+- -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
+- -Dimage=$(outputs.resources.image.url)
 ```
 
 The property `image` will be set when we create the TaskRun resource that references this Task.

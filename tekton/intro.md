@@ -7,9 +7,8 @@ In this tutorial, you will learn how to use Tekton to create a simple pipeline t
 After this tutorial you will have:
 
 * Installed Tekon and use the CLI tool `tkn` to execute a simple 'echo' task.
-* Created a GitHub project for your code and an repository on Docker Hub.
-* Created and execute a Tekton Task.
-* Created and execute a Tekton Pipeline.
+* Created and execute a Tekton Task to build a container image and publish it.
+* Created and execute a Tekton Pipeline to build a container image and publish it.
 
 Let's begin!
 

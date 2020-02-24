@@ -9,30 +9,30 @@ The task run defines the git resource and image resource as embedded resources t
 The git resource is defined in the input section
 
 ```
-  inputs:
-    resources:
-      - name: source
-        resourceSpec:
-          type: git
-          params:
-            - name: url
-              value: # REPLACE WITH YOUR FORKED REPO URL https://github.com/markpollack/spring-sample-app
-            - name: revision
-              value: master
+inputs:
+  resources:
+    - name: source
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: # REPLACE WITH YOUR FORKED REPO URL https://github.com/markpollack/spring-sample-app
+          - name: revision
+            value: master
 ```
 **The `url` parameter value should be set to your forked repository of the sample application**
 
 The image resource is defined in the output section
 
 ```
-  outputs:
-    resources:
-      - name: image
-        resourceSpec:
-          type: image
-          params:
-            - name: url
-              value: # REPLACE WITH YOUR DOCKER HUB URL markpollack/spring-sample-app:1.0.0
+outputs:
+  resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+          - name: url
+            value: # REPLACE WITH YOUR DOCKER HUB URL markpollack/spring-sample-app:1.0.0
 ```
 
 **The `url` parameter value should be set to the Docker Hub repository name.  The version `1.0.0` should match what you have in the `pom.xml` file of the sample application.**
