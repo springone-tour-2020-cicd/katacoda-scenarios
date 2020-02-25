@@ -7,27 +7,27 @@
     "steps": [
       {
         "title": "Validating the Kubernetes Cluster",
-        "text": "step0.md"
-      },
-      {
-        "title": "Installing Tekton",
         "text": "step1.md"
       },
       {
-        "title": "Executing a simple Task",
+        "title": "Installing Tekton",
         "text": "step2.md"
       },
       {
-        "title": "Install prerequisites the jib-maven task",
+        "title": "Executing a simple Task",
         "text": "step3.md"
       },
       {
-        "title": "Run the jib-maven task",
+        "title": "Install prerequisites the jib-maven task",
         "text": "step4.md"
       },
       {
-        "title": "Run a Tekton Pipeline",
+        "title": "Run the jib-maven task",
         "text": "step5.md"
+      },
+      {
+        "title": "Run a Tekton Pipeline",
+        "text": "step6.md"
       }
     ],
     "assets": {

@@ -1,92 +1,74 @@
-We will now create and run a Task that will build a container containing the Spring Boot sample applications and push it to Docker Hub.
-
-Tekton has a [catalog of pre-built tasks](https://github.com/tektoncd/catalog) that cover common cases in a CI system.  
-
-We will use the `jib-maven` task as the means to create the image and push it to Docker Hub.
-To use the `jib-maven` task there are a few things we need to setup in the Kubernetes cluster.
-
-1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the .m2 cache will available when new Pods are created to execute the build.
-1. Create a secret that contains your Docker Hub credentials.
-1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
-
-## Install `jib-maven` task prerequisites
-
-Let's change to the `lab-2` directory and execute a few `kubectl` commands to install the task prerequisites.
+View the echo Task that will simply print 'hello world' to the console.
 
 ```
-cd /root/tekton-labs/lab-2
+cat echo-task.yaml
 ```{{execute}}
 <br>
 
-Create the Persistent Volume Claim:
-
-```
-kubectl apply -f cache-pvc.yaml
-```{{execute}}
-<br>
-
-Login to your Docker Hub account using the `docker` CLI:
-
-```
-docker login
-```{{execute}}
-<br>
-
-This creates a `config.json` file that caches your Docker Hub credentials.
-You can [create a secret from existing credentials](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) with the following command.
-
-```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
-```{{execute}}
-<br>
-
-Now create the service account.  The name of the service account is `build-bot` and will be references in Tekton's TaskRun resource that will run the task.
-
-```
-kubectl apply -f service-account.yaml
-```{{execute}}
-<br>
-
-## Install jib-maven task
-
-The `lab-2` directory contains a copy of the `jib-maven` task that is found in the Tekton catalog.
-
-Open the file `/root/tekton-labs/lab-2/jib-maven-task.yaml`{{open}} and take a look around.
+Or open the file in the editor
+Open the file `/root/tekton-labs/lab-1/echo-task.yaml`{{open}}
 
 **NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
 
-Now, install the `jib-maven` task
+<br>
+
+## Install the task definition
+
+Use `kubectl` to install the task definition into the cluster.
 
 ```
-kubectl apply -f jib-maven-task.yaml
+kubectl apply -f echo-task.yaml
 ```{{execute}}
 <br>
 
+You can list the installed tasks in the cluster using the `tkn` CLI.
+```
+tkn task list
+```{{execute}}
+<br>
 
-The task is using the container image
+More information about the task can be obtained using the `describe` command.
+```
+tkn tasks describe echo-hello-world
+```{{execute}}
+<br>
+
+To execute this task directly, we can use the `tkn` CLI or create a `TaskRun` resource in a YAML file.
+We will create the `TaskRun` resource using a YAML file.
+Look at the `echo-taskrun.yaml` file.
 
 ```
-gcr.io/cloud-builders/mvn
-``` 
+cat echo-taskrun.yaml
+```{{execute}}
+You can also navigate to this file in the editor that is above the terminal.
+<br>
 
-that has maven installed on it.
-The command that is running executes the jib plugin using command line arguments.
+
+There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
+You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/taskruns.md)
 
 ```
-steps:
-- name: build-and-push
-  image: gcr.io/cloud-builders/mvn
-  command:
-  - mvn
-  - -B
-  - compile
-  - com.google.cloud.tools:jib-maven-plugin:build
-  - -Duser.home=/tekton/home
-  - -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
-  - -Djib.to.image=$(outputs.resources.image.url)
+kubectl apply -f echo-taskrun.yaml
+```{{execute}}
+<br>
+
+Now let's get a description of the `TaskRun` that was created.
+
 ```
+tkn taskrun describe echo-hello-world-task-run
+```{{execute}}
+<br>
 
-The property `image` will be set when we create the TaskRun resource that references this Task.
+After a few moments, you should see that the Status is `COMPLETED`.
+Keep executing the previous command until you see the final status.
 
-With these prerequisites installed in the cluster, we can now run the Task by creating a TaskRun resource in the next step.
+Now look at the output of `TaskRun`
+
+```
+tkn taskrun logs echo-hello-world-task-run
+```{{execute}}
+<br>
+
+Hello Tekton!
+
 
