@@ -18,3 +18,4 @@ echo "### Finished configuring git global settings"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
+echo "done" >> /root/environment-prepared
