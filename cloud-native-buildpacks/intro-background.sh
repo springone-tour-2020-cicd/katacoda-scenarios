@@ -17,7 +17,7 @@ curl -L https://github.com/pivotal/kpack/releases/download/v0.0.6/logs-v0.0.6-li
 echo "### Finished installing kpack logs CLI"
 
 echo "### Cloning sample Spring Boot app"
-git clone https://github.com/ciberkleid/spring-sample-app.git
+git clone https://github.com/springone-tour-2020-cicd/spring-sample-app.git
 echo "### Finished cloning sample Spring Boot app"
 
 echo "### Cloning buildpacks samples"
