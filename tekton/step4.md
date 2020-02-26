@@ -1,8 +1,11 @@
-We will now create and run a Task that will build a container containing the Spring Boot sample applications and push it to Docker Hub.
+We will now install some supporting Kubernetes resources in order to run a Task that will build a container containing the Spring Boot sample applications and push it to Docker Hub.
 
 Tekton has a [catalog of pre-built tasks](https://github.com/tektoncd/catalog) that cover common cases in a CI system.  
 
-We will use the `jib-maven` task as the means to create the image and push it to Docker Hub.
+From that catalog, we will use the `jib-maven` task as the means to create the image and push it to Docker Hub.
+The [jib maven plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin) provides an easy and quick way to create a container image that is ties into the maven build lifecycle.
+
+
 To use the `jib-maven` task there are a few things we need to setup in the Kubernetes cluster.
 
 1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the .m2 cache will available when new Pods are created to execute the build.
@@ -30,9 +33,15 @@ Login to your Docker Hub account using the `docker` CLI:
 ```
 docker login
 ```{{execute}}
-<br>
 
 This creates a `config.json` file that caches your Docker Hub credentials.
+
+```
+more /root/.docker/config.json
+```{{execute}}
+
+<br>
+
 You can [create a secret from existing credentials](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) with the following command.
 
 ```
@@ -62,15 +71,24 @@ kubectl apply -f jib-maven-task.yaml
 ```{{execute}}
 <br>
 
+Now if you list the tasks installed in the cluster you will see the `jib-maven` task along with the `echo-hello-world` task from the previous step.
 
-The task is using the container image
+```
+$ tkn task list
+NAME               AGE
+echo-hello-world   10 minutes ago
+jib-maven          6 seconds ago
+```
+
+
+Looking into the YAML for the task, it is using the container image
 
 ```
 gcr.io/cloud-builders/mvn
 ``` 
 
-that has maven installed on it.
-The command that is running executes the jib plugin using command line arguments.
+that has `maven` installed on it.
+The command that the task executes is shown below from the `jib-maven-task` YAML.
 
 ```
 steps:
@@ -82,11 +100,10 @@ steps:
   - compile
   - com.google.cloud.tools:jib-maven-plugin:build
   - -Duser.home=/tekton/home
-  - -Djib.allowInsecureRegistries=$(inputs.params.INSECUREREGISTRY)
   - -Djib.to.image=$(outputs.resources.image.url)
 ```
 
-The property `image` will be set when we create the TaskRun resource that references this Task.
+The value of the property `jib.to.image` will be set when we create the TaskRun resource that references this Task.
 
 With these prerequisites installed in the cluster, we can now run the Task by creating a TaskRun resource in the next step.
 
