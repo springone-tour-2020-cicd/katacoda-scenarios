@@ -21,7 +21,7 @@ You should see the version of pack displayed.
 You should see information about the running cluster.
 
 - To verify that **logs** CLI for kpack is running, run `logs --help`{{execute}}.
-You should see the usage guide for logs displayed..
+You should see the usage guide for logs displayed.
 
 We'll also experiment with a custom buildpack.
 
