@@ -1,4 +1,4 @@
-In this step we will create a container image of a Spring Boot application and publish it to Docker Hub.
+In this step we will create a `TaskRun` that creates a container image of a Spring Boot application and publish it to Docker Hub.
 
 Open the file `/root/tekton-labs/lab-2/jib-maven-taskrun.yaml`{{open}} and take a look around.
 
