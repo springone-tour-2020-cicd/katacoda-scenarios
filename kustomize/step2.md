@@ -47,15 +47,23 @@ kubectl apply -k .
 You can see the resources created by executing
 
 ```
-kubectl get all
+watch kubectl get all
 ```{{execute}}
 <br>
 
+Once the pod is in the `Running` state, type `Ctrl-C` to exit out of the watch.
 Then look at the output from hitting the endpoint.  Change the name of the service if you changed the `namePrefix` field in `kustomization.yaml`
 
 ```
 minikube service mark-service
 ```{{execute}}
+
+If you do not see the pd in the `Running` state, look at the logs and description of the pod to determine what went wrong.  You can easily delete all the resources created by issuing the following command
+
+```
+kubectl delete all -l app.kubernetes.io/name=spring-sample-app
+```{{execute}}
+<br>
 
 Congrats, now onto encapsulating this YAML in a resuable off-the-shelf kustomization.
 
