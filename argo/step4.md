@@ -7,7 +7,7 @@ We only have one Kubernetes cluster, so we will be deploying our app to the same
 Create a namespace
 
 ```
-kubectl create namespace production
+kubectl create namespace dev
 ```{{execute}}
 <br>
 
@@ -28,7 +28,7 @@ Path: overlays/dev
 
 DESTINATION
 Cluster: https://kubernetes.default.svc
-Namespace: default
+Namespace: dev
 ```
 
 Notice that the repo we have provided is the gitops repo, not the app source code repo. The gitops repo contains a reference to the app image, which Argo CD assumes has been created already. If you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. You'll notice also that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support a simpler yaml file layout as well.
@@ -40,6 +40,25 @@ Before hitting 'CREATE', click on 'EDIT AS YAML'. Notice that you can define an 
 Click 'CANCEL' to exit the yaml editor and then click 'CREATE' to create the app in Argo CD.
 
 Wait till you see the new app appear. If you don't see it within a few moments, refresh the Dashboard tab.
+
+
+## Try it out
+
+```
+kubectl -n dev port-forward service/mark-service 81:80
+```{{execute T1}}
+
+Then curl the port-forwarded endpoint
+
+```
+curl localhost:81
+```{{execute T2}}
+
+Stop the port-forwarding by executing `# Ctrl-C`{{execute interrupt T1}}
+
+
+
+
 
 
 

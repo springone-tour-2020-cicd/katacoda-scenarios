@@ -24,3 +24,19 @@ spec:
 
 
  argocd app create spring-sample-app-production --repo https://github.com/markpollack/spring-sample-app-ops.git --path overlays/production --dest-namespace production --dest-server https://kubernetes.default.svc
+
+
+~$ kubectl -n dev port-forward service/mark-service 81:80
+
+~$ kubectl -n production port-forward service/mark-service 81:80
+
+master $
+master $ curl localhost:81
+"hello, world.  {app name='spring-sample-app', version='1.0.0', profile='dev'}"master $
+master $
+master $
+master $ curl localhost:81
+"hello, world.  {app name='spring-sample-app', version='1.0.0', profile='production'}"master $
+
+
+

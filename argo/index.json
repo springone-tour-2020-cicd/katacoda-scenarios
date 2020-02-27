@@ -1,5 +1,5 @@
 {
-  "title": "Getting Started with Argo",
+  "title": "Getting Started with Argo CD",
   "description": "Use Argo to deploy to Kubernetes",
   "difficulty": "Beginner",
   "time": "30",
@@ -24,6 +24,10 @@
       {
         "title": "",
         "text": "step5.md"
+      },
+      {
+        "title": "",
+        "text": "step6.md"
       }
     ],
     "assets": {

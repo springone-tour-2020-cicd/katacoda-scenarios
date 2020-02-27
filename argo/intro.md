@@ -4,8 +4,7 @@ Created by Intuit in 2018, it is part of [Argoproj](https://argoproj.github.io),
 
 **Pre-requisites**
 
-This tutorial assumes you have a completed scenario: [_Creating a project on GitHub and Docker Hub_](https://www.katacoda.com/markpollack/scenarios/github-dockerhub). This pre-requisite exercise will ensure you have GitHub account with forks of a sample app and sample ops repositories, as well as a Docker Hub account with a repository for the sample app Docker image.
-
+This tutorial assumes you have a completed scenario: [_Creating a project on GitHub and Docker Hub_](https://www.katacoda.com/markpollack/scenarios/github-dockerhub). This pre-requisite exercise will ensure you have GitHub account with a fork of the sample ops repository.
 
 
 Let's begin!

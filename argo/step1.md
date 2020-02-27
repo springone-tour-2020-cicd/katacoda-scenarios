@@ -12,17 +12,15 @@ You should see the usage guide for argocd CLI displayed.
 
 # Additional assets
 
-You'll also need to clone the GitHub forks you created in the [pre-requisites scenario](https://www.katacoda.com/markpollack/scenarios/github-dockerhub).
+You'll also need to clone the GitHub sample-ops repository you forked in the [pre-requisites scenario](https://www.katacoda.com/markpollack/scenarios/github-dockerhub).
 
 For simplicity, set the following environment variable to your GitHub org name:
 ```export MY_GITHUB_ORG=```{{copy}}
 
-Run the following commands to clone your forks of the [sample app](https://github.com/springone-tour-2020-cicd/spring-sample-app.git) and [sample ops](https://github.com/springone-tour-2020-cicd/spring-sample-app-ops.git) repos:
+Run the following command to clone your fork of the [sample ops](https://github.com/springone-tour-2020-cicd/spring-sample-app-ops.git) repo:
 ```
-git clone https://github.com/${MY_GITHUB_ORG}/spring-sample-app.git
 git clone https://github.com/${MY_GITHUB_ORG}/spring-sample-app-ops.git
 ```{{execute}}
-
 
 
 Now on to the real stuff!
