@@ -40,7 +40,12 @@ The next change adds a `namePrefix` to all resources, so they can be easily iden
 
 **NOTE:** Replace the label with your own value.
 
-The last part of the `kustomization.yaml` file is showing one of the several [Generators](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md#generators) that `kustomize` supports.  In this case, we are using a `configMapGenerator` that will pull key-value pairs from the file `env.properties` and expose them as environment variables to the application running in the container.  
+The last part of the `kustomization.yaml` file is showing one of the several [Generators](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md#generators) that `kustomize` supports.
+
+ In this case, we are using a `configMapGenerator` that creates `ConfigMap` resources.  No surprise there.  In this case we are using the generator that reads key-value pairs from a properties file and will put those key-value pairs into the environment.  Editing a properties file is easier than adding the environment variables into a deployment YAML file.
+
+
+will pull key-value pairs from the file `env.properties` and expose them as environment variables to the application running in the container.  
 
 The `env.properties` file already contains the key-value pair `SPRING_PROFILES_ACTIVE=dev`.
 
