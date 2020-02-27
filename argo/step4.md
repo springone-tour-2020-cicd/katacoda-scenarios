@@ -1,29 +1,51 @@
-# Register your kubernetes cluster with Argo CD
+# First deployment
 
-Next, let's register the Kubernetes cluster with Argo CD, so that it can deploy apps to it.
+Let's deploy our sample application (the one you forked earlier).
 
-Run the following command:
+We only have one Kubernetes cluster, so we will be deploying our app to the same cluster in which we installed Argo CD. You can also easily attach other clusters to Argo CD and use it to deploy apps to to those.
+
+In the UI, click on `+ NEW APP`.
+
+Fill in the form as follows, using details pertaining to your fork of the sample app. Make sure to replace the placeholder `YOUR-GITHUB-ORG` with the proper value. Leave any fields not mentioned below at their default value.
 ```
-argocd cluster add
-```{{execute}}
+GENERAL
+Application Name: spring-sample-app
+Project: default
+SYNC POLICY: Automatic
 
-The available clusters are displayed. These are being read from your local kubectl config file, which was pre-configured when Kubernetes and kubectl were pre-installed into the tutorial environment.
+SOURCE
+Repository URL: https://github.com/<YOUR-GITHUB-ORG>>/spring-sample-app.git
+Revision: HEAD
 
-The output should look something like this:
+DESTINATION
+Cluster:
+Namespace: default
 ```
-ERRO[0000] Choose a context name from:
-CURRENT  NAME                         CLUSTER     SERVER
-*        kubernetes-admin@kubernetes  kubernetes  https://172.17.0.63:6443
-``````
 
-Copy the value under the NAME column, and use it to register the cluster:
-```
-argocd cluster add <CLUSTER_NAME>
-```{{copy}}
 
-For example:
-`argocd cluster add kubernetes-admin@kubernetes`
 
-This command installs a ServiceAccount named argocd-manager into the kube-system namespace of the corresponding kubectl context and binds the service account to an admin-level ClusterRole. Argo CD uses this service account token to perform its management tasks (i.e. deploy/monitoring).
+Wait till you see the new app appear. CLick on the box / tile
 
-Switch back to UI and click on the gear icon on left side of the screen. Click on Clusters. You should see your cluster attached.
+Green hearts meena running, healthy
+
+open app:
+
+new dash, change port to 80, remove applications (or put link here)
+
+Let's make a change and watch argo propagate it.
+Any change to gitops will trigger argo.
+
+Let's change replicas.
+
+Back to Argo, refresh, see two more pods.
+
+
+###### DELETE ME
+
+other sample app:
+Sample app:
+https://github.com/argoproj/argocd-example-apps.git
+
+
+
+

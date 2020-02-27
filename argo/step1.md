@@ -1,6 +1,6 @@
 # Tutorial environment
 
-Your tutorial environment comes with some pre-installed tools and assets. Let's review them.
+Your tutorial environment comes with some pre-installed tools. Let's review them.
 
 Wait until `Environment ready!` appears in the terminal window.
 
@@ -10,10 +10,19 @@ You should see information about the running cluster.
 - To verify that **argocd** CLI is installed, run `argocd --help`{{execute}}.
 You should see the usage guide for argocd CLI displayed.
 
+# Additional assets
 
+You'll also need to clone the GitHub forks you created in the [pre-requisites scenario](https://www.katacoda.com/markpollack/scenarios/github-dockerhub).
 
-git clone https://github.com/springone-tour-2020-cicd/spring-sample-app-ops.git
+For simplicity, set the following environment variable to your GitHub org name:
+```export MY_GITHUB_ORG=```{{copy}}
+
+Run the following commands to clone your forks of the [sample app](https://github.com/springone-tour-2020-cicd/spring-sample-app.git) and [sample ops](https://github.com/springone-tour-2020-cicd/spring-sample-app-ops.git) repos:
+```
+git clone https://github.com/${MY_GITHUB_ORG}/spring-sample-app.git
+git clone https://github.com/${MY_GITHUB_ORG}/spring-sample-app-ops.git
+```{{execute}}
+
 
 
 Now on to the real stuff!
-
