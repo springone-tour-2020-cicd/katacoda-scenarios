@@ -1,20 +1,29 @@
-Let's begin by changing into the `simple` directory.
+An [off-the-shelf configuration](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/glossary.md#off-the-shelf-configuration) is a kustomization and associated resources that are published in a location for shared use.  Think of it as a Maven repository but for Kubernetes resoruces.
 
+Let's begin by changing into the `off-the-shelf` directory.
 
 ```
-cd kustomize-labs/off-the-shelf
+cd /root/kustomize-labs/off-the-shelf
 ```{{execute}}
 <br>
 
-Open it in the editor. `/root/kustomize-labs/off-the-shelf/kustomization.yaml`{{open}}
+Open the file `/root/kustomize-labs/off-the-shelf/kustomization.yaml`{{open}} in the editor.
 
-The first field to look at is the `resources:` field which points to a GitHub repository and its version.  This is the reusable set of Kubernetes resource definitions that we will be 'customizing'.  In this case the resource definitions are for a Spring Web application that has actuator endpoints which will be used for liveliness and readiness probes.  
+The first field to look at is the `resources:` field which points to a GitHub repository and its version.  
 
-You can navigate to GitHub and [look at the off the shelf kustomization](https://github.com/kustomizations/spring-boot-web).  It is very similar to what was used in the previous `simple` step of the tutorial.
+```
+resources:
+  - github.com/kustomizations/spring-boot-web?ref=1.0.0
+```
+
+This is the reusable set of Kubernetes resource definitions that we will be 'customizing'.  In this case the resource definitions are for a Spring Web application that has actuator endpoints which will be used for liveliness and readiness probes.  
+
+You can navigate to GitHub and [look at the off-the-shelf configuration](https://github.com/kustomizations/spring-boot-web).  It is very similar to what was used in the previous `simple` step of the tutorial.
 
 
 The first change to the resource definitions is to refer to your own container image of your application and its version.
 
+<br>
 ```
 images:
   - name: markpollack/spring-sample-app  # used for Kustomize matching
@@ -24,11 +33,14 @@ images:
 
 **NOTE:** Replace `<YOUR-DOCKERHUB-USERNAME>` in this file with your Docker Hub user name and make sure you have an image with that tag on [DockerHub](dockerhub.com).
 
+<br>
+
+
 The next change adds a `namePrefix` to all resources, so they can be easily identified as belonging to you.  The `commonLabels` field will it will add the specified labels to all kubernetes resources.   
 
 **NOTE:** Replace the label with your own value.
 
-The last part of the `kustomization.yaml` file is showing one of the several [Generators](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md#generators) that `kustomize` support.  In this case, we are using a `configMapGenerator` that will pull key-value pairs from the file `env.properties` and expose them as environment variables to the application running in the container.  
+The last part of the `kustomization.yaml` file is showing one of the several [Generators](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md#generators) that `kustomize` supports.  In this case, we are using a `configMapGenerator` that will pull key-value pairs from the file `env.properties` and expose them as environment variables to the application running in the container.  
 
 The `env.properties` file already contains the key-value pair `SPRING_PROFILES_ACTIVE=dev`.
 
@@ -57,7 +69,7 @@ Then look at the output from hitting the endpoint by using `curl` to access the 
 minikube service list
 ```{{execute}}
 
-You will see
+`curl`ing the endpoint, you will see the following profile in the response.
 
 ```
 profile='dev'

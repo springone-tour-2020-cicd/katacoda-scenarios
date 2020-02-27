@@ -6,7 +6,7 @@ cd kustomize-labs/simple
 ```{{execute}}
 <br>
 
-The main file that drives Kustomize is `kustomization.yaml`  Open it in the editor. `/root/kustomize-labs/simple/kustomization.yaml`{{open}}
+The main file that drives Kustomize is `kustomization.yaml`  Open the file `/root/kustomize-labs/simple/kustomization.yaml`{{open}} in the editor.
 
 The contents of `kustomization.yaml` are:
 

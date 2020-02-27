@@ -7,8 +7,8 @@ In this tutorial you will learn how to use several features of Kustomize to depl
 After this tutorial you will have:
 
 * Used a simple kustomization to understand the basic feature set that is available.
-* Used an `off-the-shelf` kustomization to better manage the the base set of Kubernetes resources that will be deployed. 
-* Deployed the same Spring Boot application to multiple environments, with different resource specifications per environment.
+* Used an `off-the-shelf` configuration to better manage the the base set of Kubernetes resources that will be deployed. 
+* Deploy the same Spring Boot application to multiple environments, with different resource specifications per environment.
 
 Let's begin!
 
