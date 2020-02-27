@@ -17,13 +17,25 @@ You should see a service, deployment, a replica set, and a pod.
 
 Return to the Dashboard and identify the four boxes in the graph of app resources that correspond to these four resources. Note that each box has an icon on the left indicating the type of resource (`svc`, `deploy`, `rs`, and `pod`), and additional info pops up if you mouse over the box as well.
 
+You can also use the argocd CLI to explore the app deployment:
+```
+argocd app list
+```{{execute}}
+and
+```
+argocd app get spring-sample-app
+```{{execute}}
 
+
+
+##### WIP...
+
+Let's make a change and watch argo propagate it.
 
 open app:
 
 new dash, change port to 80, remove applications (or put link here)
 
-Let's make a change and watch argo propagate it.
 Any change to gitops will trigger argo.
 
 Let's change replicas.
