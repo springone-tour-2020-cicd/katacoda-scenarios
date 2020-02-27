@@ -1,4 +1,4 @@
-# Log in to Argo CD
+# Logging in...
 
 There are two ways to interact with Argo CD: the CLI and the UI. Let's log in through both.
 

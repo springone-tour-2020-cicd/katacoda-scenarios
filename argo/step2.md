@@ -42,11 +42,11 @@ Watch the progress on the change by running the following command. As soon as yo
 kubectl get service argocd-server -n argocd --watch
 ```{{execute}}
 
-Finally, for convenience, let's save the new EXTERNAL-IP in the following environment variable:
+Finally, for convenience, let's save the new EXTERNAL-IP in the following environment variable. You can do so by executing the following command, which will obtain the EXTERNAL-IP and set it to the environment variables ARGOCD_SERVER.
 ```
 export ARGOCD_SERVER=`kubectl get service argocd-server -n argocd -o json | jq --raw-output .status.loadBalancer.ingress[0].ip`
 echo "ARGOCD_SERVER=$ARGOCD_SERVER"
-```{{copy}}
+```{{execute}}
 
 As a final sanity check, you can make sure all Argo CD pods are in `Running` state:
 ```
@@ -55,4 +55,4 @@ kubectl get pods -n argocd
 
 
 
-Next, let's log in to Argo CD.
+Great! We're ready to begin using Argo CD.
