@@ -22,12 +22,12 @@ kubectl get all -n argocd
 
 The installation also includes a couple of Custom Resource Definitions (CRDs), providing Kubernetes primitives for Argo CD concepts of Application and ApplicationProject. You can list these by running:
 ```
-kubectl api-resources --api-group argoproj.io
+kubectl api-resources --api-group argoproj.io 
 ```{{execute}}
 
 You can always list resources created by Argo CD by querying for these CRDs. We haven't created any yet, so we expect the following command to return an empty result:
 ```
-kubectl get applications,appprojects
+kubectl get applications,appprojects -n argocd
 ```{{execute}}
 
 ### Expose Argo CD Server

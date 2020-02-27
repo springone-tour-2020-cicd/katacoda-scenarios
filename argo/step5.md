@@ -10,7 +10,7 @@ You should see a visual representation of all of the resources related to the ap
 
 Take a look at the resources that were created in Kubernetes. Recall we specified the default namespace in our app configuration, so we can check for the resources created there:
 ```
-kubectl get all
+kubectl get all -n dev
 ```{{execute}}
 
 You should see a service, deployment, a replica set, and a pod.
