@@ -1,92 +1,75 @@
-View the echo Task that will simply print 'hello world' to the console.
+Let's begin by changing into the `simple` directory.
+
 
 ```
-cat echo-task.yaml
-```{{execute}}
-
-Or open the file in the editor
-Open the file `/root/tekton-labs/lab-1/echo-task.yaml`{{open}}
-
-**NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
-
-<br>
-
-The echo task uses the image `ubuntu` and then simply executes the command `echo hello world`.
-
-## Install the task definition
-
-Use `kubectl` to install the task definition into the cluster.
-
-```
-kubectl apply -f echo-task.yaml
+cd kustomize-labs/off-the-shelf
 ```{{execute}}
 <br>
 
-You can list the installed tasks in the cluster using the `tkn` CLI.
+Open it in the editor. `/root/kustomize-labs/off-the-shelf/kustomization.yaml`{{open}}
+
+The first field to look at is the `resources:` field which points to a GitHub repository and its version.  This is the reusable set of Kubernetes resource definitions that we will be 'customizing'.  In this case the resource definitions are for a Spring Web application that has actuator endpoints which will be used for liveliness and readiness probes.  
+
+You can navigate to GitHub and [look at the off the shelf kustomization](https://github.com/kustomizations/spring-boot-web).  It is very similar to what was used in the previous `simple` step of the tutorial.
+
+
+The first change to the resource definitions is to refer to your own container image of your application and its version.
+
 ```
-tkn task list
+images:
+  - name: markpollack/spring-sample-app  # used for Kustomize matching
+    newName: <YOUR-DOCKERHUB-USERNAME>/spring-sample-app
+    newTag: 1.0.0
+```
+
+**NOTE:** Replace `<YOUR-DOCKERHUB-USERNAME>` in this file with your Docker Hub user name and make sure you have an image with that tag on [DockerHub](dockerhub.com).
+
+The next change adds a `namePrefix` to all resources, so they can be easily identified as belonging to you.  The `commonLabels` field will it will add the specified labels to all kubernetes resources.   
+
+**NOTE:** Replace the label with your own value.
+
+The last part of the `kustomization.yaml` file is showing one of the several [Generators](https://github.com/kubernetes-sigs/kustomize/blob/master/docs/fields.md#generators) that `kustomize` support.  In this case, we are using a `configMapGenerator` that will pull key-value pairs from the file `env.properties` and expose them as environment variables to the application running in the container.  
+
+The `env.properties` file already contains the key-value pair `SPRING_PROFILES_ACTIVE=dev`.
+
+**NOTE:** The `Deployment` resource in the off-the-shelf customization is expecting to reference a config map named `spring-configmap-env`.
+
+## Create Resources and apply to cluster
+
+The version of `kustomize` that is bundled with `kubectl` doesn't understand how to process the `envs` field of `configMapGenerator` so we will use the `kustomize` CLI directly to create the resource definitions and apply that to the cluster using `kubectl`
+
+```
+kustomize build . | kubectl apply -f -
 ```{{execute}}
 <br>
 
-More information about the task can be obtained using the `describe` command.
+You can see the resources created by executing
+
 ```
-tkn tasks describe echo-hello-world
+watch kubectl get all
+```{{execute}}
+
+Once the `STATUS` of the pod is `Running` state, Press `# Ctrl+C`{{execute interrupt T1}} to exit out of the watch.
+
+Then look at the output from hitting the endpoint by using `curl` to access the `http` URL for your application's service that is returned from executing the command:
+
+```
+minikube service list
+```{{execute}}
+
+You will see
+
+```
+profile='dev'
+```
+
+If you do not see the pod in the `Running` state, look at the logs and description of the pod to determine what went wrong.  You can easily delete all the resources created by issuing the following command
+
+```
+kubectl delete all -l app.kubernetes.io/name=spring-sample-app
 ```{{execute}}
 <br>
 
-## Execute the task
 
-To execute this task directly, we can use the `tkn` CLI or create a `TaskRun` resource in a YAML file.
-We will create the `TaskRun` resource using a YAML file.
-Look at the `echo-taskrun.yaml` file.
-
-```
-cat echo-taskrun.yaml
-```{{execute}}
-You can also navigate to this file in the editor that is above the terminal.
-<br>
-
-
-There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
-You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/taskruns.md)
-
-```
-kubectl apply -f echo-taskrun.yaml
-```{{execute}}
-<br>
-
-Now let's get a description of the `TaskRun` that was created.
-
-```
-tkn taskrun describe echo-hello-world-task-run
-```{{execute}}
-<br>
-
-You should see in the last part of the output of this command the status of the pod that is running the echo command
-
-
-```
-🦶 Steps
-
- NAME     STATUS
- ∙ echo   PodInitializing
- ```
-
-Keep executing the `tkn taskrun describe` command and you will eventually see that the pod status is `COMPLETED`.
-
-
-Now look at the output of `TaskRun`
-
-```
-tkn taskrun logs echo-hello-world-task-run
-```{{execute}}
-
-You will see the log from the `echo` step
-
-```
-[echo] hello world
-``
-
-Hello Tekton! 
-
+Congrats! Now onto supporting different deployment environments.
 
