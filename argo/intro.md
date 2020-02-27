@@ -1,7 +1,14 @@
 # EDIT:
 
-Argo CD is a tool for declarative continuous delivery to Kubernetes. [ref](https://argoproj.github.io/argo-cd/)
+[Argo CD](https://argoproj.github.io/argo-cd) is a tool for Gitops-driven declarative continuous delivery to Kubernetes.
 
-Argo CD was developed by Intuit and is part of [Argoproj](https://argoproj.github.io), a set of open source projects for Kubernetes native workflows, events, CI and CD.
+Created by Intuit in 2018, it is part of [Argoproj](https://argoproj.github.io), a set of open source projects for Kubernetes native workflows, events, CI and CD.
+
+**Pre-requisites**
+
+This tutorial assumes you have a completed the pre-requisite scenario [_Creating a project on GitHub and Docker Hub_](https://www.katacoda.com/markpollack/scenarios/github-dockerhub).
 
 
+
+
+Let's begin!

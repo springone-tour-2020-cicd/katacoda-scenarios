@@ -1,4 +1,4 @@
-# Log in to ArgoCD
+# Log in to Argo CD
 
 Let's log through both the CLI and the UI.
 

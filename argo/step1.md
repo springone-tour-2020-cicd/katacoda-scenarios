@@ -11,5 +11,9 @@ You should see information about the running cluster.
 You should see the usage guide for argocd CLI displayed.
 
 
-Let's start by installing ArgoCD...
+
+git clone https://github.com/springone-tour-2020-cicd/spring-sample-app-ops.git
+
+
+Now on to the real stuff!
 

@@ -1,6 +1,6 @@
-# Register your kubernetes cluster with ArgoCD
+# Register your kubernetes cluster with Argo CD
 
-Next, let's register the Kubernetes cluster with ArgoCD, so that it can deploy apps to it.
+Next, let's register the Kubernetes cluster with Argo CD, so that it can deploy apps to it.
 
 Run the following command:
 ```
@@ -24,6 +24,6 @@ argocd cluster add <CLUSTER_NAME>
 For example:
 `argocd cluster add kubernetes-admin@kubernetes`
 
-This command installs a ServiceAccount named argocd-manager into the kube-system namespace of the corresponding kubectl context and binds the service account to an admin-level ClusterRole. ArgoCD uses this service account token to perform its management tasks (i.e. deploy/monitoring).
+This command installs a ServiceAccount named argocd-manager into the kube-system namespace of the corresponding kubectl context and binds the service account to an admin-level ClusterRole. Argo CD uses this service account token to perform its management tasks (i.e. deploy/monitoring).
 
 Switch back to UI and click on the gear icon on left side of the screen. Click on Clusters. You should see your cluster attached.
