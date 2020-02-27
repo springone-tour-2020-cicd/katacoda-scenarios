@@ -1,10 +1,11 @@
-# DRAFT DRAFT DRAFT WIP WIP WIP
+# First deployment
 
-### Without KNative
+Let's deploy a simple sample application.
 
-Sample app:
-https://github.com/argoproj/argocd-example-apps.git
+The app we will deploy is:
+https://github.com/springone-tour-2020-cicd/katacoda-scenarios.git
 
+In the UI, click on 
 Click on +NEW APP
 
 Show screenshot of settings
@@ -23,6 +24,14 @@ Any change to gitops will trigger argo.
 Let's change replicas.
 
 Back to Argo, refresh, see two more pods.
+
+
+###### DELETE ME
+
+other sample app:
+Sample app:
+https://github.com/argoproj/argocd-example-apps.git
+
 
 
 
