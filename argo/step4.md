@@ -34,7 +34,7 @@ Notice that the repo we have provided is the gitops repo, not the app source cod
 head -n 4 spring-sample-app-ops/overlays/dev/kustomization.yaml
 ```{{execute}}
 
-Additionally, if you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. You'll notice also that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support a simpler yaml file layout as well.
+Additionally, if you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. You'll notice also that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support other yaml file layouts as well.
 
 Finally, note that the cluster we specified as our destination (aliased as  "in-cluster" by Argo CD by default) refers to the same cluster into which Argo CD is installed. It is possible to attach other clusters to Argo CD and deploy to those as well. Since we only have one cluster, we will just use the "in-cluster" option.
 
@@ -64,6 +64,7 @@ You should see output such as:
 
 Notice the value of the profile is coming from the env properties file in the `overlays/dev` directory that we specified when creating the Application:
 ```
+echo ""
 cat spring-sample-app-ops/overlays/dev/env.properties
 ```{{execute}}
 

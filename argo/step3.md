@@ -11,13 +11,13 @@ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut
 
 Copy the password displayed on the screen, and use it to log into the CLI. Assuming you set the value of the environment variable ARGOCD_SERVER in the previous step, you can run the following command:
 ```
-argocd login $ARGOCD_SERVER
+argocd login $ARGOCD_SERVER --insecure --username admin
 ```{{execute}}
 
-Enter `y` when prompted. Then enter `admin` as the username and copy the password from above to log in.
+When prompted, copy and paste the password from the previous command.
 
 OPTIONAL:
-You can use ```argocd account update-password```{{copy}} to update the password to something that's easier to remember.
+You can use ```argocd account update-password```{{execute}} to update the password to something that's easier to remember.
 
 ### The UI
 

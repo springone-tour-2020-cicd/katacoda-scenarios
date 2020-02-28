@@ -30,7 +30,8 @@ You should see output such as:
 
 In this case the value of the profile is coming from the env properties file in the `overlays/production ` directory that we specified when creating the Application:
 ```
-spring-sample-app-ops/overlays/production/env.properties
+echo ""
+cat spring-sample-app-ops/overlays/production/env.properties
 ```{{execute}}
 
 Stop the port-forwarding by executing `# Ctrl-C`{{execute interrupt T1}}
