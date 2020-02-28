@@ -14,6 +14,7 @@ Before we build the image, just for kicks, let's make another minor code change:
 ```
 sed -i 's/Greetings Earth/Howdy everyone/g' src/main/java/com/example/springsampleapp/HelloController.java
 ```{{execute}}
+
 Validate the code change:
 ```
 tail src/main/java/com/example/springsampleapp/HelloController.java

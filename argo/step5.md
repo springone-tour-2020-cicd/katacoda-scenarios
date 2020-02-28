@@ -19,6 +19,8 @@ Return to the Dashboard and identify the four boxes in the graph of app resource
 
 You will also see a ConfigMap and an Endpoint in Argo CD that were not listed by the `kubectl get all` command. This is because `kubectl get all` does not return these resource types, but you can replace `all` with the type to see them.
 
+# Explore with argocd CLI
+
 You can also use the argocd CLI to explore the app deployment:
 ```
 argocd app list
@@ -28,29 +30,7 @@ and
 argocd app get spring-sample-app
 ```{{execute}}
 
-
-
-##### WIP...
-
-Let's make a change and watch argo propagate it.
-
-open app:
-
-new dash, change port to 80, remove applications (or put link here)
-
-Any change to gitops will trigger argo.
-
-Let's change replicas.
-
-Back to Argo, refresh, see two more pods.
-
-
-###### DELETE ME
-
-other sample app:
-Sample app:
-https://github.com/argoproj/argocd-example-apps.git
-
-
-
-
+Finally, as we mentioned earlier, you can query for Argo CD Applications and ApplicationProjects:
+```
+kubectl get applications,appprojects -n argocd
+```{{execute}}

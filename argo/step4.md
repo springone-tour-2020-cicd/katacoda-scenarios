@@ -9,8 +9,6 @@ Create a namespace called `dev` to simulate a development environment for deploy
 ```
 kubectl create namespace dev
 ```{{execute}}
-<br>
-
 
 In the UI, click on `+ NEW APP`.
 
@@ -58,6 +56,16 @@ Then curl the port-forwarded endpoint
 ```
 curl localhost:81
 ```{{execute T2}}
+
+You should see output such as:
+```
+"hello, world.  {app name='spring-sample-app', version='1.0.0', profile='dev'}"
+```
+
+Notice the value of the profile is coming from the env properties file in the `overlays/dev` directory that we specified when creating the Application:
+```
+cat spring-sample-app-ops/overlays/dev/env.properties
+```{{execute}}
 
 Stop the port-forwarding by executing `# Ctrl-C`{{execute interrupt T1}}
 
