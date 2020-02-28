@@ -32,7 +32,7 @@ Namespace: dev
 Notice that the repo we have provided is the gitops repo, not the app source code repo. The gitops repo contains a reference to the app image, which Argo CD assumes has been created already:
 ```
 head -n 4 spring-sample-app-ops/overlays/dev/kustomization.yaml
-```
+```{{execute}}
 
 Additionally, if you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. You'll notice also that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support a simpler yaml file layout as well.
 

@@ -27,7 +27,7 @@ argocd app list
 ```{{execute}}
 and
 ```
-argocd app get spring-sample-app
+argocd app get spring-sample-app-dev
 ```{{execute}}
 
 Finally, as we mentioned earlier, you can query for Argo CD Applications and ApplicationProjects:
