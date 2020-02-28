@@ -17,6 +17,8 @@ You should see a service, deployment, a replica set, and a pod.
 
 Return to the Dashboard and identify the four boxes in the graph of app resources that correspond to these four resources. Note that each box has an icon on the left indicating the type of resource (`svc`, `deploy`, `rs`, and `pod`), and additional info pops up if you mouse over the box as well.
 
+You will also see a ConfigMap and an Endpoint in Argo CD that were not listed by the `kubectl get all` command. This is because `kubectl get all` does not return these resource types, but you can replace `all` with the type to see them.
+
 You can also use the argocd CLI to explore the app deployment:
 ```
 argocd app list

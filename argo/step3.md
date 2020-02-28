@@ -23,9 +23,9 @@ You can use ```argocd account update-password```{{copy}} to update the password 
 
 Next, let's log into UI.
 
-Click on the tab titled `Dashboard`. This tab is defaulting to localhost:80 in the tutorial environment, so it will automatically open the Argo CD dashboard UI.
+Click on the tab titled `Dashboard`. This tab is defaulting to localhost:80 in the tutorial environment, so it will automatically open the Argo CD dashboard UI when the service EXTERNAL IP becomes ready.
 
-You can also use the following link in a new tab if you prefer:
+You can also use the following link to open the Argo CD UI in a new tab if you prefer:
 
 https://[[HOST_SUBDOMAIN]]-80-[[KATACODA_HOST]].environments.katacoda.com
 

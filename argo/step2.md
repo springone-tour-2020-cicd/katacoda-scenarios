@@ -15,7 +15,7 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 
 ### What was installed?
 
-Review the output of `kubectl apply` command to see the list of resources created. Notice that it includes a handful of deployments. You can get more info using:
+Review the output of the `kubectl apply` command to see the list of resources created. Notice that it includes a handful of deployments. You can get more info using:
 ```
 kubectl get all -n argocd
 ```{{execute}}
@@ -37,12 +37,14 @@ Notice in the output of the `kubectl get all` command above that none of the ser
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ```{{execute}}
 
-Watch the progress on the change by running the following command. As soon as you see a value assigned to EXTERNAL-IP, type <kbd>Ctrl</kbd>+<kbd>C</kbd> to continue.
+Watch the progress on the "patch" by running the following command.
 ```
 kubectl get service argocd-server -n argocd --watch
 ```{{execute}}
 
-Finally, for convenience, let's save the new EXTERNAL-IP in the following environment variable. You can do so by executing the following command, which will obtain the EXTERNAL-IP and set it to the environment variables ARGOCD_SERVER.
+As soon as you see a value assigned to EXTERNAL-IP, `send Ctrl+C`{{execute interrupt}} to continue.
+
+Finally, for convenience, let's save the new EXTERNAL-IP in an environment variable. You can do so by executing the following command, which will obtain the EXTERNAL-IP and set it to the environment variable ARGOCD_SERVER.
 ```
 export ARGOCD_SERVER=`kubectl get service argocd-server -n argocd -o json | jq --raw-output .status.loadBalancer.ingress[0].ip`
 echo "ARGOCD_SERVER=$ARGOCD_SERVER"

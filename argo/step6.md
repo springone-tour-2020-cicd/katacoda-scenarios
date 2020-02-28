@@ -1,6 +1,6 @@
 # Deploy to production environment
 
-Create a namespace
+Create a namespace called `production` to simulate a production environment for deployment:
 
 ```
 kubectl create namespace production
@@ -8,7 +8,7 @@ kubectl create namespace production
 <br>
 
 
-Create another ArgoCd 'Application' but this time using the `argocd` CLI
+Create another Argo CD 'Application' but this time using the `argocd` CLI
 
 ```
 argocd app create spring-sample-app-production --repo https://github.com/markpollack/spring-sample-app-ops.git --path overlays/production --dest-namespace production --dest-server https://kubernetes.default.svc --sync-policy automated

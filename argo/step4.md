@@ -1,10 +1,10 @@
 # Deploy to development deployment
 
-Let's deploy our sample application (the one you forked earlier).
+Let's deploy our sample application.
 
 We only have one Kubernetes cluster, so we will be deploying our app to the same cluster in which we installed Argo CD. You can also easily attach other clusters to Argo CD and use it to deploy apps to to those.
 
-Create a namespace
+Create a namespace called `dev` to simulate a development environment for deployment:
 
 ```
 kubectl create namespace dev
@@ -31,9 +31,14 @@ Cluster: https://kubernetes.default.svc
 Namespace: dev
 ```
 
-Notice that the repo we have provided is the gitops repo, not the app source code repo. The gitops repo contains a reference to the app image, which Argo CD assumes has been created already. If you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. You'll notice also that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support a simpler yaml file layout as well.
+Notice that the repo we have provided is the gitops repo, not the app source code repo. The gitops repo contains a reference to the app image, which Argo CD assumes has been created already:
+```
+head -n 4 spring-sample-app-ops/overlays/dev/kustomization.yaml
+```
 
-Note also that the cluster we specified as our destination (aliased as  "in-cluster" by Argo CD by default) refers to the same cluster into which Argo CD is installed. It is possible to attach other clusters to Argo CD and deploy to those as well. Since we only have one cluster, we will just use the "in-cluster" option.
+Additionally, if you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. You'll notice also that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support a simpler yaml file layout as well.
+
+Finally, note that the cluster we specified as our destination (aliased as  "in-cluster" by Argo CD by default) refers to the same cluster into which Argo CD is installed. It is possible to attach other clusters to Argo CD and deploy to those as well. Since we only have one cluster, we will just use the "in-cluster" option.
 
 Before hitting 'CREATE', click on 'EDIT AS YAML'. Notice that you can define an application declaratively in yaml and create the app without using the UI.
 
@@ -58,8 +63,6 @@ Stop the port-forwarding by executing `# Ctrl-C`{{execute interrupt T1}}
 
 
 
+Congrats! You've created your first app!
 
-
-
-
-Congrats! You've created your first app. Let's explore what's happened...
+Let's explore what's happened...
