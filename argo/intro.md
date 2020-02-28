@@ -4,7 +4,7 @@ Created by Intuit in 2018, it is part of [Argoproj](https://argoproj.github.io),
 
 **Pre-requisites**
 
-This tutorial assumes you have completed scenario: [_Creating a project on GitHub and Docker Hub_](https://www.katacoda.com/markpollack/scenarios/github-dockerhub). This pre-requisite exercise will ensure you have a GitHub account with a fork of the sample ops repository.
+This tutorial assumes you have completed scenario: [_Creating a project on GitHub and Docker Hub_](https://www.katacoda.com/markpollack/scenarios/github-dockerhub). This pre-requisite exercise will ensure you have a GitHub account with a fork of the [sample ops repository](https://github.com/springone-tour-2020-cicd/spring-sample-app-ops).
 
 
 Let's begin!
