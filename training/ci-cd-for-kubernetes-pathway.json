@@ -1,0 +1,41 @@
+{
+  "title": "CI/CD for Kubernetes",
+  "description": "And introductory exploration of CI/CD for Kubernetes",
+  "courses": [
+    {
+      "pathway_id": "ciberkleid",
+      "title": "Creating a project on GitHub and Docker Hub",
+      "id": "github-dockerhub",
+      "course_id": "github-dockerhub",
+      "description": "Create GitHub repo with a sample Spring Boot application and a registry on Docker Hub"
+    },
+    {
+      "pathway_id": "ciberkleid",
+      "title": "Getting Started with Cloud Native Buildpacks",
+      "id": "cloud-native-buildpacks",
+      "course_id": "cloud-native-buildpacks",
+      "description": "Use Cloud Native Buildpacks to build a container image"
+    },
+    {
+      "pathway_id": "ciberkleid",
+      "title": "Getting Started with Tekton",
+      "id": "tekton",
+      "course_id": "tekton",
+      "description": "Use Tekton to build a container image"
+    },
+    {
+      "pathway_id": "ciberkleid",
+      "title": "Getting Started with Kustomize",
+      "id": "kustomize",
+      "course_id": "kustomize",
+      "description": "Use Kustomize to wrangle your YAML"
+    },
+    {
+      "pathway_id": "ciberkleid",
+      "title": "Getting Started with Argo CD",
+      "id": "argocd",
+      "course_id": "argocd",
+      "description": "Use Argo CD to deploy to Kubernetes"
+    }
+  ]
+}
