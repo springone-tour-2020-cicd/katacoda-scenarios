@@ -1,6 +1,6 @@
 {
   "title": "Getting Started with Argo CD",
-  "description": "Use Argo to deploy to Kubernetes",
+  "description": "Use Argo CD to deploy to Kubernetes",
   "difficulty": "Beginner",
   "time": "30",
   "details": {
