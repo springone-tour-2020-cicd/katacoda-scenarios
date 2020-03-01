@@ -1,7 +1,5 @@
 # Spring Boot buildpack support
 
-The next platform we'll explore is Spring Boot.
- 
 Spring Boot 2.3.0.M1 introduced buildpack support directly for both Maven and Gradle. Using either `mvn spring-boot:build-image` or `gradle bootBuildImage`, you can build an image from your Spring Boot source code with a single command.
 
 Let's see this in action. Notice that our sample Spring app uses a version of Spring Boot that includes buildpack support (2.3.0.M1 or later): 

@@ -1,6 +1,6 @@
 # Buildpacks as a Service with kpack
 
-The last platform we'll look at in this tutorial is `kpack`, a Kubernetes-native platform implementation that runs as a service.
+`kpack` is a Kubernetes-native buildpack platform that runs as a service.
 
 ### Install kpack
 

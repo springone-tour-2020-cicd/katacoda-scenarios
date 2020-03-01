@@ -16,6 +16,11 @@
       "course_id": "cloud-native-buildpacks-with-kpack",
       "title": "Cloud Native Buildpacks as a Service with kpack",
       "description": "Learn how to run Cloud Native Buildpacks as a Service with kpack"
+    },
+    {
+      "course_id": "cloud-native-buildpacks-course-summary",
+      "title": "Cloud Native Buildpacks - Course Summary",
+      "description": "Where to from here?"
     }
   ]
 }

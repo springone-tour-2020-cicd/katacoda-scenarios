@@ -1,51 +1,35 @@
-# First build, take two
+# pack deep-dive
 
-Let's continue our deep-dive into the `pack build` command.
-
-### Local path
-
-We can also omit the `--path` parameter if we execute `pack build` from the directory that contains the source code. Let's mosey on over there:
+`pack` also allows us to inspect our app image:
 ```
-cd ~/spring-sample-app
+pack inspect-image spring-sample-app
 ```{{execute}}
 
-### Re-build the image
+You can see the run image and the buildpacks used to create the app image. What if you want to influence the build by adding a few instructions? One option is to add a custom buildpack.
 
-Before we continue, let's make a minor change to the code. Recall that the app displayed the message _"hello world"_. Let's change that for our next build.
+### Add a custom buildpack
+
+Since buildpacks are modular and pluggable, we can contribute our own custom buildpacks to the build. You can read more about creating custom buildpacks [here](https://github.com/buildpacks/samples/tree/master/buildpacks) later, but for now, re-run the command as shown below. Note that we are declaring all of the buildpacks that were used by default (as listed in the `inspect-image` command output), and adding our custom buildpack to the sequence:
 ```
-sed -i 's/hello world/Greetings Earth/g' src/main/java/com/example/springsampleapp/HelloController.java
+pack build spring-sample-app \
+     --buildpack org.cloudfoundry.openjdk \
+     --buildpack org.cloudfoundry.buildsystem \
+     --buildpack org.cloudfoundry.jvmapplication \
+     --buildpack org.cloudfoundry.tomcat \
+     --buildpack org.cloudfoundry.springboot \
+     --buildpack org.cloudfoundry.distzip \
+     --buildpack org.cloudfoundry.springautoreconfiguration \
+     --buildpack ~/samples/buildpacks/hello-world
 ```{{execute}}
 
-You can verify that the file contains the updated string using `tail src/main/java/com/example/springsampleapp/HelloController.java`{{execute}}
-
-Now, let's re-build the image using our simplified `pack build` command:
+Find the log entries showing the custom buildpack was executed, starting with:
 ```
-pack build spring-sample-app
+[builder] ---> Hello World buildpack
+```
+
+Look through the rest of the log and notice that the existing layers and cache, which were not altered by the addition of the custom buildpack, were re-used.
+
+You can also inspect the image again to validate the additional buildpack was used.
+```
+pack inspect-image spring-sample-app
 ```{{execute}}
-
-### Speedy re-build
-
-Notice that the build is faster the second time. A few factors contribute to this:
-
-1. The builder and run (stack) images are now available in the local Docker repository
-
-2. Spring/Java dependencies are now available in a local Maven (.m2) repository
-
-3. Even though we made a change to our app code, the build was able to re-use layers from the app image and from cache (pay special attention to the logs for the `restoring`, `analyzing`, and `exporting` phases). Building a layered image enables pack to efficiently recreate only the layers that have changed.
-
-Validate that the image was updated (the image id has changed):
-```
-docker images | grep spring-sample-app
-```{{execute}}
-
-Re-run the app to see the updated message:
-```
-docker run -it -p 8080:8080 spring-sample-app
-```{{execute}}
-
-Send a request to the app:
-```
-curl localhost:8080
-```{{execute T2}}
-
-`Send Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.

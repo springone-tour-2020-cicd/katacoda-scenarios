@@ -8,15 +8,15 @@ Cloud Native Buildpack _Platforms_, or simply `platforms`, are tools that orches
 
 **As end-users, whether developers or operators, we interact with a _platform_ in order to use _buildpacks_.**
 
-In API-speak, buildpacks are tools that implement the [Buildpack Interface Specification](https://github.com/buildpacks/spec/blob/master/buildpack.md), and platforms are tools that implement the [Platform Interface Specification](https://github.com/buildpacks/spec/blob/master/platform.md). 
+In API-speak, buildpacks are tools that implement the [Buildpack Interface Specification](https://github.com/buildpacks/spec/blob/master/buildpack.md), and platforms are tools that implement the [Platform Interface Specification](https://github.com/buildpacks/spec/blob/master/platform.md).
 
-# What we'll cover
+Examples of platforms include the pack CLI, Spring Boot with Maven/Gradle plug-ins, kpack, Tekton, and Pivotal Build Service. We will cover a few of these throughout this course. This scenario focuses on the pack CLI.
 
-This tutorial will introduce you to three buildpack platforms:
-- pack
-- Spring Boot
-- kpack
+# Scenario environment
+
+Your scenario environment comes with some pre-installed tools/assets. 
+
+Wait until `Environment ready!` appears in the terminal window.
 
 
-
-Let's start by taking stock of the tools and assets that are pre-installed into the tutorial environment...
+Let's begin!

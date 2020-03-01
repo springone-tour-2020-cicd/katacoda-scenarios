@@ -1,37 +1,13 @@
 {
-  "title": "Cloud Native Buildpacks with pack",
-  "description": "Learn about Cloud Native Buildpacks through the use of the pack CLI",
+  "title": "Cloud Native Buildpacks - Course Summary",
+  "description": "Where to from here?",
   "difficulty": "Beginner",
-  "time": "20",
+  "time": "5",
   "details": {
     "steps": [
       {
         "title": "",
         "text": "step1.md"
-      },
-      {
-        "title": "",
-        "text": "step2.md"
-      },
-      {
-        "title": "",
-        "text": "step3.md"
-      },
-      {
-        "title": "",
-        "text": "step4.md"
-      },
-      {
-        "title": "",
-        "text": "step5.md"
-      },
-      {
-        "title": "",
-        "text": "step6.md"
-      },
-      {
-        "title": "",
-        "text": "step7.md"
       }
     ],
     "intro": {

@@ -1,8 +1,6 @@
-# Recap
+# Course Recap
 
-That's all for this scenario!
-
-To recap. we've looked at three different platforms for building images using Cloud Native Buildpacks:
+In this course. we looked at three different platforms for building images using Cloud Native Buildpacks:
 
 1. `pack` - local CLI tool
 2. Spring Boot Maven/Gradle plug-ins
