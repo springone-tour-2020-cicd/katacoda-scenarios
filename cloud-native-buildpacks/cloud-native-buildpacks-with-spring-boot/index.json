@@ -1,0 +1,37 @@
+{
+  "title": "Cloud Native Buildpacks with Spring Boot",
+  "description": "Learn about Spring Boot's built-in support for Cloud Native Buildpack for both Maven and Gradle",
+  "difficulty": "Beginner",
+  "time": "20",
+  "details": {
+    "steps": [
+      {
+        "title": "",
+        "text": "step1.md"
+      }
+    ],
+    "intro": {
+      "text": "intro.md",
+      "courseData": "intro-background.sh",
+      "code": "intro-foreground.sh"
+    },
+    "finish": {
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {
+          "file": "init-env",
+          "target": "/usr/local/bin",
+          "chmod": "+x"
+        }
+      ]
+    }
+  },
+  "environment": {
+    "uilayout": "terminal"
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}

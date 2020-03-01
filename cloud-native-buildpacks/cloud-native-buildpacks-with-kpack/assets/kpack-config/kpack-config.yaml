@@ -1,0 +1,41 @@
+---
+apiVersion: build.pivotal.io/v1alpha1
+kind: ClusterBuilder
+metadata:
+  name: default
+spec:
+  image: cloudfoundry/cnb:0.0.53-bionic
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dockerhub-credentials
+  annotations:
+    build.pivotal.io/docker: https://index.docker.io/v1/
+type: kubernetes.io/basic-auth
+stringData:
+  username: DOCKERHUB_USERNAME_PLACEHOLDER
+  password: DOCKERHUB_PASSWORD_PLACEHOLDER
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kpack-service-account
+secrets:
+  - name: dockerhub-credentials
+---
+apiVersion: build.pivotal.io/v1alpha1
+kind: Image
+metadata:
+  name: spring-sample-app
+spec:
+  builder:
+    name: default
+    kind: ClusterBuilder
+  serviceAccount: kpack-service-account
+  cacheSize: "1.5Gi"
+  source:
+    git:
+      url: https://github.com/springone-tour-2020-cicd/spring-sample-app.git
+      revision: master
+  tag: DOCKERHUB_ORG_PLACEHOLDER/spring-sample-app:latest
