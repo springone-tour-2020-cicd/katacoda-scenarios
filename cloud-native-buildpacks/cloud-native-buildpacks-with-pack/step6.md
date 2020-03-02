@@ -1,6 +1,6 @@
-# pack deep-dive
+# Inspect & customize the image
 
-`pack` also allows us to inspect our app image:
+`pack` provides a way to inspect our app image:
 ```
 pack inspect-image spring-sample-app
 ```{{execute}}

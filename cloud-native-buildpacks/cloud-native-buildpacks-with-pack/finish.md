@@ -1,1 +1,0 @@
-Complete the other scenarios in this course to explore alternate platforms for using buildpacks to translate source code to images. 

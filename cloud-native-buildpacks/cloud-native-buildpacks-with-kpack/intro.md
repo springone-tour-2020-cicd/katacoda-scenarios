@@ -1,6 +1,6 @@
 **Pre-requisites**
 
-This scenario assumes you have completed the scenario `Cloud Native Buildpacks with pack`, which covers fundamentals of Cloud Native Buildpacks.
+This scenario assumes you have completed the scenario _Cloud Native Buildpacks with pack_, which covers fundamentals of Cloud Native Buildpacks.
 
 This scenario also assumes you have a [Docker Hub account](https://hub.docker.com/signup) (free). If you don't already, take a moment to create one now.
 

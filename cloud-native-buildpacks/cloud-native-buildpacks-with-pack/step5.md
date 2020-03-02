@@ -2,7 +2,7 @@
 
 Let's dive further into the `pack build` command by re-building the image and examining the log again.
 
-Before we re-build, however, let's make a small code change.
+Before we re-build, let's make a small code change.
 
 ### App source code change
 
