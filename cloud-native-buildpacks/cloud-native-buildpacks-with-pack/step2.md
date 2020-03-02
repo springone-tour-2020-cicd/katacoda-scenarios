@@ -1,6 +1,6 @@
 # First build with pack
 
-Let's start by building a simple Java with `pack`.
+Let's start by building an image for a simple Java app with `pack`.
 
 A sample app is provided for you. Run `ls spring-sample-app`{{execute}} to see the application files. You will see the familiar Spring Boot Maven app files. There's nothing special about this app, we're just saving time by using an existing sample.
 

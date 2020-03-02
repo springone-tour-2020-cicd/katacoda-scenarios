@@ -7,7 +7,7 @@ The Cloud Native Buildpacks project was initiated by Pivotal and Heroku in Janua
 **After this scenario you will have...**
 
 * Learned **basic concepts** of Cloud Native Buildpacks
-* Created an image from an application using the **`pack`** CLI
+* Created an image from an application using the **`pack` CLI**
 * Updated the image, taking advantage of buildpack **layering** and **caching**
 
 
