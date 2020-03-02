@@ -7,16 +7,18 @@ docker images | grep spring-sample-app
 
 Take note of the image id. We'll re-build the image shortly, and you can validate that the image id changes with each build.
 
-You can start your app using `docker run`:
+Note that by using pack and buildpacks, there was no need to install a JDK, run Maven, or otherwise configure a build environment in order to build the OCI image for the app!
+
+For kicks, let's make sure the app works. Start the app using `docker run`:
 ```
 docker run -it -p 8080:8080 spring-sample-app
 ```{{execute}}
 
-Send a request to the app:
+When the app log indicates the app has started, send a request to the app:
 ```
 curl localhost:8080
 ```{{execute T2}}
 
-Note that by using pack and buildpacks, there was no need to install a JDK, run Maven, or otherwise configure a build environment!
+You should see a _"hello, world"_ response from the app, with some additional app details.
 
 `Send Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.
