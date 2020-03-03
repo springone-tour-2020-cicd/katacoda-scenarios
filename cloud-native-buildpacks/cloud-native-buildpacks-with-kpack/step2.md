@@ -4,7 +4,7 @@ Your scenario environment comes with some pre-installed tools/assets. Let's revi
 
 Wait until `Environment ready!` appears in the terminal window.
 
-We'll be installing kpack into a Kubernetes cluster.
+We'll need a Kubernetes cluster so that we can install and configure kpack.
 - To verify that **kubectl** and **Kubernetes** are installed, run `kubectl cluster-info`{{execute}}.
 You should see information about the running cluster.
 
