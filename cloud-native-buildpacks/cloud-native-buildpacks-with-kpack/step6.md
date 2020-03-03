@@ -5,18 +5,25 @@ We're now ready to apply the yaml file to the kubernetes cluster:
 kubectl apply -f ~/kpack-config/kpack-config.yaml
 ```{{execute}}
 
-Ensure kpack has processed the builder and image:
+kpack will automatically detect the latest git commit in the source code repo defined in image.yaml. It will create an image for our app using the builder declared in build.yaml, and finally it will publish the image to Docker Hub using the service account we created.
+
+# Is it working?
+
+Each build creates a new pod. Check to see if a pod has been created:
 ```
-kubectl get builders,builds,clusterbuilders,images,sourceresolvers
+kubectl get pods
 ```{{execute}}
 
-You can also use `kubectl describe` to get more detail about the builder and the image:
+The pod executes the buildpack lifecycle using an _init container_ for each lifecycle phase. The pod itself doesn't do anything additional. Hence, you cannot simply look at the logs of the pod directly. Instead, kpack provides a `logs` CLI to make it easy to append the logs from the various init containers in the pod in order: 
 ```
-kubectl describe clusterbuilder default
+logs -image spring-sample-app -build 1
 ```{{execute}}
 
-and
+You should recognize the same buildpack lifecycle we observed with pack and Spring Boot in the kpack logs. 
 
-```
-kubectl describe image spring-sample-app
-```{{execute}}
+When the logs show that the build is done, check your Docker Hub organization to make sure a new image has been published.
+
+
+
+
+

@@ -2,7 +2,6 @@
 
 Let's begin by installing kpack to our kubernetes cluster:
 ```
-cd ~
 kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.6/release-0.0.6.yaml
 ```{{execute}}
 

@@ -5,14 +5,14 @@ We've provided a yaml file containing the necessary configuration. Let's review 
 cat ~/kpack-config/kpack-config.yaml
 ```{{execute}}
 
-Notice that it contains four resources. The key resource is the last one, the **Image** resource. Take a look at this one closely. Notice that it defines:
+Notice that it contains four resources. Two are standard Kubernetes resources (Secret and ServiceAccount) and two use CRDs created by kpack (ClusterBuilder and Image).
+
+The key resource is the last one, the **Image** resource. Take a look at this one closely. Notice that it defines:
 - The builder to use: default
 - The source code:  https://github.com/springone-tour-2020-cicd/spring-sample-app.git
 - The destination registry: DOCKERHUB_ORG_PLACEHOLDER/spring-sample-app:latest
 
-The ClusterBuilder and Image are two of the CRDs that were installed with kpack.
-
-The other resources in the file support the above Image configuration. You can see a ClusterBuilder resource contaning the precise details of what we are calling the default builder (cloudfoundry/cnb:bionic). Also, the Secret and ServiceAccount help provide _write_ access to Docker Hub.
+The other three resources in the file support the above Image configuration. The ClusterBuilder resource contans the precise details of what we are calling the default builder (cloudfoundry/cnb:bionic). The Secret and ServiceAccount provide credentials to publish to Docker Hub.
 
 # Provide your Docker Hub credentials
 
