@@ -6,15 +6,15 @@ Before we re-build, let's make a small code change.
 
 ### App source code change
 
-Recall that the app displayed the message _"hello world"_. Let's change that for our next build.
+Recall that the app displayed the message _"hello, world"_. Let's change that for our next build.
 
 Run the following commands to cd into the app directory and update the source code:
 ```
 cd ~/spring-sample-app
-sed -i 's/hello world/Greetings Earth/g' src/main/java/com/example/springsampleapp/HelloController.java
+sed -i 's/hello/greetings/g' src/main/java/com/example/springsampleapp/HelloController.java
 ```{{execute}}
 
-You can verify that the file contains the updated string using `tail src/main/java/com/example/springsampleapp/HelloController.java`{{execute}}
+You can verify that the file contains the updated string using `cat src/main/java/com/example/springsampleapp/HelloController.java`{{execute}}
 
 ### Re-build the image
 

@@ -2,20 +2,14 @@
 
 Spring Boot 2.3.0.M1 introduced buildpack support directly for both Maven and Gradle. Using either `mvn spring-boot:build-image` or `gradle bootBuildImage`, you can build an image from your Spring Boot source code with a single command.
 
-Let's see this in action. Notice that our sample Spring app uses a version of Spring Boot that includes buildpack support (2.3.0.M1 or later): 
+Let's see this in action. 
+
+A sample app is provided for you. Run `ls spring-sample-app`{{execute}} to see the application files. You will see the familiar Spring Boot Maven app files. There's nothing special about this app, we're just saving time by using an existing sample.
+
+Notice that our sample Spring app uses a version of Spring Boot that includes buildpack support (2.3.0.M1 or later): 
 ```
 cd ~/spring-sample-app
 head pom.xml 
-```{{execute}}
-
-Before we build the image, just for kicks, let's make another minor code change:
-```
-sed -i 's/Greetings Earth/Howdy everyone/g' src/main/java/com/example/springsampleapp/HelloController.java
-```{{execute}}
-
-Validate the code change:
-```
-tail src/main/java/com/example/springsampleapp/HelloController.java
 ```{{execute}}
 
 Now, build the project using the new `spring-boot:build-image` Maven plugin:
@@ -24,8 +18,8 @@ Now, build the project using the new `spring-boot:build-image` Maven plugin:
 ```{{execute}}
 
 You should see evidence of the image build in the log. A few observations:
-- In this case, Maven builds the jar before invoking the buildpack lifecycle, so you will see Maven building the jar file as usual before the build-image plugin is invoked. 
-- When the build-image plugin is invoked, you should recognize the lifecycle phases that we observed with `pack`. Notice that the build phase does not rebuild the jar from source. Rather, it builds the image using the jar file that Maven just created.
+- When the build-image plugin is invoked, you should recognize the lifecycle phases that we observed with `pack`. 
+- Recall that with pack, the Maven build was part of the buildpack build phase. With Spring Boot, the Maven build is done before the buildpack lifecycle is invoked, hence the buildpack lifecycle builds the image using the jar that Maven created, rather than the source code.
 - Spring Boot's choice of default builder is the same one we chose for `pack` (this is [configurable](https://docs.spring.io/spring-boot/docs/2.3.0.M2/maven-plugin/html/#build-image-example-custom-image-builder)), so we can be confident that the image is being built in the same way by either platform.
 ```
 [INFO] Building image 'docker.io/library/spring-sample-app:0.0.1-SNAPSHOT'
