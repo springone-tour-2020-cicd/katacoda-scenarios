@@ -1,30 +1,31 @@
-# Is it working?
+# Configure kpack
 
-kpack will automatically detect the latest git commit in the source code repo defined in image.yaml. It will create an image for our app using the builder declared in build.yaml, and finally it will publish the image to Docker Hub using the service account we created.
+To configure the builder, we will use the ClusterBuilder CRD installed with kpack. To configure the source and destination, we will use the kpack Image CRD. We will also need to grant write access to Docker Hub, so we'll configure a Secret and a Service Account using corresponding Kubernetes primitives. 
 
-Check your Docker Hub organization to make sure a new image has been published.
-
-You can check kpack logs using the kpack `logs` CLI:
+Take a look at the contents of the supplied yaml file and notice all of these resource definitions:
 ```
-logs -image spring-sample-appkubectl get builders,builds,clusterbuilders,images,sourceresolvers -build 1 
+cat ~/kpack-config/kpack-config.yaml
 ```{{execute}}
 
-You should recognize the same buildpack lifecycle we observed with pack and Spring Boot in the kpack logs. 
+Notice that the ClusterBuilder (a builder scoped to the cluster rather than a namespace), we are using the same builder we used with `pack` and Spring Boot (cloudfoundry/cnb:bionic), so we can be sure that the resulting image is the same, regardless of which of the three platforms we used to generate it.
 
-Read more about viewing kpack logs in this [blog post](https://starkandwayne.com/blog/kpack-viewing-build-logs).
+Notice also three placeholder values:
+- DOCKERHUB_USERNAME_PLACEHOLDER
+- DOCKERHUB_PASSWORD_PLACEHOLDER
+- DOCKERHUB_ORG_PLACEHOLDER
 
-You can also watch the kpack-controller logs:
+ To update these placeholders with your Docker Hub account details, run the following script and respond to the prompts:
 ```
-kubectl logs -n kpack \
-   $(kubectl get pod -n kpack | grep Running | head -n1 | awk '{print $1}') \
-   -f
+~/kpack-config/kpack-config.sh
 ```{{execute}}
 
---------------------------------------------------
-Extra credit: If you want to see kpack automatically creating new builds when a code change occurs, you can:
-1. Fork the [spring-sample-app repo](https://github.com/springone-tour-2020-cicd/spring-sample-app.git)
-2. Update the GitHub URL in image.yaml to point to your fork
-3. Use `kubectl apply` as above to update the Imagekubectl get builders,builds,clusterbuilders,images,sourceresolvers
-4. Make a change to any file on the GitHub repo
-5. Check kpack logs for `build 2` and/or check DockerHub to confirm a new image was built
---------------------------------------------------
+Take a look at the yaml file again and validate that the three placeholders were correctly updated (your password will show up on the screen so make sure no one is looking over your shoulder!)
+```
+cat ~/kpack-config/kpack-config.yaml
+```{{execute}}
+
+Clear your password from the screen:
+```
+clear
+```{{execute}}
+

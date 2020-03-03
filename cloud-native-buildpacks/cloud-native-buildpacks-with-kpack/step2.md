@@ -1,14 +1,19 @@
-# Configure kpack
+# Scenario environment
 
-Let's configure kpack to build an image from our spring-sample-app.
+Your scenario environment comes with some pre-installed tools/assets. Let's review them.
 
-As with the previous platforms we looked at, we need to specify the builder, the source code, and the image repository.
+Wait until `Environment ready!` appears in the terminal window.
 
-In the case of pack and Spring Boot, we used our local clone of the source code and the local Docker daemon as the image source and destination. 
+We'll be installing kpack into a Kubernetes cluster.
+- To verify that **kubectl** and **Kubernetes** are installed, run `kubectl cluster-info`{{execute}}.
+You should see information about the running cluster.
 
-Since kpack runs as a service on a kubernetes cluster, it does not have access to the source code or Docker daemon on the local host. Hence, we'll use GitHub as the location of the source code, and Docker Hub as the destination for the image.
+kpack provides a CLI tool called `logs` specifically for accessing logs produced during image builds.
+- To verify that **logs** CLI for kpack is running, run `logs --help`{{execute}}.
+You should see the usage guide for logs displayed.
 
-In short, we need to configure:
-- the builder to use
-- the source code on GitHub, with proper read access
-- the repository on Docker Hub, with proper write access
+We'll also need an app to build and a Docker registry to which to publish the image. Since kpack runs in a Kubernetes cluster, it does not have access to the local host in the same way `pack` and the Spring Boot plugins for Maven and Gradle do. Hence, we will be using GitHub and Docker Hub as the source and destination for our build.
+
+
+
+Now on to the real stuff!

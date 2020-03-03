@@ -1,51 +1,35 @@
-# Second build
+# The builder
 
-Let's dive further into the `pack build` command by re-building the image and examining the log again.
+Our `pack build` command explicitly declared a _builder_ to use: `--builder cloudfoundry/cnb:bionic`
 
-Before we re-build, let's make a small code change.
+##### What's a builder, anyway?
 
-### App source code change
+A builder is an image that bundles all the bits and information on how to build your apps. It includes the buildpacks that will be used as well as the environment for building and running your app. The builder we specified is publicly available on Docker Hub [cloudfoundry/cnb](https://hub.docker.com/r/cloudfoundry/cnb) (click on the `Tags` tab to see available builder images).
 
-Recall that the app displayed the message _"hello, world"_. Let's change that for our next build.
-
-Run the following commands to cd into the app directory and update the source code:
+We can use `pack` to get more information about the builder:
 ```
-cd ~/spring-sample-app
-sed -i 's/hello/greetings/g' src/main/java/com/example/springsampleapp/HelloController.java
+pack inspect-builder cloudfoundry/cnb:bionic
 ```{{execute}}
 
-You can verify that the file contains the updated string using `cat src/main/java/com/example/springsampleapp/HelloController.java`{{execute}}
+From the output, you can see that this builder supports several programming frameworks through ordered sets of modular buildpacks, and it specifies the order of detection that will be applied to applications. You can also see the stack and the run image that the builder will use for the app image it produces.
 
-### Re-build the image
-
-Now, let's re-build the image. We no longer need to specify the builder since we have set a default builder. We also no longer need to specify the path since we are now in the directory containing the source code. Hence, we can run a simplified `pack build` command with only the image name:
+Now, check your local Docker repository for any images downloaded from the cloudfoundry org on Docker Hub.
 ```
-pack build spring-sample-app
+docker images | grep cloudfoundry
 ```{{execute}}
 
-### Speedy re-build
+You should see both the builder image as well as the run image. `pack` downloaded both of these during the first build. We can expect future builds with the same builder to be faster as they can use the local copies.
 
-Notice that the build is faster the second time. A few factors contribute to this:
+##### What other builders could I have used?
 
-1. The builder and run (stack) images are now available in the local Docker repository
-
-2. Spring/Java dependencies are now available in a local Maven (.m2) repository
-
-3. Even though we made a change to our app code, the build was able to re-use layers from the app image and from cache (pay special attention to the logs for the `restoring`, `analyzing`, and `exporting` phases). Building a layered image enables pack to efficiently recreate only the layers that have changed.
-
-Validate that the image was updated (the image id has changed):
+If you're curious about other builders you can use, run:
 ```
-docker images | grep spring-sample-app
+pack suggest-builders
 ```{{execute}}
 
-Re-run the app to see the updated message:
+##### Default builder
+ 
+Let's stick with the builder we'd chosen. In fact, to simplify our pack command, let's set it as our default:
 ```
-docker run -it -p 8080:8080 spring-sample-app
+pack set-default-builder cloudfoundry/cnb:bionic
 ```{{execute}}
-
-Send a request to the app:
-```
-curl localhost:8080
-```{{execute T2}}
-
-`Send Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.

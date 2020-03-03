@@ -12,11 +12,6 @@ In API-speak, buildpacks are tools that implement the [Buildpack Interface Speci
 
 Examples of platforms include the pack CLI, Spring Boot with Maven/Gradle plug-ins, kpack, Tekton, and Pivotal Build Service. We will cover a few of these throughout this course. This scenario focuses on the pack CLI.
 
-# Scenario environment
-
-Your scenario environment comes with some pre-installed tools/assets. 
-
-Wait until `Environment ready!` appears in the terminal window.
 
 
-Let's begin!
+Let's start by taking stock of the tools and assets that are pre-installed into the scenario environment...

@@ -1,31 +1,27 @@
-# Configure kpack
+# Install kpack
 
-To configure the builder, we will use the ClusterBuilder CRD installed with kpack. To configure the source and destination, we will use the kpack Image CRD. We will also need to grant write access to Docker Hub, so we'll configure a Secret and a Service Account using corresponding Kubernetes primitives. 
-
-Take a look at the contents of the supplied yaml file and notice all of these resource definitions:
+Let's begin by installing kpack to our kubernetes cluster:
 ```
-cat ~/kpack-config/kpack-config.yaml
+cd ~
+kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.6/release-0.0.6.yaml
 ```{{execute}}
 
-Notice that the ClusterBuilder (a builder scoped to the cluster rather than a namespace), we are using the same builder we used with `pack` and Spring Boot (cloudfoundry/cnb:0.0.53-bionic), so we can be sure that the resulting image is the same, regardless of which of the three platforms we used to generate it.
-
-Notice also three placeholder values:
-- DOCKERHUB_USERNAME_PLACEHOLDER
-- DOCKERHUB_PASSWORD_PLACEHOLDER
-- DOCKERHUB_ORG_PLACEHOLDER
-
- To update these placeholders with your Docker Hub account details, run the following script and respond to the prompts:
+Review the output to see the list of resources created. Notice that it includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`. These deployment resources comprise the kpack service itself:
 ```
-~/kpack-config/kpack-config.sh
+kubectl get all -n kpack
 ```{{execute}}
 
-Take a look at the yaml file again and validate that the three placeholders were correctly updated (your password will show up on the screen so make sure no one is looking over your shoulder!)
+Wait until the status of the two pods is `Running`.
+
+The installation also includes several Custom Resource Definitions (CRDs) that give us Kubernetes primitives to configure kpack to pull code from a source code or artifact repository, build an OCI image, and publish the image to a Docker registry:
 ```
-cat ~/kpack-config/kpack-config.yaml
+kubectl api-resources --api-group build.pivotal.io
 ```{{execute}}
 
-Clear your password from the screen:
+We'll be able to list kpack resources that we create by querying for these CRDs. We haven't created any yet, so we expect the following command to return an empty result:
 ```
-clear
+kubectl get builders,builds,clusterbuilders,images,sourceresolvers
 ```{{execute}}
 
+
+Next, let's configure kpack to build images for our sample app.
