@@ -12,7 +12,7 @@ kpack provides a CLI tool called `logs` specifically for accessing logs produced
 - To verify that **logs** CLI for kpack is installed, run `logs --help`{{execute}}.
 You should see the usage guide for logs displayed.
 
-We'll be using GitHub and Docker Hub as the source and destination for our build, so we don't need a local resource for these.
+We'll be using GitHub and Docker Hub as the source and destination for our build, so we don't need local resources for these.
 
 
 Now on to the real stuff!
