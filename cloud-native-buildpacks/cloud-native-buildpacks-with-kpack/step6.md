@@ -14,7 +14,7 @@ Each build creates a new pod. Check to see if a pod has been created:
 kubectl get pods
 ```{{execute}}
 
-The pod executes the buildpack lifecycle using an _init container_ for each lifecycle phase. The pod itself doesn't do anything additional. Hence, you cannot simply look at the logs of the pod directly. Instead, kpack provides a `logs` CLI to make it easy to append the logs from the various init containers in the pod in order: 
+The pod executes the buildpack lifecycle using an _init container_ for each lifecycle phase. The pod itself doesn't do anything additional. Hence, you cannot simply look at the logs of the pod directly. Instead, kpack provides a `logs` CLI to make it easy to get the logs from the various init containers in order: 
 ```
 logs -image spring-sample-app -build 1
 ```{{execute}}
