@@ -12,7 +12,7 @@ Notice that it contains four resources. The key resource is the last one, the **
 
 The ClusterBuilder and Image are two of the CRDs that were installed with kpack.
 
-The other resources in the file support the above Image configuration. You can see a ClusterBuilder resource contaning the precise details of what we are calling the default builder. Also, the Secret and ServiceAccount help provide write access to Docker Hub.
+The other resources in the file support the above Image configuration. You can see a ClusterBuilder resource contaning the precise details of what we are calling the default builder (cloudfoundry/cnb:bionic). Also, the Secret and ServiceAccount help provide _write_ access to Docker Hub.
 
 # Provide your Docker Hub credentials
 

@@ -6,7 +6,7 @@ Check your Docker Hub organization to make sure a new image has been published.
 
 You can check kpack logs using the kpack `logs` CLI:
 ```
-logs -image spring-sample-appkubectl get builders,builds,clusterbuilders,images,sourceresolvers -build 1 
+logs -image spring-sample-app -build 1
 ```{{execute}}
 
 You should recognize the same buildpack lifecycle we observed with pack and Spring Boot in the kpack logs. 
