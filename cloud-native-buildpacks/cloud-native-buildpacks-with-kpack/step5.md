@@ -8,20 +8,22 @@ cat ~/kpack-config/kpack-config.yaml
 Notice that it contains four resources. Two are standard Kubernetes resources (Secret and ServiceAccount) and two use CRDs created by kpack (ClusterBuilder and Image).
 
 The key resource is the last one, the **Image** resource. Take a look at this one closely. Notice that it defines:
-- The builder to use: default
-- The source code:  https://github.com/springone-tour-2020-cicd/spring-sample-app.git
-- The destination registry: DOCKERHUB_ORG_PLACEHOLDER/spring-sample-app:latest
+- spec.builder specifies the builder
+- spec.source specifies the app source
+- spec.tag specifies the app image destination
 
-The other three resources in the file support the above Image configuration. The ClusterBuilder resource contans the precise details of what we are calling the default builder (cloudfoundry/cnb:bionic). The Secret and ServiceAccount provide credentials to publish to Docker Hub.
+The details of the builder that we have named as `default` are defined farther up the file, using the kpack CRD, ClusterBuilder. You can see this points to the cloudfoundry/cnb:bionic which we used previously in this course.
+
+For the source we are choosing to point to a built jar file rather than the source code. With all of the platforms we have looked at in this course, we have the option to build from source or a built jar file. We'll use the latter option here to speed up the image build.
 
 # Provide your Docker Hub credentials
 
-Notice three placeholder values in our yaml file:
+To publish the image to Docker Hub, you need to provide your Docker account details. Notice that the yaml file contains placeholders:
 - DOCKERHUB_USERNAME_PLACEHOLDER
 - DOCKERHUB_PASSWORD_PLACEHOLDER
 - DOCKERHUB_ORG_PLACEHOLDER
 
-You'll need to replace these with your Docker Hub account details. To do so, run the following script and respond to the prompts:
+Replace these with your Docker Hub account details by running the following script and responding to the prompts:
 ```
 ~/kpack-config/kpack-config.sh
 ```{{execute}}

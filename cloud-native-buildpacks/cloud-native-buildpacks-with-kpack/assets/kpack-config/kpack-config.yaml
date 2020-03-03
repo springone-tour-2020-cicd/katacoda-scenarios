@@ -35,7 +35,6 @@ spec:
   serviceAccount: kpack-service-account
 #  cacheSize: "1.5Gi"
   source:
-    git:
-      url: https://github.com/springone-tour-2020-cicd/spring-sample-app.git
-      revision: master
+    blob:
+      url: https://github.com/springone-tour-2020-cicd/spring-sample-app/blob/master/target/spring-sample-app-1.0.0.jar
   tag: DOCKERHUB_ORG_PLACEHOLDER/spring-sample-app:latest
