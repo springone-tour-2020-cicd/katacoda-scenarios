@@ -56,7 +56,7 @@ Notice that, in contrast with `pack`, the name of the published image is automat
 
 Start your application using `docker run`:
 ```
-docker run -it -p8080:8080 spring-sample-app:0.0.1-SNAPSHOT
+docker run -it -p8080:8080 spring-sample-app:1.0.0
 ```{{execute}}
 
 Send a request to the app:
