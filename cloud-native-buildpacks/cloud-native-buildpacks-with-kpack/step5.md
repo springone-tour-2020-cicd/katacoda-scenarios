@@ -1,20 +1,27 @@
 # Configure kpack
 
-To configure the builder, we will use the ClusterBuilder CRD installed with kpack. To configure the source and destination, we will use the kpack Image CRD. We will also need to grant write access to Docker Hub, so we'll configure a Secret and a Service Account using corresponding Kubernetes primitives. 
-
-Take a look at the contents of the supplied yaml file and notice all of these resource definitions:
+We've provided a yaml file containing the necessary configuration. Let's review the contents:
 ```
 cat ~/kpack-config/kpack-config.yaml
 ```{{execute}}
 
-Notice that the ClusterBuilder (a builder scoped to the cluster rather than a namespace), we are using the same builder we used with `pack` and Spring Boot (cloudfoundry/cnb:bionic), so we can be sure that the resulting image is the same, regardless of which of the three platforms we used to generate it.
+Notice that it contains four resources. The key resource is the last one, the **Image** resource. Take a look at this one closely. Notice that it defines:
+- The builder to use: default
+- The source code:  https://github.com/springone-tour-2020-cicd/spring-sample-app.git
+- The destination registry: DOCKERHUB_ORG_PLACEHOLDER/spring-sample-app:latest
 
-Notice also three placeholder values:
+The ClusterBuilder and Image are two of the CRDs that were installed with kpack.
+
+The other resources in the file support the above Image configuration. You can see a ClusterBuilder resource contaning the precise details of what we are calling the default builder. Also, the Secret and ServiceAccount help provide write access to Docker Hub.
+
+# Provide your Docker Hub credentials
+
+Notice three placeholder values in our yaml file:
 - DOCKERHUB_USERNAME_PLACEHOLDER
 - DOCKERHUB_PASSWORD_PLACEHOLDER
 - DOCKERHUB_ORG_PLACEHOLDER
 
- To update these placeholders with your Docker Hub account details, run the following script and respond to the prompts:
+You'll need to replace these with your Docker Hub account details. To do so, run the following script and respond to the prompts:
 ```
 ~/kpack-config/kpack-config.sh
 ```{{execute}}

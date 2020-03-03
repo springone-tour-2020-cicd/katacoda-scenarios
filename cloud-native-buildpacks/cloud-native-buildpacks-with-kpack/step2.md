@@ -9,11 +9,10 @@ We'll be installing kpack into a Kubernetes cluster.
 You should see information about the running cluster.
 
 kpack provides a CLI tool called `logs` specifically for accessing logs produced during image builds.
-- To verify that **logs** CLI for kpack is running, run `logs --help`{{execute}}.
+- To verify that **logs** CLI for kpack is installed, run `logs --help`{{execute}}.
 You should see the usage guide for logs displayed.
 
-We'll also need an app to build and a Docker registry to which to publish the image. Since kpack runs in a Kubernetes cluster, it does not have access to the local host in the same way `pack` and the Spring Boot plugins for Maven and Gradle do. Hence, we will be using GitHub and Docker Hub as the source and destination for our build.
-
+We'll be using GitHub and Docker Hub as the source and destination for our build, so we don't need a local resource for these.
 
 
 Now on to the real stuff!
