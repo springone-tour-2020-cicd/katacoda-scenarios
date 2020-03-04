@@ -5,7 +5,7 @@ By default, pack publishes images to the local Docker repository. Check your Doc
 docker images | grep spring-sample-app
 ```{{execute}}
 
-Take note of the image id. We'll re-build the image shortly, and you can validate that the image id changes with each build.
+Don't worry if the creation date says "40 years ago". `pack` zeroes out all the timestamps in the built images in order to achieve reproducible builds (if you run the same version of the buildpacks against the same source code, you will get images with identical shas). Instead, take note of the image id. We'll re-build the image shortly, and you can validate that the image id changes with each build.
 
 Note that by using pack and buildpacks, there was no need to install a JDK, run Maven, or otherwise configure a build environment in order to build the OCI image for the app!
 
