@@ -29,7 +29,7 @@ tanzu buildpacks ecosystem - buy int build service means you're buying into a st
 
 pb CLI - simplifies kpack, rather than configure kpack using kubectl and custom resources, this can get challenging for developers to do across an enteprise. pb cli makes it simpler, exposing only what you need ot know
 
-Installation - installation, upgrade and image relocation... smoother upgrade experience based on pivnet, etc..
+Installation - installation, upgrade and image relocation... smoother upgrade experience based on pivnet, etc...
 
 Build webhook module - enterprises have their own CA certs, webhook allows enterprises to provisio their own cs certs in their builds. CA Certs/ HTTP Proxy - critical enterprise functionality
 

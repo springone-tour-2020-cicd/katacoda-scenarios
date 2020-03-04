@@ -14,7 +14,7 @@ cd spring-sample-app
 You should see evidence of the image build in the log. A few observations:
 - When the build-image plugin is invoked, you should recognize the lifecycle phases that we observed with `pack`. 
 - Recall that with pack, the Maven build was part of the buildpack build phase. With Spring Boot, the Maven build is done before the buildpack lifecycle is invoked, hence the buildpack lifecycle builds the image using the jar that Maven created, rather than the source code.
-- Spring Boot's choice of default builder is pinned to a specific version (0.0.53-bionic). This is [configurable](https://docs.spring.io/spring-boot/docs/2.3.0.M2/maven-plugin/html/#build-image-example-custom-image-builder)). As long as we use the same builder across platforms, we can be confident that the image is being built in the same way.
+- Spring Boot's choice of default builder is pinned to a specific version (0.0.53-bionic). This is [configurable](https://docs.spring.io/spring-boot/docs/2.3.0.M2/maven-plugin/html/#build-image-example-custom-image-builder). As long as we use the same builder across platforms, we can be confident that the image is being built in the same way.
 ```
 [INFO] Building image 'docker.io/library/spring-sample-app:0.0.1-SNAPSHOT'
 [INFO]
