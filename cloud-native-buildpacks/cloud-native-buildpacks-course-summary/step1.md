@@ -22,4 +22,4 @@ These three options are very accessible and appealing to both developers and ope
 
 [Tanzu/Pivotal Build Service](https://docs.pivotal.io/build-service) builds on kpack, providing enterprise-level abstractions on top of it. Currently in Beta, it is scheduled for GA in the Spring.
 
-[Tekton Pipelines](https://tekton.dev/) provides a Kibernetes-native pipeline mechanism, and includes support for the buildpack lifecycle as well.
+[Tekton Pipelines](https://tekton.dev/) provides a Kubernetes-native pipeline mechanism, and includes support for the buildpack lifecycle as well.
