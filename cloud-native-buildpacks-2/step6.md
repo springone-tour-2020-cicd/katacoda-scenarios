@@ -45,7 +45,7 @@ docker run -it -p 8080:8080 spring-sample-app
 
 Send a request to the app:
 ```
-curl localhost:8080
+curl localhost:8080; echo
 ```{{execute T2}}
 
 `Send Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.

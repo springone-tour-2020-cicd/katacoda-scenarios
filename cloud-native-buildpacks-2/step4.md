@@ -14,7 +14,7 @@ docker run -it -p 8080:8080 spring-sample-app
 
 Send a request to the app:
 ```
-curl localhost:8080
+curl localhost:8080; echo
 ```{{execute T2}}
 
 Note that by using pack and buildpacks, there was no need to install a JDK, run Maven, or otherwise configure a build environment!

@@ -16,7 +16,7 @@ docker run -it -p 8080:8080 spring-sample-app
 
 When the app log indicates the app has started, send a request to the app:
 ```
-curl localhost:8080
+curl localhost:8080; echo
 ```{{execute T2}}
 
 You should see a _"hello, world"_ response from the app, with some additional app details.
