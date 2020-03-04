@@ -1,3 +1,7 @@
+# Further reading
+
+You can read the announcement of Spring Boot support for Cloud Native Buildpacks in this [blog post](https://spring.io/blog/2020/01/27/creating-docker-images-with-spring-boot-2-3-0-m1), and look through the docs for the [Maven](https://docs.spring.io/spring-boot/docs/2.3.0.M2/maven-plugin/html/#build-image) and [Gradle](https://docs.spring.io/spring-boot/docs/2.3.0.M2/gradle-plugin/reference/html/#build-image) plugins.
+
 # Second build
 
 Let's re-build the image to see the efficiencies we observed with `pack` in play again here.

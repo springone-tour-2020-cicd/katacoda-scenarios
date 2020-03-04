@@ -1,5 +1,10 @@
 # Build an image with Spring Boot
 
+Let's begin by confirming there are no images yet for our sample app. The following command should return an empty result: 
+```
+docker images | grep spring-sample-app
+```{{execute}}
+
 Build the project using the new `spring-boot:build-image` Maven plugin:
 ```
 cd spring-sample-app
