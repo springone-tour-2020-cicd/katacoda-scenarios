@@ -36,7 +36,7 @@ In the **analysis & restore** phases, it finds opportunities for optimization an
 ===> RESTORING
 ```
 
-In the **build** phase, it applies the participating buildpacks that it detected earlier, in order. Notice that each contributes to the app image in _layers_, including the JDK (to compile from source), the JRE (for the runtime image), the Build System (for the Maven build), etc...:
+In the **build** phase, it applies the participating buildpacks that it detected earlier, in order. Notice that each contributes to the app image in _layers_, including the JDK (to compile from source), the JRE (for the runtime image), the Build System (for the Maven build), etc...
 ```
 ===> BUILDING
 [builder]
