@@ -2,7 +2,7 @@
 
 Run `pack --help`{{execute}} to see the kinds of commands `pack` can execute.
 
-We'll use the command `pack build` to build our first image. There's nothing special about this app, we're just saving time by using an existing sample.
+We'll use the command `pack build` to build an image from our sample app. There's nothing special about this app, we're just saving time by using an existing sample.
 
 Run the following command:
 ```
