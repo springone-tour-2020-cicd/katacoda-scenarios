@@ -8,9 +8,9 @@ cat ~/kpack-config/kpack-config.yaml
 Notice that it contains four resources. Two are standard Kubernetes resources (Secret and ServiceAccount) and two use CRDs created by kpack (ClusterBuilder and Image).
 
 The key resource is the last one, the **Image** resource. Take a look at this one closely. Notice that it defines:
-- spec.builder specifies the builder
-- spec.source specifies the app source
-- spec.tag specifies the app image destination
+- spec.builder - specifies the builder
+- spec.source - specifies the app source
+- spec.tag - specifies the app image destination
 
 The details of the builder that we have named as `default` are defined farther up the file, using the kpack CRD, ClusterBuilder. You can see this points to the cloudfoundry/cnb:bionic which we used previously in this course.
 
