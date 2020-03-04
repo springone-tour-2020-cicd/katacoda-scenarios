@@ -23,7 +23,7 @@ To publish the image to Docker Hub, you need to provide your Docker account deta
 - DOCKERHUB_PASSWORD_PLACEHOLDER
 - DOCKERHUB_ORG_PLACEHOLDER
 
-Replace these with your Docker Hub account details by running the following script and responding to the prompts:
+Replace these with your Docker Hub account details by running the following script and responding to the prompts. When prompted for your password, note that you can also use an auth token. Auth tokens can be created through the Docker Hub UI and deleted/revoked at any time.
 ```
 ~/kpack-config/kpack-config.sh
 ```{{execute}}

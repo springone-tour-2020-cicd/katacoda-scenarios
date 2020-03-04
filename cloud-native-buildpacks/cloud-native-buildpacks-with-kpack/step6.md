@@ -21,7 +21,9 @@ logs -image spring-sample-app -build 1
 
 You should recognize the same buildpack lifecycle we observed with pack and Spring Boot in the kpack logs. 
 
-When the logs show that the build is done, check your Docker Hub organization to make sure a new image has been published.
+When the log shows that the build is done, check your Docker Hub organization to make sure a new image has been published.
+
+`Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
 
 
 

@@ -14,7 +14,7 @@ For kicks, let's make sure the app works. Start the app using `docker run`:
 docker run -it -p 8080:8080 spring-sample-app
 ```{{execute}}
 
-When the app log indicates the app has started, send a request to the app:
+When the app log indicates the app has started, send a request to the app. Clicking on the following command will send the request in a new terminal window:
 ```
 curl localhost:8080; echo
 ```{{execute T2}}

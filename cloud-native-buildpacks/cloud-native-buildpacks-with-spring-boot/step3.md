@@ -53,7 +53,7 @@ Start your application using `docker run`:
 docker run -it -p8080:8080 spring-sample-app:1.0.0
 ```{{execute}}
 
-Send a request to the app:
+Send a request to the app. Clicking on the following command will send the request in a new terminal window:
 ```
 curl localhost:8080; echo
 ```{{execute T2}}

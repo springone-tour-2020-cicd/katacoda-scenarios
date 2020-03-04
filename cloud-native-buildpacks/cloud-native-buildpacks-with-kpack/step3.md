@@ -19,7 +19,7 @@ kubectl api-resources --api-group build.pivotal.io
 
 We'll be able to list kpack resources that we create by querying for these CRDs. We haven't created any yet, so we expect the following command to return an empty result:
 ```
-kubectl get builders,builds,clusterbuilders,images,sourceresolvers
+kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
 ```{{execute}}
 
 
