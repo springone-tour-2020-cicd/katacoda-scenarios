@@ -19,9 +19,7 @@ kubectl describe image spring-sample-app
 
 Watch the kpack-controller logs:
 ```
-kubectl logs -n kpack \
-   $(kubectl get pod -n kpack | grep Running | head -n1 | awk '{print $1}') \
-   -f
+kubectl -n kpack logs -l app=kpack-controller -f
 ```{{execute}}
 
 Read more about viewing kpack logs in this [blog post](https://starkandwayne.com/blog/kpack-viewing-build-logs).

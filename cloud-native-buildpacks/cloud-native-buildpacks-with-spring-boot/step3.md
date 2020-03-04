@@ -54,3 +54,5 @@ curl localhost:8080
 ```{{execute T2}}
 
 `Send Ctrl+C`{{execute interrupt T1}} to stop the app before proceeding to the next step.
+
+As we saw with `pack` in the previous scenario in this course, subsequent builds will be faster as they will re-use local build and run images, local Maven repository, and cached image layers.
