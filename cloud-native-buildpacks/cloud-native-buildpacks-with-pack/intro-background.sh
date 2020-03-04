@@ -5,7 +5,7 @@ printf "" > /root/environment-prepared
 echo "$(date)"
 
 echo "### Installing pack CLI" 
-curl -L https://github.com/buildpacks/pack/releases/download/v0.8.1/pack-v0.8.1-linux.tgz | tar zx && \
+curl -L https://github.com/buildpacks/pack/releases/download/v0.9.0/pack-v0.9.0-linux.tgz | tar zx && \
     chmod +x pack && \
     mv pack /usr/local/bin/pack
 echo "### Finished installing pack CLI"

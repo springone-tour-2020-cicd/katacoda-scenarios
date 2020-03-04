@@ -9,7 +9,9 @@ You can see the run image and the buildpacks used to create the app image. What 
 
 ### Add a custom buildpack
 
-Since buildpacks are modular and pluggable, we can contribute our own custom buildpacks to the build. You can read more about creating custom buildpacks [here](https://github.com/buildpacks/samples/tree/master/buildpacks) later, but for now, re-run the command as shown below. Note that we are declaring all of the buildpacks that were used by default (as listed in the `inspect-image` command output), and adding our custom buildpack to the sequence:
+Since buildpacks are modular and pluggable, we can contribute our own custom buildpacks to the build. You can read more about creating custom buildpacks [here](https://github.com/buildpacks/samples/tree/master/buildpacks) later, but for now, let's use a simple example custom buildpack. This buildpack just prints some lines to the log during the build, but you could create a custom buildpack that does anything that makes sense for your organization or your application.
+
+Re-run the `pack build` command as shown below. Note that we are declaring all of the buildpacks that were used by default (as listed in the `inspect-image` command output), and adding our custom buildpack to the sequence:
 ```
 pack build spring-sample-app \
      --buildpack org.cloudfoundry.openjdk \

@@ -2,7 +2,12 @@
 
 Run `pack --help`{{execute}} to see the kinds of commands `pack` can execute.
 
-We'll use the command `pack build` to build an image from our sample app. There's nothing special about this app, we're just saving time by using an existing sample.
+We'll use the command `pack build` to build an image from our sample app. In our command, we will specify:
+ - a name for the image to be created
+ - the path to the app source code
+ - the builder we want to use (more on this later)
+ 
+It's worth noting that there's nothing special about our app, we're just saving time by using an existing sample.
 
 Run the following command:
 ```
@@ -11,7 +16,9 @@ pack build spring-sample-app \
      --builder cloudfoundry/cnb:bionic
 ```{{execute}}
 
-As the image is building, look through the log. Notice that pack is first downloading two images based on the builder we specified:
+The first build may take a few minutes as it has to download all of the bits and bytes needes for building the image, including the builder, JDK, JRE, all of the Spring and Java dependencies... Please be patient - subsequent builds will be faster. As the build is progressing, take the time to look through the log and keep reading below for an explanation of what is happening.
+
+Notice that pack is first downloading two images based on the builder we specified:
 ```
 bionic: Pulling from cloudfoundry/cnb
 ...
@@ -59,8 +66,6 @@ In the **build** phase, it applies the participating buildpacks that it detected
 [builder]   Executable JAR: Contributing to layer
 ```
 
-It takes some time to download the JDK, JRE, and all of the Spring and Java dependencies. Please be patient :-)
-
 In the **export** phase, it produces the layered OCI image for our application. Layering will make it more efficient to update in the future. The image name is the name we specified in our `pack build` command; the tag is `latest` since we didn't specify a tag.
 ```
 ===> EXPORTING
@@ -81,5 +86,3 @@ The export phase also caches layers, enabling more efficient re-builds in the fu
 ```
 
 Wait until the command completes. You should see `Successfully built image spring-sample-app` as the last line in the log.
-
-Don't worry, subsequent builds will be faster, and we'll take a closer look at this in a minute, but first...
