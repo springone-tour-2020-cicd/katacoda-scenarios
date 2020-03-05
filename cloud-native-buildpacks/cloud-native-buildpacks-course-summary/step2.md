@@ -1,18 +1,18 @@
-# Why Cloud Native Buildpacks over Dockerfile or Jib?
+# Which platform should I choose?
 
-Let's highlight some advantages of Cloud Native Buildpacks over two popular alternatives, Dockerfile and Jib.
+You can choose the platform that provides the best fit for the user or enterprise experience you need to address. The three platform choices we reviewed provide different features and advantages. For example:
 
-**Dockerfile**
+- `pack` and `kpack` are compatible with the same wide variety of polyglot buildpacks and can hence be used to build images for apps written in a variety of frameworks, while the Spring Boot option is specific to, well, Spring Boot
 
-Dockerfile boils down to manually declaring how to build an image from an app. It requires more work to create and maintain, placing a burden on developers and introducing variability and inconsistency across apps and teams. Image updates are inefficient (read more [here](https://spring.io/blog/2020/01/27/creating-docker-images-with-spring-boot-2-3-0-m1)) and any best practices on creating, sharing, managing, and maintaining Dockerfiles are left to each developer or team to discover, implement, and enforce.
+- `pack` and Spring Boot are executed manually or via a script at a command line, while `kpack` runs as a service, providing a centralized and hosted option for an image building service
 
-- Cloud Native Buildpacks provide the bility to make changes in a centralized place (the builder) - all applications using the builder will pick up the change
-- Cloud Native Buildpacks provide consistent, reproducible builds for a variety of frameworks (Java, NodeJS, Python, Golang, .NET Core, PHP, HTTPD, NGINX, Scala, and Ruby)
+- Spring Boot leverages the familiar Maven and Gradle workflows by operating through a simple plug-in
 
-**Jib**
+# More choices!
 
-The user experience with Jib is most comparable to the built-in support of Spring Boot for Cloud Native Buildpacks. It is a great option for apps not using versions of Spring Boot 2.3.0.M1 or later. Otherwise, consider the following advantages of Cloud Native Buildpacks:
+These three options are very accessible and appealing to both developers and operators, but as we consider the challenges of enterprise operations at scale, the value of some additional features becomes evident, and indeed additional platforms are evolving to address these broader use cases. For example:
 
-- Integration directly with the Spring Boot Maven and Gradle plugins
-- Ability to guarantee the same image can be produced if you choose to migrate platforms or take advantage of a service like kpack in a mature CI/CD workflow
-- The _cloudfoundry_ Cloud Native Buildpacks include a memory calculator, which calculates suitable memory settings for Java apps. Read more [here](https://github.com/cloudfoundry/java-buildpack-memory-calculator)
+[Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service) builds on kpack, providing enterprise-level abstractions on top of it. Currently in Beta, it is scheduled for GA in the Spring.
+
+[Tekton Pipelines](https://tekton.dev) provides a Kubernetes-native pipeline mechanism, and includes support for the buildpack lifecycle as well.
+

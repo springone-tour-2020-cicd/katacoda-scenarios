@@ -1,38 +1,18 @@
-# Summary of resources
+# Why Cloud Native Buildpacks over Dockerfile or Jib?
 
-Below is a summary of the tools and links provided throughout this course:
+Let's highlight some advantages of Cloud Native Buildpacks over two popular alternatives, Dockerfile and Jib.
 
-**Installed Tools**
+**Dockerfile**
 
-- [pack CLI releases](https://github.com/buildpacks/pack/releases)
-- [kpack releases (kpack and logs CLI)](https://github.com/pivotal/kpack/releases)
-- [Sample Spring Boot app](https://github.com/springone-tour-2020-cicd/spring-sample-app.git)
-- [Sample Spring Boot app - jar artifact](https://github.com/springone-tour-2020-cicd/spring-sample-app/releases/download/v1.0.0/spring-sample-app-1.0.0.jar)
-- [Sample custom buildpack](https://github.com/buildpacks/samples.git)
+Dockerfile boils down to manually declaring how to build an image from an app. It requires more work to create and maintain, placing a burden on developers and introducing variability and inconsistency across apps and teams. Image updates are inefficient (read more [here](https://spring.io/blog/2020/01/27/creating-docker-images-with-spring-boot-2-3-0-m1)) and any best practices on creating, sharing, managing, and maintaining Dockerfiles are left to each developer or team to discover, implement, and enforce.
 
-**Cloud Native Buildpacks**
+- Cloud Native Buildpacks provide the bility to make changes in a centralized place (the builder) - all applications using the builder will pick up the change
+- Cloud Native Buildpacks provide consistent, reproducible builds for a variety of frameworks (Java, NodeJS, Python, Golang, .NET Core, PHP, HTTPD, NGINX, Scala, and Ruby)
 
-- [Cloud Native Buildpacks](https://buildpacks.io)
-- [Cloud Native Buildpacks documentation](https://buildpacks.io/docs)
-- [Cloud Native Buildpacks git repo](https://github.com/buildpacks)
-- [Buildpack Interface Specification](https://github.com/buildpacks/spec/blob/master/buildpack.md)
-- [Platform Interface Specification](https://github.com/buildpacks/spec/blob/master/platform.md)
-- [Buildpack lifecycle](https://buildpacks.io/docs/concepts/components/lifecycle)
-- [Docker Hub Registry for cloudfoundry/cnb images](https://hub.docker.com/r/cloudfoundry/cnb) (click on the `Tags` tab to see available builder images)
-- [Creating custom buildpacks](https://github.com/buildpacks/samples/tree/master/buildpacks)
-- [Java Memory Calculator](https://github.com/cloudfoundry/java-buildpack-memory-calculator)
+**Jib**
 
-**Spring Boot Support for Cloud Native Buildpacks**
+The user experience with Jib is most comparable to the built-in support of Spring Boot for Cloud Native Buildpacks. It is a great option for apps not using versions of Spring Boot 2.3.0.M1 or later. Otherwise, consider the following advantages of Cloud Native Buildpacks:
 
-- [Spring Boot support for Cloud Native Buildpacks announcement](https://spring.io/blog/2020/01/27/creating-docker-images-with-spring-boot-2-3-0-m1)
-- [Spring Boot Maven plugin documentation](https://docs.spring.io/spring-boot/docs/2.3.0.M2/maven-plugin/html/#build-image)
-- [Spring Boot Gradle plugin documentation](https://docs.spring.io/spring-boot/docs/2.3.0.M2/gradle-plugin/reference/html/#build-image)
-
-**Cloud Native Buildpacks with kpack**
-
-- [Viewing kpack build logs](https://starkandwayne.com/blog/kpack-viewing-build-logs)
-
-**Extras**
-
-- [Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service)
-- [Tekton Pipelines](https://tekton.dev)
+- Integration directly with the Spring Boot Maven and Gradle plugins
+- Ability to guarantee the same image can be produced if you choose to migrate platforms or take advantage of a service like kpack in a mature CI/CD workflow
+- The _cloudfoundry_ Cloud Native Buildpacks include a memory calculator, which calculates suitable memory settings for Java apps. Read more [here](https://github.com/cloudfoundry/java-buildpack-memory-calculator)
