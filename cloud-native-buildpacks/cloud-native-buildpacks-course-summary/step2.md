@@ -28,7 +28,6 @@ Below is a summary of the tools and links provided throughout this course:
 - [Spring Boot Gradle plugin documentation](https://docs.spring.io/spring-boot/docs/2.3.0.M2/gradle-plugin/reference/html/#build-image)
 
 **Cloud Native Buildpacks with kpack**
-- [kpack release-0.0.6.yaml](https://github.com/pivotal/kpack/releases/download/v0.0.6/release-0.0.6.yaml)
 - [Viewing kpack build logs](https://starkandwayne.com/blog/kpack-viewing-build-logs)
 
 **Extras**
