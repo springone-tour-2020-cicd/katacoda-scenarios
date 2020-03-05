@@ -4,7 +4,7 @@ You can also use regular kubectl commands to describe kpack resources or check t
 
 Get kpack resources:
 ```
-kubectl get builders,builds,clusterbuilders,images,sourceresolvers
+kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
 ```{{execute}}
 
 Get more detail about the builder, including the run image, the list of frameworks supported (Java, Nodejs, Go, DotNet Core) and the buildpacks that contribute to the builds:
@@ -21,5 +21,7 @@ Watch the kpack-controller logs:
 ```
 kubectl -n kpack logs -l app=kpack-controller -f
 ```{{execute}}
+
+`Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
 
 Read more about viewing kpack logs in this [blog post](https://starkandwayne.com/blog/kpack-viewing-build-logs).

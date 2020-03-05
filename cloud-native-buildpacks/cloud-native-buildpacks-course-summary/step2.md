@@ -13,7 +13,7 @@ Below is a summary of the tools and links provided throughout this course:
 **Cloud Native Buildpacks**
 
 - [Cloud Native Buildpacks](https://buildpacks.io)
-- [Cloud Native Buildpacks documentation](https://buildpacks.io/docs/)
+- [Cloud Native Buildpacks documentation](https://buildpacks.io/docs)
 - [Cloud Native Buildpacks git repo](https://github.com/buildpacks)
 - [Buildpack Interface Specification](https://github.com/buildpacks/spec/blob/master/buildpack.md)
 - [Platform Interface Specification](https://github.com/buildpacks/spec/blob/master/platform.md)
@@ -32,6 +32,6 @@ Below is a summary of the tools and links provided throughout this course:
 - [Viewing kpack build logs](https://starkandwayne.com/blog/kpack-viewing-build-logs)
 
 **Extras**
-- [Tanzu/Pivotal Build Service](https://docs.pivotal.io/build-service)
-- [Tekton Pipelines](https://tekton.dev/)
+- [Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service)
+- [Tekton Pipelines](https://tekton.dev)
 
