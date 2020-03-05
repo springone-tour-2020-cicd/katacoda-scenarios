@@ -1,38 +1,17 @@
-# Summary of resources
+# Which platform should I choose?
 
-Below is a summary of the tools and links provided throughout this course:
+You can choose the platform that provides the best fit for the user or enterprise experience you need to address. The three platform choices we reviewed provide different features and advantages. For example:
 
-**Installed Tools**
+- `pack` and `kpack` are compatible with the same wide variety of polyglot buildpacks and can hence be used to build images for apps written in a variety of frameworks, while the Spring Boot option is specific to, well, Spring Boot
 
-- [pack CLI releases](https://github.com/buildpacks/pack/releases)
-- [kpack releases (kpack and logs CLI)](https://github.com/pivotal/kpack/releases)
-- [Sample Spring Boot app](https://github.com/springone-tour-2020-cicd/spring-sample-app.git)
-- [Sample Spring Boot app - jar artifact](https://github.com/springone-tour-2020-cicd/spring-sample-app/releases/download/v1.0.0/spring-sample-app-1.0.0.jar)
-- [Sample custom buildpack](https://github.com/buildpacks/samples.git)
+- `pack` and Spring Boot are executed manually or via a script at a command line, while `kpack` runs as a service, providing a centralized and hosted option for an image building service
 
-**Cloud Native Buildpacks**
+- Spring Boot leverages the familiar Maven and Gradle workflows by operating through a simple plug-in
 
-- [Cloud Native Buildpacks](https://buildpacks.io)
-- [Cloud Native Buildpacks documentation](https://buildpacks.io/docs)
-- [Cloud Native Buildpacks git repo](https://github.com/buildpacks)
-- [Buildpack Interface Specification](https://github.com/buildpacks/spec/blob/master/buildpack.md)
-- [Platform Interface Specification](https://github.com/buildpacks/spec/blob/master/platform.md)
-- [Buildpack lifecycle](https://buildpacks.io/docs/concepts/components/lifecycle)
-- [Docker Hub Registry for cloudfoundry/cnb images](https://hub.docker.com/r/cloudfoundry/cnb) (click on the `Tags` tab to see available builder images)
-- [Creating custom buildpacks](https://github.com/buildpacks/samples/tree/master/buildpacks)
+# More choices!
 
-**Spring Boot Support for Cloud Native Buildpacks**
+These three options are very accessible and appealing to both developers and operators, but as we consider the challenges of enterprise operations at scale, the value of some additional features becomes evident, and indeed additional platforms are evolving to address these broader use cases. For example:
 
-- [Spring Boot support for Cloud Native Buildpacks announcement](https://spring.io/blog/2020/01/27/creating-docker-images-with-spring-boot-2-3-0-m1)
-- [Spring Boot Maven plugin documentation](https://docs.spring.io/spring-boot/docs/2.3.0.M2/maven-plugin/html/#build-image)
-- [Spring Boot Gradle plugin documentation](https://docs.spring.io/spring-boot/docs/2.3.0.M2/gradle-plugin/reference/html/#build-image)
+[Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service) builds on kpack, providing enterprise-level abstractions on top of it. Currently in Beta, it is scheduled for GA in the Spring.
 
-**Cloud Native Buildpacks with kpack**
-
-- [Viewing kpack build logs](https://starkandwayne.com/blog/kpack-viewing-build-logs)
-
-**Extras**
-
-- [Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service)
-- [Tekton Pipelines](https://tekton.dev)
-
+[Tekton Pipelines](https://tekton.dev) provides a Kubernetes-native pipeline mechanism, and includes support for the buildpack lifecycle as well.

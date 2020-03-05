@@ -7,7 +7,7 @@ Get kpack resources:
 kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
 ```{{execute}}
 
-Get more detail about the builder, including the run image, the list of frameworks supported (Java, Nodejs, Go, DotNet Core) and the buildpacks that contribute to the builds:
+Get more detail about the builder, including the run image, the list of frameworks supported (Java, Nodejs, Go, .NET Core) and the buildpacks that contribute to the builds:
 ```
 kubectl describe clusterbuilder default
 ```{{execute}}
