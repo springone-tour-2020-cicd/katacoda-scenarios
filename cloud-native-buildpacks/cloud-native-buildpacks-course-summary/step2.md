@@ -12,7 +12,7 @@ You can choose the platform that provides the best fit for the user or enterpris
 
 These three options are very accessible and appealing to both developers and operators, but as we consider the challenges of enterprise operations at scale, the value of some additional features becomes evident, and indeed additional platforms are evolving to address these broader use cases. For example:
 
-[Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service) builds on kpack, providing enterprise-level abstractions on top of it. Currently in Beta, it is scheduled for GA in the Spring.
+[Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service) provides enterprise-level abstractions on top of `kpack`. Currently in Beta, it is scheduled for GA in the Spring.
 
 [Tekton Pipelines](https://tekton.dev) provides a Kubernetes-native pipeline mechanism, and includes support for the buildpack lifecycle as well.
 
