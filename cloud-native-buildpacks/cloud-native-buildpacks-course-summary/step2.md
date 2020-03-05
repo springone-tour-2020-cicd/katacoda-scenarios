@@ -4,8 +4,8 @@ Below is a summary of the tools and links provided throughout this course:
 
 **Installed Tools**
 
-- [pack CLI](https://github.com/buildpacks/pack/releases/download/v0.9.0/pack-v0.9.0-linux.tgz)
-- [kpack CLI](https://github.com/pivotal/kpack/releases/download/v0.0.6/logs-v0.0.6-linux.tgz)
+- [pack CLI releases](https://github.com/buildpacks/pack/releases)
+- [kpack releases (kpack and logs CLI)](https://github.com/pivotal/kpack/releases)
 - [Sample Spring Boot app](https://github.com/springone-tour-2020-cicd/spring-sample-app.git)
 - [Sample Spring Boot app - jar artifact](https://github.com/springone-tour-2020-cicd/spring-sample-app/releases/download/v1.0.0/spring-sample-app-1.0.0.jar)
 - [Sample custom buildpack](https://github.com/buildpacks/samples.git)
