@@ -2,7 +2,8 @@
 
 This scenario provides:
  
- - A re-cap of this course and some guidelines about additional platforms you may want to explore.
-
-We'll also cover some advantages of Cloud Native Buildpacks over common alternatives (Dockerfile and Jib).
+- A re-cap of this course
+- Pointers to additional platforms you may want to explore
+- Advantages of Cloud Native Buildpacks over common alternatives (Dockerfile and Jib)
+- Summary of links provided throughout this course
 
