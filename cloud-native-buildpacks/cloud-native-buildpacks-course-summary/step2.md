@@ -6,7 +6,7 @@ You can choose the platform that provides the best fit for the user or enterpris
 
 - `pack` and Spring Boot are executed manually or via a script at a command line, while `kpack` runs as a service, providing a centralized and hosted option for an image building service that can automatically react to code or builder updates
 
-- Spring Boot leverages the familiar Maven and Gradle workflows by operating through a simple plug-in
+- Spring Boot leverages its existing build plugins, thereby operating through the familiar Maven and Gradle workflows
 
 # More choices!
 
