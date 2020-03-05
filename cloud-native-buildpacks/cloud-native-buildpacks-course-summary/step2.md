@@ -28,9 +28,11 @@ Below is a summary of the tools and links provided throughout this course:
 - [Spring Boot Gradle plugin documentation](https://docs.spring.io/spring-boot/docs/2.3.0.M2/gradle-plugin/reference/html/#build-image)
 
 **Cloud Native Buildpacks with kpack**
+
 - [Viewing kpack build logs](https://starkandwayne.com/blog/kpack-viewing-build-logs)
 
 **Extras**
+
 - [Tanzu/Pivotal Build Service](https://pivotal.io/pivotal-build-service)
 - [Tekton Pipelines](https://tekton.dev)
 
