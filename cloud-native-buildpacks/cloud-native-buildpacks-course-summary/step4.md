@@ -22,7 +22,8 @@ Below is a summary of the tools and links provided throughout this course:
 - [Buildpack lifecycle](https://buildpacks.io/docs/concepts/components/lifecycle)
 - [Docker Hub Registry for cloudfoundry/cnb images](https://hub.docker.com/r/cloudfoundry/cnb) (click on the `Tags` tab to see available builder images)
 - [Creating custom buildpacks](https://github.com/buildpacks/samples/tree/master/buildpacks)
-- [Java Memory Calculator](https://github.com/cloudfoundry/java-buildpack-memory-calculator)
+- [cloudfoundry/openjdk-cnb - memory calculator](https://github.com/cloudfoundry/openjdk-cnb)
+- [Java Buildpack Memory Calculator - older docs](https://github.com/cloudfoundry/java-buildpack-memory-calculator)
 
 **Spring Boot Support for Cloud Native Buildpacks**
 

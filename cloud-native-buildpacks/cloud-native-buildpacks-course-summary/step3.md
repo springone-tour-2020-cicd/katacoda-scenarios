@@ -15,4 +15,4 @@ The user experience with Jib is most comparable to the built-in support of Sprin
 
 - Integration directly with the Spring Boot Maven and Gradle plugins
 - Ability to guarantee the same image can be produced if you choose to migrate platforms or take advantage of a service like kpack in a mature CI/CD workflow
-- The _cloudfoundry_ Cloud Native Buildpacks include a memory calculator, which calculates suitable memory settings for Java apps. Read more [here](https://github.com/cloudfoundry/java-buildpack-memory-calculator)
+- Cloud Native Buildpack [cloudfoundry/openjdk-cnb](https://github.com/cloudfoundry/openjdk-cnb) includes a memory calculator, which calculates suitable memory settings for Java apps. For additional detail on the memory calculator, you can also refer to the [older Java Buildpack documentation](https://github.com/cloudfoundry/java-buildpack-memory-calculator), from which the code was ported to the Cloud Native Buildpack code base.
