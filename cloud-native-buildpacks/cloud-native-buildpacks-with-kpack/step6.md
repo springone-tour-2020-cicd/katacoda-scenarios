@@ -9,7 +9,7 @@ kubectl apply -f ~/kpack-config/kpack-config.yaml
 
 kpack will create a Build resource for every commit it detects. For now, you should see a Build resource for the latest commit:
 ```
-kubectl get builds -n kpack-builds
+kubectl get builds
 ```
 
 Edit the name of the build in the following command to see the details:
