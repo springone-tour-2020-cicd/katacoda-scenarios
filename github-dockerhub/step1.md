@@ -13,7 +13,8 @@ Now let's create a new repository in your account by forking an existing project
 1. Navigate to the [spring-sample-app](https://github.com/springone-tour-2020-cicd/spring-sample-app) page in your browser and press the `FORK` button in the upper right hand corner of the screen.  Then select the account you want it to be forked into.
 <!-- Insert a picture here -->
 2. Now create a local clone of the fork by selecting the `Clone with HTTPS` button on the `Clone or Download` menu in the forked repo.
-![Clone or Download](/root/assets/images/clone-or-download.png)
+
+![Clone or Download](./assets/images/clone-or-download.png)
 
 <br>
 This will copy the web URL to your clipboard.  Use the URL in the following `git clone` CLI command
