@@ -16,7 +16,7 @@ hub clone springone-tour-2020-cicd/go-sample-app
 ```{{execute}}
 
 ## Build app image
-There are various ways to build an image from source code, ranging from Dockerfile to higher level abstractions. In this scenario, you will buil the app locally and package it into an image using a simple Dockerfile.
+There are various ways to build an image from source code, ranging from Dockerfile to higher level abstractions. In this scenario, you will build the app locally and package it into an image using a simple Dockerfile.
 
 First build the app locally:
 ```

@@ -21,7 +21,7 @@ echo "### Finished configuring git global settings"
 echo "### Create a /workspace directory and cd into it"
 mkdir -p /workspace
 cd /workspace
-echo "### Create setting up workspace directory"
+echo "### Finished setting up workspace directory"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
