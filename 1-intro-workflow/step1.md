@@ -60,13 +60,6 @@ First, copy the following command to the terminal and replace `<YOUR_DH_USERNAME
 IMG_REPO=<YOUR_DH_USERNAME>
 ```{{copy}}
 
-Next, tag your image to prepare it for publication to Docker Hub:
-
-```
-docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.0
-docker images | grep go-sample-app
-```{{execute}}
-
 Log in to Docker Hub and enter your access token at the prompt:
 
 ```
@@ -76,10 +69,11 @@ docker login -u $IMG_REPO
 Now, use the `docker tag` and `docker push` to publish the image with a versioned tag to Docker Hub::
 
 ```
+docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.0
 docker push $IMG_REPO/go-sample-app:1.0.0
 ```{{execute}}
 
-## Create ops files (yamls) for deployment to Kubernetes
+## Create ops files for deployment to Kubernetes
 Start by creating a namespace to deploy the application:
 
 ```
@@ -106,13 +100,13 @@ Use the `kubectl create` command to create the deployment yaml file. The `--dry-
 kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app@$IMG_SHA --dry-run -o yaml > deployment.yaml
 ```{{execute}}
 
-The `deployment.yaml` will create a Kubernetes deployment, replica set, and pod(s). You will also need to create a service, so that you can expose the application via an accessible IP address.
+The `deployment.yaml` defines the Kubernetes deployment, including replica set and pod. You will also need to create a service, so that you can expose the application via an accessible IP address.
 
 Use the `kubectl create` command to create the service yaml file. In orer to do so, you must first deploy the image to Kubernetes:
 
 ```
 kubectl apply -f deployment.yaml -n=dev
-kubectl expose deployment go-sample-app --port=8080 --target-port=8080 --dry-run -o yaml > service.yaml
+kubectl expose deployment go-sample-app -n=dev --port=8080 --target-port=8080 --dry-run -o yaml > service.yaml
 ```{{execute}}
 
 ## Test the app
