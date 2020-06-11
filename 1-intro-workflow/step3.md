@@ -16,6 +16,8 @@ git commit -am 'hello sunshine'
 git push origin master
 ```{{execute}}
 
+You can ignore the warning about untracked files (Dockerfile and hello-server). We don't need those in the GitHub repo.
+
 ## Create GitHub repo for ops files
 Use the `hub` CLI to create a new repo for the ops files and push the files to GitHub:
 

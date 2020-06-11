@@ -13,9 +13,9 @@ echo "### Finished installing hub CLI"
 
 echo "### Configuring git global settings"
 git config --global hub.protocol https
-#git config --global credential.helper cache
-#git config --global user.email "guest@example.com"
-#git config --global user.name "Guest User"
+git config --global credential.helper cache
+git config --global user.email "guest@example.com"
+git config --global user.name "Guest User"
 echo "### Finished configuring git global settings"
 
 ########## NO CHANGES BELOW THIS LINE ##########
