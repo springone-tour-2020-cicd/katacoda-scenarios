@@ -12,7 +12,7 @@ Please wait until `Environment ready!` appears in the terminal window.
 The [hub CLI](https://hub.github.com/hub.1.html) enables you to clone and fork GitHub repos from the command line. Use the `hub clone` command to clone the sample application, a simple "Hello World" app written in Go. You will need to enter your GitHub username and access token at the prompts:
 
 ```
-hub clone springone-tour-2020-cicd/go-sample-app
+hub clone springone-tour-2020-cicd/go-sample-app /workspace/go-sample-app
 ```{{execute}}
 
 ## Build app image

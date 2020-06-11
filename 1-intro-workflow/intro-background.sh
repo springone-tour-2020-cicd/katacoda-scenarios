@@ -18,10 +18,6 @@ git config --global hub.protocol https
 #git config --global user.name "Guest User"
 echo "### Finished configuring git global settings"
 
-echo "### Create a /workspace directory and cd into it"
-mkdir -p /workspace
-echo "### Finished setting up workspace directory"
-
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
 echo "done" >> /root/environment-prepared
