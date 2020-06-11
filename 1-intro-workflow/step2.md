@@ -15,7 +15,8 @@ sed -i '' 's/world/sunshine/g' go-sample-app/hello-server.go
 ## Re-build the image
 Re-build the image:
 
-```pack build $IMG_REPO/go-sample-app:1.0.0 \
+```
+pack build $IMG_REPO/go-sample-app:1.0.0 \
      --path go-sample-app \
      --builder gcr.io/paketo-buildpacks/builder:base \
      --publish

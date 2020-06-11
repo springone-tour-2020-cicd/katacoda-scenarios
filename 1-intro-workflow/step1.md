@@ -31,7 +31,8 @@ docker login -u $IMG_REPO
 
 Now, use the `pack build` command to build the image. The `builder` will produce the image, and the `--publish` flag instructs `pack` to publish the image to the registry:
 
-```pack build $IMG_REPO/go-sample-app:1.0.0 \
+```
+pack build $IMG_REPO/go-sample-app:1.0.0 \
      --path go-sample-app \
      --builder gcr.io/paketo-buildpacks/builder:base \
      --publish
