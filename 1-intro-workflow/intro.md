@@ -14,8 +14,6 @@ Once you have your access tokens ready, you can get started.
 
 **Intro Worflow**
 
-By the end of this scenario, you will have two new GitHub repos: sample app source code, and sample app deployment "ops" files. You will also understand the basic flow that needs to be automated:
-
-   **change code --> build image --> update ops files --> deploy**
+By the end of this scenario, you will have two new GitHub repos: sample app source code, and sample app deployment "ops" files. You will also understand the basic flow that needs to be automated: _**change code --> build image --> update ops files --> deploy**_.
 
 Let's begin!
