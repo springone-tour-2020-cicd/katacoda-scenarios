@@ -24,7 +24,15 @@ cd /workspace/go-sample-app
 CGO_ENABLED=0 go build -i -o hello-server
 ```{{execute}}
 
-Next, create a Dockerfile to package the app binary into an image:
+Test out the app locally. Start the process in the background, send a request, and then kill the process. The hello-server process should respond with "Hello, world!":
+
+```
+./hello-server &
+curl localhost:8080
+pkill hello-server
+```{{execute}}
+
+Next, create a Dockerfile to package the app binary into an image. The Dockerfile simply needs to copy the binary into the image and set the app launch command:
 ```
 cat <<EOF >Dockerfile
 FROM scratch
@@ -33,12 +41,18 @@ ENTRYPOINT ["/hello-server"]
 EOF
 ```{{execute}}
 
-Now, build the image: 
+Now, build the image. The Dockerfile will be used by default:
 ```
 docker build . -t go-sample-app
 ```{{execute}}
 
-The image is in the local Docker daemon. To publish it to Docker hub, you first need to tag the image appropriately and authenticate against Docker Hub.
+The image is in the local Docker daemon:
+
+```
+docker images | grep go-sample-app
+```{{execute}}
+
+ To publish it to Docker Hub, you first need to tag the image appropriately and authenticate against Docker Hub.
 
 First, copy the following command to the terminal and replace `<YOUR_DH_USERNAME>` with your Docker Hub username:
 
@@ -46,16 +60,22 @@ First, copy the following command to the terminal and replace `<YOUR_DH_USERNAME
 IMG_REPO=<YOUR_DH_USERNAME>
 ```{{copy}}
 
-Next, log in to Docker Hub and enter your access token at the prompt:
+Next, tag your image to prepare it for publication to Docker Hub:
+
+```
+docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.0
+docker images | grep go-sample-app
+```{{execute}}
+
+Log in to Docker Hub and enter your access token at the prompt:
 
 ```
 docker login -u $IMG_REPO
-````{{execute}}
+```{{execute}}
 
 Now, use the `docker tag` and `docker push` to publish the image with a versioned tag to Docker Hub::
 
 ```
-docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.0
 docker push $IMG_REPO/go-sample-app:1.0.0
 ```{{execute}}
 
@@ -83,7 +103,7 @@ echo $IMG_SHA
 Use the `kubectl create` command to create the deployment yaml file. The `--dry-run` option just creates the yaml file without deploying the image to Kubernetes:
 
 ```
-kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app@$IMG_SHA --dry-run -o yaml > go-sample-app-ops/deployment.yaml
+kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app@$IMG_SHA --dry-run -o yaml > deployment.yaml
 ```{{execute}}
 
 The `deployment.yaml` will create a Kubernetes deployment, replica set, and pod(s). You will also need to create a service, so that you can expose the application via an accessible IP address.
@@ -91,21 +111,20 @@ The `deployment.yaml` will create a Kubernetes deployment, replica set, and pod(
 Use the `kubectl create` command to create the service yaml file. In orer to do so, you must first deploy the image to Kubernetes:
 
 ```
-kubectl apply -f go-sample-app-ops/deployment.yaml -n=dev
-kubectl expose deployment go-sample-app --port=8080 --target-port=8080 --dry-run -o yaml > go-sample-app-ops/service.yaml
+kubectl apply -f deployment.yaml -n=dev
+kubectl expose deployment go-sample-app --port=8080 --target-port=8080 --dry-run -o yaml > service.yaml
 ```{{execute}}
 
 ## Test the app
 To test the app, you must also deploy the service:
 ```
-kubectl apply -f go-sample-app-ops/service.yaml -n=dev
+kubectl apply -f service.yaml -n=dev
 ```{{execute}}
 
 The service exposes the app outside of the cluster. You can now use port-forwarding to forward traffic from `localhost:8080`. for example, to the service you just created. Use the `kubectl port-forward` command, as follows. We will run the port-forwarding in the background so that we can test the app in this same terminal window:
 
 ```
 kubectl port-forward service/go-sample-app 8080:8080 -n=dev 2>&1 > /dev/null &
-KPID="$!"
 ```{{execute}}
 
 Now, test the app. You should get a response of "Hello, world!":
@@ -116,5 +135,5 @@ curl localhost:8080
 ## Cleanup
 Stop the port-forwarding process:
 ```
-kill $KPID
+pkill kubectl
 ```{{execute}}
