@@ -9,20 +9,22 @@ In this step, you will:
 Please wait until `Environment ready!` appears in the terminal window.
 
 ## Clone app repo
-The [hub CLI](https://hub.github.com/hub.1.html) enables you to clone and fork GitHub repos from the command line. Use the `hub clone` command to clone the sample application, a simple "Hello World" app written in Go (enter your GitHub username and access token at the prompts):
+The [hub CLI](https://hub.github.com/hub.1.html) enables you to clone and fork GitHub repos from the command line. Use the `hub clone` command to clone the sample application, a simple "Hello World" app written in Go. You will need to enter your GitHub username and access token at the prompts:
 
 ```
 hub clone springone-tour-2020-cicd/go-sample-app
 ```{{execute}}
 
 ## Build app image
-There are various ways to build an image from source code, ranging from Dockerfile to higher level abstractions. In this scenario, you will use [buildpacks](https://buildpacks.io). Specifically, you will use the [pack CLI](https://github.com/buildpacks/pack), together with [Paketo Buildpacks](https://github.com/paketo-buildpacks) to build an image in one easy step.
+There are various ways to build an image from source code, ranging from Dockerfile to higher level abstractions. In this scenario, you will use [buildpacks](https://buildpacks.io). Specifically, you will use the [pack CLI](https://github.com/buildpacks/pack), together with [Paketo Buildpacks](https://github.com/paketo-buildpacks).
 
-You will build the image and publish it to Docker Hub on one step, but first, you must log in to Docker Hub.
+You will build the image and publish it to Docker Hub on one easy step, but first, you must log in to Docker Hub.
 
 Copy the following command to the terminal and replace `<YOUR_DH_USERNAME>` with your Docker Hub username:
 
-```IMG_REPO=<YOUR_DH_USERNAME>```{{copy}}
+```
+IMG_REPO=<YOUR_DH_USERNAME>
+```{{copy}}
 
 Next, log in to Docker Hub and enter your access token at the prompt:
 docker login -u $IMG_REPO
