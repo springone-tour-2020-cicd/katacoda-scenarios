@@ -14,7 +14,7 @@ cd go-sample-app
 hub fork --remote-name origin
 git commit -am 'hello sunshine'
 git push origin master
-```{execute}
+```{{execute}}
 
 ## Create GitHub repo for ops files
 Use the `hub` CLI to create a new repo for the ops files and push the files to GitHub:
@@ -24,6 +24,6 @@ cd ../go-sample-app-ops
 git init; git add .; git commit -m 'initial commit'
 hub create go-sample-app-ops
 git push -u origin HEAD
-```{execute}
+```{{execute}}
 
 That's it! You are now ready to begin automating the build & deployment process. Continue to the remaining scenarios in this course to explore a selection of tools for CI/CD automation.
