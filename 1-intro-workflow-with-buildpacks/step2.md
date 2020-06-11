@@ -9,18 +9,17 @@ In this step, you will:
 ## Make a code change to the app
 Use the following command to change "Hello, world!" to "Hello, sunshine!":
 ```
-cd /workspace/go-sample-app
-sed -i '' 's/world/sunshine/g' hello-server.go
+sed -i '' 's/world/sunshine/g' go-sample-app/hello-server.go
 ```{{execute}}
 
 ## Re-build the image
-Re-build the image and publish to Docker Hub:
+Re-build the image:
 
 ```
-CGO_ENABLED=0 go build -i -o hello-server
-docker build . -t go-sample-app
-docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.1
-docker push $IMG_REPO/go-sample-app:1.0.1
+pack build $IMG_REPO/go-sample-app:1.0.0 \
+     --path go-sample-app \
+     --builder gcr.io/paketo-buildpacks/builder:base \
+     --publish
 ```{{execute}}
 
 ## Update ops yamls

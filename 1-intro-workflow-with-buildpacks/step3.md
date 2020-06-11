@@ -10,7 +10,7 @@ In this step, you will:
 Use the `hub` CLI to fork the sample repo and push the app files to GitHub. You will need your GitHub access token to authenticate against GitHub:
 
 ```
-cd /workspace/go-sample-app
+cd go-sample-app
 hub fork --remote-name origin
 git commit -am 'hello sunshine'
 git push origin master
@@ -20,7 +20,7 @@ git push origin master
 Use the `hub` CLI to create a new repo for the ops files and push the files to GitHub:
 
 ```
-cd /workspace/go-sample-app-ops
+cd ../go-sample-app-ops
 git init; git add .; git commit -m 'initial commit'
 hub create go-sample-app-ops
 git push -u origin HEAD

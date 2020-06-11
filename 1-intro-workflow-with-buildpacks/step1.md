@@ -16,47 +16,26 @@ hub clone springone-tour-2020-cicd/go-sample-app
 ```{{execute}}
 
 ## Build app image
-There are various ways to build an image from source code, ranging from Dockerfile to higher level abstractions. In this scenario, you will buil the app locally and package it into an image using a simple Dockerfile.
+There are various ways to build an image from source code, ranging from Dockerfile to higher level abstractions. In this scenario, you will use [buildpacks](https://buildpacks.io). Specifically, you will use the [pack CLI](https://github.com/buildpacks/pack), together with [Paketo Buildpacks](https://github.com/paketo-buildpacks).
 
-First build the app locally:
-```
-cd /workspace/go-sample-app
-CGO_ENABLED=0 go build -i -o hello-server
-```{{execute}}
+You will build the image and publish it to Docker Hub on one easy step, but first, you must log in to Docker Hub.
 
-Next, create a Dockerfile to package the app binary into an image:
-```
-cat <<EOF >Dockerfile
-FROM scratch
-COPY hello-server /
-ENTRYPOINT ["/hello-server"]
-EOF
-```{{execute}}
-
-Now, build the image: 
-```
-docker build . -t go-sample-app
-```{{execute}}
-
-The image is in the local Docker daemon. To publish it to Docker hub, you first need to tag the image appropriately and authenticate against Docker Hub.
-
-First, copy the following command to the terminal and replace `<YOUR_DH_USERNAME>` with your Docker Hub username:
+Copy the following command to the terminal and replace `<YOUR_DH_USERNAME>` with your Docker Hub username:
 
 ```
 IMG_REPO=<YOUR_DH_USERNAME>
 ```{{copy}}
 
 Next, log in to Docker Hub and enter your access token at the prompt:
-
-```
 docker login -u $IMG_REPO
-````{{execute}}
 
-Now, use the `docker tag` and `docker push` to publish the image with a versioned tag to Docker Hub::
+Now, use the `pack build` command to build the image. The `builder` will produce the image, and the `--publish` flag instructs `pack` to publish the image to the registry:
 
 ```
-docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.0
-docker push $IMG_REPO/go-sample-app:1.0.0
+pack build $IMG_REPO/go-sample-app:1.0.0 \
+     --path go-sample-app \
+     --builder gcr.io/paketo-buildpacks/builder:base \
+     --publish
 ```{{execute}}
 
 ## Create ops files (yamls) for deployment to Kubernetes
@@ -69,8 +48,8 @@ kubectl create ns dev
 Next, create a directory in which to save the ops files:
 
 ```
-mkdir -p /workspace/go-sample-app-ops
-cd /workspace/go-sample-app-ops
+mkdir go-sample-app-ops
+cd go-sample-app-ops
 ```{{execute}}
 
 You could use the image tag from above (1.0.0) to deploy the image, but let's use the image digest instead. Use the following command to get the image digest:

@@ -11,6 +11,18 @@ curl -L https://github.com/github/hub/releases/download/v$HUB_VERSION/hub-linux-
      rm -rf hub-linux-amd64-$HUB_VERSION
 echo "### Finished installing hub CLI"
 
+echo "### Installing pack CLI" 
+PACK_VERSION=0.11.1
+curl -L https://github.com/buildpacks/pack/releases/download/v$PACK_VERSION/pack-v$PACK_VERSION-linux.tgz | tar zx && \
+    chmod +x pack && \
+    mv pack /usr/local/bin/pack
+echo "### Finished installing pack CLI"
+
+echo "### Downloading builder"
+pack set-default-builder gcr.io/paketo-buildpacks/builder:base
+docker pull gcr.io/paketo-buildpacks/builder:base
+echo "### Finished downloading builder"
+
 echo "### Configuring git global settings"
 git config --global hub.protocol https
 #git config --global credential.helper cache
@@ -18,9 +30,9 @@ git config --global hub.protocol https
 #git config --global user.name "Guest User"
 echo "### Finished configuring git global settings"
 
-echo "### Create a /workspace directory and cd into it"
-mkdir -p /workspace
-cd /workspace
+echo "### Create a workspace directory and cd into it"
+mkdir workspace
+cd workspace
 echo "### Create setting up workspace directory"
 
 ########## NO CHANGES BELOW THIS LINE ##########
