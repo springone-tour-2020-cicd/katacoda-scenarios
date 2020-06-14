@@ -18,9 +18,7 @@ done
 }
 
 # export env vars
-set -a
-[ -f /root/vars.env ] && . /root/vars.env
-set +a
+set -a; [ -f /root/init-env/vars.env ] && . /root/init-env/vars.env; set +a
 
 # wait for env setup to be complete
 show_progress
