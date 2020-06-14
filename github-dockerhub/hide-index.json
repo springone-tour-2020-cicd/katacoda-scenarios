@@ -20,7 +20,9 @@
     ],
     "assets": {
       "host01": [
-        {"file": "init-env", "target": "/usr/local/bin/", "chmod": "+x"},
+        {"file": "init-foreground", "target": "/root/init-env/bin/", "chmod": "+x"},
+        {"file": "init-background", "target": "/root/init-env/bin/", "chmod": "+x"},
+        {"file": "init-controller", "target": "/root/init-env/bin/", "chmod": "+x"},
         {"file": "images/clone-or-download.png", "target": "assets/images"}
       ]
     },

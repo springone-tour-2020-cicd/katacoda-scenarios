@@ -1,3 +1,13 @@
 #!/bin/bash
 
-export PS1="\n\[\033[0m\]\w\$ "
+#export PS1="\n\[\033[0m\]\w\$ "
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+
+# config command line prompt to show git branch status
+source /usr/lib/git-core/git-sh-prompt
+export GIT_PS1_SHOWDIRTYSTATE=yes
+export PS1="\n\[\e[35m\]\$(__git_ps1) \[\e[33m\]\w\[\e[0m\]\n\$ "
+
+# enable bash completion
+source /etc/bash_completion

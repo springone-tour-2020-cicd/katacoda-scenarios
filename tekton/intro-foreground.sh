@@ -1,17 +1,7 @@
-#!/bin/bash
-# wait until background tasks complete
-until `which init-env`; do sleep 1; done;
+#!/bin/bash +x
 
-# needed to set JAVA_HOME here instead of in background
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+PATH=/root/init-env/bin:$PATH
+until `which init-controller`; do sleep 1; done;
+source init-foreground
 
-# config command line prompt to show git branch status
-source /usr/lib/git-core/git-sh-prompt
-export GIT_PS1_SHOWDIRTYSTATE=yes
-export PS1="\n\[\e[35m\]\$(__git_ps1) \[\e[33m\]\w\[\e[0m\]\n\$ "
-
-# enable bash completion
-source /etc/bash_completion
-
-# clear screen
-clear
+echo "Environment ready!"
