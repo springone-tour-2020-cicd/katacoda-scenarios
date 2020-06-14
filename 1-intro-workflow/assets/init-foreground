@@ -1,5 +1,5 @@
 #!/bin/bash
 
-echo "In foreground script" > fg.log
+echo "hello from fg script"
 export PS1="\n\[\033[0m\]\w\$ "
-export TEST=hello
+export TEST=hello2
