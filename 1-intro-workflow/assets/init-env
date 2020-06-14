@@ -5,7 +5,7 @@ show_progress()
 printf "Preparing environment..."
 
 while true; do
-  grep -i "done" /root/ init-env.status &> /dev/null
+  grep -i "done" /root/init-env/init-env.status &> /dev/null
   if [[ "$?" -ne 0 ]]; then
     # env is not ready yet
     printf "."
