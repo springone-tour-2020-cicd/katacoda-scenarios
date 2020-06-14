@@ -1,2 +1,3 @@
 #!/bin/bash
-until `which init-env`; do sleep 1; done;
+
+until `which init-controller`; do sleep 1; done;

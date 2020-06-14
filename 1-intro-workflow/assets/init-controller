@@ -1,0 +1,26 @@
+#!/bin/bash
+
+show_progress()
+{
+printf "Preparing environment..."
+
+while true; do
+  grep -i "done" /root/init-env/init-env.status &> /dev/null
+  if [[ "$?" -ne 0 ]]; then
+    # env is not ready yet
+    printf "."
+    sleep 1
+  else
+    printf "\n"
+    break
+  fi
+done
+}
+
+# wait for init background to complete
+show_progress
+
+# init foreground
+[ -f /root/init-env/init-foreground.sh ] && source /root/init-env/init-foreground.sh
+
+echo "Environment ready!"

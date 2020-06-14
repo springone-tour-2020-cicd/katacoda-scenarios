@@ -20,8 +20,9 @@
     ],
     "assets": {
       "host01": [
-        {"file": "vars.env", "target": "/root/init-env", "chmod": "+x"},
-        {"file": "init-env", "target": "/usr/local/bin/", "chmod": "+x"}
+        {"file": "init-foreground", "target": "/usr/local/bin/", "chmod": "+x"},
+        {"file": "init-background", "target": "/usr/local/bin/", "chmod": "+x"},
+        {"file": "init-controller", "target": "/usr/local/bin/", "chmod": "+x"}
       ]
     },
     "intro": {
