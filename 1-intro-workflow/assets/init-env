@@ -5,7 +5,7 @@ show_progress()
 printf "Preparing environment..."
 
 while true; do
-  grep -i "done" /root/environment-prepared &> /dev/null
+  grep -i "done" /root/ init-env.status &> /dev/null
   if [[ "$?" -ne 0 ]]; then
     # env is not ready yet
     printf "."
@@ -15,8 +15,14 @@ while true; do
     break
   fi
 done
-
-echo "Environment ready!"
 }
 
+# export env vars
+set -a
+[ -f /root/vars.env ] && . /root/vars.env
+set +a
+
+# wait for env setup to be complete
 show_progress
+
+echo "Environment ready!"

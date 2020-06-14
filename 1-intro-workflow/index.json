@@ -1,6 +1,6 @@
 {
   "title": "Intro Workflow and Prerequisites Setup",
-  "description": "Set up the prerequisites for the course as you go through a manual build & deploy workflow.",
+  "description": "Set up the prerequisites for the course as you go through a manual build & deploy workflow",
   "difficulty": "Beginner",
   "time": "30",
   "details": {
@@ -20,6 +20,7 @@
     ],
     "assets": {
       "host01": [
+        {"file": "vars.env", "target": "/root/init-env", "chmod": "+x"},
         {"file": "init-env", "target": "/usr/local/bin/", "chmod": "+x"}
       ]
     },

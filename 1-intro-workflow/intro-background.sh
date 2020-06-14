@@ -1,7 +1,11 @@
 #!/bin/bash
-exec &>> environment-prepared-log
 
-printf "" > /root/environment-prepared
+mkdir -p /root/init-env
+cd /root/init-env
+
+exec &>>  init-env.log
+
+printf "" > init-env.status
 echo "$(date)"
 
 echo "### Installing hub CLI"
@@ -20,4 +24,4 @@ echo "### Finished configuring git global settings"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
-echo "done" >> /root/environment-prepared
+echo "done" >> /root/init-env.status
