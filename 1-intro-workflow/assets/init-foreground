@@ -1,3 +1,4 @@
 #!/bin/bash
 
 export PS1="\n\[\033[0m\]\w\$ "
+export TEST=hello

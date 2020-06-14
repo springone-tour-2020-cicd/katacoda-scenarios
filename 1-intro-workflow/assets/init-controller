@@ -17,12 +17,4 @@ while true; do
 done
 }
 
-# wait for init background to complete
 show_progress
-
-# init foreground
-#[ -f /root/init-env/init-foreground.sh ] && source /root/init-env/init-foreground.sh
-until `which init-foreground`; do sleep 1; done;
-source init-foreground
-
-echo "Environment ready!"
