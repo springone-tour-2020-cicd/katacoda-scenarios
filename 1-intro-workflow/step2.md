@@ -20,8 +20,8 @@ sed -i 's/world/sunshine/g' hello-server.go
 Re-build the image and push it to the registry as version 1.0.1:
 
 ```
-docker build . -t go-sample-app -t localhost:5000/apps/go-sample-app:1.0.1
-docker push localhost:5000/apps/go-sample-app:1.0.1
+docker build . -t go-sample-app -t $IMG_REPO/go-sample-app:1.0.1
+docker push $IMG_REPO/go-sample-app:1.0.1
 ```{{execute}}
 
 ## Update ops yamls
