@@ -8,7 +8,7 @@ In this step, you will:
 
 The previous step was fairly straightforward.
 However, as we introduce more differences between environments, the complexity of this approach will become unmanageable.
-We've duplicated our code and had to mess around with imperative find and replace.
+We've duplicated our resource yamls and had to mess around with imperative find and replace.
 
 Let's say that in the production environment we want to customize the following:
 
@@ -19,12 +19,11 @@ Let's say that in the production environment we want to customize the following:
 - memory to be properly set.
 - health check and readiness check.
 
-If we're going to do this, we should look beyond search and replace tools.
+If we're going to do this, we should look beyond search and replace tools like `sed` or `yq`.
 
 ## Let's take a look at other solutions
 
 Kustomize allows us to declaratively specify the differences between environments, in a Kubernetes-native way using CRDs (Custom Resource Definitions).
-In fact,
 
 First, let's get rid of our duplicated production yamls.
 
@@ -32,7 +31,7 @@ First, let's get rid of our duplicated production yamls.
 rm *-prod.yaml
 ```{{execute}}
 
-Next, let's move the main Kubernetes resource definitions inside `base` folder.
+Next, let's move the main Kubernetes resource definitions inside a `base` folder.
 
 ```
 mkdir base
@@ -84,6 +83,16 @@ kustomize edit set namespace dev
 cd ../prod
 kustomize edit set namespace prod
 ```{{execute}}
+
+We can now apply the Kustomization.
+
+```
+
+```
+
+Let's test this out.
+
+
 
 ### Add environment variable
 
