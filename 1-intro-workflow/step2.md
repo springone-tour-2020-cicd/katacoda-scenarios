@@ -52,7 +52,21 @@ curl localhost:8080
 ```{{execute}}
 
 ## Cleanup
+
 Stop the port-forwarding process:
 ```
 pkill kubectl
 ```{{execute}}
+
+## Commit the changes
+
+Use the `hub` CLI to fork the sample repo and push the app files to GitHub. You will need your GitHub access token to authenticate against GitHub:
+
+```
+cd /workspace/go-sample-app
+hub fork --remote-name origin
+git commit -am 'hello sunshine'
+git push origin master
+```{{execute}}
+
+You can ignore the warning about untracked files (Dockerfile and hello-server). We don't need those in the GitHub repo.
