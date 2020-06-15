@@ -1,60 +1,12 @@
-In this step we will introduce the production environment to our application.
-For this we will create a new namespace `prod`.
+# ROUND 4 - use overlays to transform our resources
 
-```
-kubectl create namespace prod
-```{{execute}}
+In this step, you will:
+1. Introduce Kustomize
+2. Customize the namespace
+3. Use `yq` to manipulate resources
+4. Deploy both environments to Kubernetes and test it
 
-Our `deployment.yaml` and `service.yaml` currently have a reference to the `dev` namespace, which should be changed for the production environment.
-Let's start by making a production copy of our deployment and service yamls.
-
-```
-cd ops
-cp deployment.yaml deployment-prod.yaml
-cp service.yaml service-prod.yaml
-```{{execute}}
-
-We need to change the namespace value in the metadata sections.
-We can easily do this using `sed -i “s/dev/prod/g” deployment-prod.yaml`, although this is error prone.
-The `yq` command line tool is better suited for the job as it understands the yaml structure.
-
-Let's first install `yq`.
-
-```
-wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
-chmod +x /usr/local/bin/yq
-```{{execute}}
-
-```
-yq w -i deployment-prod.yaml "metadata.namespace" "prod"
-yq w -i service-prod.yaml "metadata.namespace" "prod"
-```{{execute}}
-
-Let's apply the changes to our Kubernetes cluster.
-
-```
-kubectl apply -f .
-```{{execute}}
-
-We can now test the production deployment.
-
-```
-kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
-```{{execute}}
-
-Test the app.
-```
-curl localhost:8080
-```{{execute}}
-
-## Cleanup
-
-Stop the port-forwarding process:
-```
-pkill kubectl
-```{{execute}}
-
-Now this was fairly straightforward.
+The previous step was fairly straightforward.
 However, as we introduce more differences between environments, the complexity of this approach will become unmanageable.
 We've duplicated our code and had to mess around with imperative find and replace.
 
@@ -69,7 +21,7 @@ Let's say that in the production environment we want to customize the following:
 
 If we're going to do this, we should look beyond search and replace tools.
 
-# Let's take a look at other solutions
+## Let's take a look at other solutions
 
 Kustomize allows us to declaratively specify the differences between environments, in a Kubernetes-native way using CRDs (Custom Resource Definitions).
 In fact,
@@ -110,7 +62,7 @@ cat kustomization.yaml
 > - deployment.yaml
 > ```
 
-### Add namespace
+### Customize the namespace
 
 Let's add the namespace for each of the environments.
 
@@ -124,37 +76,16 @@ touch overlays/dev/kustomization.yaml
 touch overlays/prod/kustomization.yaml
 ```{{execute}}
 
+Now let's set the namespace in each of the environment's kustomization files.
 
 ```
-
-echo "app.name=Kustomize Demo" > application.properties
-
-kustomize edit add configmap demo-configmap \
-  --from-file application.properties
-
-cat kustomization.yaml
+cd overlays/dev
+kustomize edit set namespace dev
+cd ../prod
+kustomize edit set namespace prod
 ```{{execute}}
 
-`kustomization.yaml`'s configMapGenerator section should contain:
-
-> ```
-> configMapGenerator:
-> - files:
->   - application.properties
->   name: demo-configmap
-> ```
-
 ### Add environment variable
-
-We want to add database credentials for the prod environment. In general, these credentials can be put into the file `application.properties`.
-However, for some cases, we want to keep the credentials in a different file and keep application specific configs in `application.properties`.
- With this clear separation, the credentials and application specific things can be managed and maintained flexibly by different teams.
-For example, application developers only tune the application configs in `application.properties` and operation teams or SREs
-only care about the credentials.
-
-For Spring Boot application, we can set an active profile through the environment variable `spring.profiles.active`. Then
-the application will pick up an extra `application-<profile>.properties` file. With this, we can customize the configMap in two
-steps. Add an environment variable through the patch and add a file to the configMap.
 
 <!-- @customizeConfigMap @testAgainstLatestRelease -->
 ```
@@ -197,7 +128,7 @@ cat kustomization.yaml
 >   name: demo-configmap
 > ```
 
-### Name Customization
+### Customize the name
 
 Arrange for the resources to begin with prefix
 _prod-_ (since they are meant for the _production_

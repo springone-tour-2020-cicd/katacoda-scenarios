@@ -28,14 +28,14 @@ The only value that needs to be updated is the image digest in deployment.yaml:
 ```
 IMG_SHA_OLD=$IMG_SHA
 IMG_SHA=$(curl --silent -X GET https://hub.docker.com/v2/repositories/$IMG_REPO/go-sample-app/tags/1.0.1 | jq '.images[].digest' -r)
-sed -i "s|$IMG_SHA_OLD|$IMG_SHA|g" /workspace/go-sample-app-ops/deployment.yaml
+sed -i "s|$IMG_SHA_OLD|$IMG_SHA|g" /workspace/go-sample-app/ops/deployment.yaml
 ```{{execute}}
 
 ## Re-deploy the image
 Even though only the `deployment.yaml` was updated, you can point to the whole ops directory to re-deploy. Kubernetes will only update the resources that changed:
 
 ```
-kubectl apply -f /workspace/go-sample-app-ops -n=dev
+kubectl apply -f /workspace/go-sample-app/ops
 ```{{execute}}
 
 # Re-test the app
@@ -43,7 +43,7 @@ kubectl apply -f /workspace/go-sample-app-ops -n=dev
 Set up port-forwarding again and test the app:
 
 ```
-kubectl port-forward service/go-sample-app 8080:8080 -n=dev 2>&1 > /dev/null &
+kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 
 Test the app. This time you should get a response of "Hello, sunshine!":
@@ -63,7 +63,6 @@ pkill kubectl
 Use the `hub` CLI to fork the sample repo and push the app files to GitHub. You will need your GitHub access token to authenticate against GitHub:
 
 ```
-cd /workspace/go-sample-app
 hub fork --remote-name origin
 git commit -am 'hello sunshine'
 git push origin master
