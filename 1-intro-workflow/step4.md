@@ -48,8 +48,8 @@ We have to inform `kustomize` of which files to track.
 ```
 cd base
 touch kustomization.yaml
-kubectl kustomize edit add resource service.yaml
-kubectl kustomize edit add resource deployment.yaml
+kustomize edit add resource service.yaml
+kustomize edit add resource deployment.yaml
 
 cat kustomization.yaml
 ```{{execute}}
