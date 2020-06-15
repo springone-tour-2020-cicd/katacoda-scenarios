@@ -1,133 +1,118 @@
 # ROUND 1 - initial build & deploy
 
-In this step, you will:
-1. Clone a sample app repo
-2. Build an image for the app and publish the image to Docker Hub
-3. Create the ops yaml files for the image
-4. Deploy the app to Kubernetes and test it
+Objective:
+Understand the basic workflow of deploying an application to Kubernetes. In subsequent steps, we will build on this basic flow.
 
+In this step, you will:
+- Clone a sample app repo
+- Test the app locally
+- Build an image for the app
+- Publish the image to Docker Hub
+- Deploy the app to Kubernetes
+- Save the deployment definitions as yaml-formatted "ops" files
+- Test the deployed app
+
+## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
 
 ## Clone app repo
-The [hub CLI](https://hub.github.com/hub.1.html) enables you to clone and fork GitHub repos from the command line. Use the `hub clone` command to clone the sample application, a simple "Hello World" app written in Go. You will need to enter your GitHub username and access token at the prompts:
+We will be working with a sample app that is publicly available on GitHub.
+
+Start by cloning the app repo and listing the contents:
 
 ```
-hub clone springone-tour-2020-cicd/go-sample-app /workspace/go-sample-app
-```{{execute}}
-
-## Build app image
-There are various ways to build an image from source code, ranging from Dockerfile to higher level abstractions. In this scenario, you will build the app locally and package it into an image using a simple Dockerfile.
-
-First build the app locally:
-```
+git clone https://github.com/springone-tour-2020-cicd/go-sample-app.git /workspace/go-sample-app
 cd /workspace/go-sample-app
-CGO_ENABLED=0 go build -i -o hello-server
+ls
 ```{{execute}}
 
-Test out the app locally. Start the process in the background, send a request, and then kill the process. The hello-server process should respond with "Hello, world!":
+This is a simple "hello world" app written in Go. Test it locally by running the following commands to start the 'hello-server' process in the background and send a request. Validate that the app responds with "Hello, world!":
 
 ```
-./hello-server &
+go run hello-server &
 curl localhost:8080
+```{{execute}}
+
+Stop the app:
+
+```
 pkill hello-server
 ```{{execute}}
 
-Next, create a Dockerfile to package the app binary into an image. The Dockerfile simply needs to copy the binary into the image and set the app launch command:
-```
-cat <<EOF >Dockerfile
-FROM scratch
-COPY hello-server /
-ENTRYPOINT ["/hello-server"]
-EOF
-```{{execute}}
+## Build app image
+There are various ways to turn an app into an image. In this step, you will use the Dockerfile included in the app repo to build the image. The `docker build` command will find the file called `Dockerfile` automatically:
 
-Now, build the image. The Dockerfile will be used by default:
 ```
 docker build . -t go-sample-app
 ```{{execute}}
 
-The image is in the local Docker daemon:
+Docker saves the image to the local docker daemon by default. List it using the following command:
 
 ```
 docker images | grep go-sample-app
 ```{{execute}}
 
- To publish it to Docker Hub, you first need to tag the image appropriately and authenticate against Docker Hub.
+# Publish app image
+Next, publish the image to a registry so that it is accessible for deployment to Kubernetes. There is a Docker registry running on the local docker daemon, listening on port 5000. We will use this registry for now.
 
-First, copy the following command to the terminal and replace `<YOUR_DH_USERNAME>` with your Docker Hub username:
-
-```
-IMG_REPO=<YOUR_DH_USERNAME>
-```{{copy}}
-
-Log in to Docker Hub and enter your access token at the prompt:
+To publish the image to a registry, you first need to name the image using the registry and repository information. It is also good practice to use a version tag. Run the following commands to rename and publish (aks tag and push) the image:
 
 ```
-docker login -u $IMG_REPO
+docker tag go-sample-app localhost:5000/apps/go-sample-app:1.0.0
+docker push localhost:5000/apps/go-sample-app:1.0.0
 ```{{execute}}
 
-Now, use the `docker tag` and `docker push` to publish the image with a versioned tag to Docker Hub::
+You can see the image has been uploaded to the registry:
 
 ```
-docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.0
-docker push $IMG_REPO/go-sample-app:1.0.0
+curl http://localhost:5000/v2/apps/go-sample-app/tags/list
 ```{{execute}}
 
-## Create ops files for deployment to Kubernetes
-Start by creating a namespace to deploy the application:
+## Deploy image to Kubernetes
+The scenario environment is pre-configured with access to a Kubernetes cluster. Start by creating a namespace to deploy the app image:
 
 ```
 kubectl create ns dev
 ```{{execute}}
 
-Next, create a directory in which to save the ops files:
+Next, deploy the image. Use the `-o yaml` option to write the deployment yaml to a file at the same time.
 
 ```
 mkdir ops
-cd ops
+kubectl create deployment go-sample-app --image=localhost:5000/apps/go-sample-app:1.0.0 -n dev -o yaml > ops/deployment.yaml
 ```{{execute}}
 
-You could use the image tag from above (1.0.0) to deploy the image, but let's use the image digest instead. Use the following command to get the image digest:
+`kubectl create` is an _imperative_ way to create a deployment. You can list the resources that comprise the deployment using:
 
 ```
-IMG_SHA=$(curl --silent -X GET https://hub.docker.com/v2/repositories/$IMG_REPO/go-sample-app/tags/1.0.0 | jq '.images[].digest' -r)
-echo $IMG_SHA
+kubectl get all -n dev
 ```{{execute}}
 
-Use the `kubectl create` command to create the deployment yaml file. The `--dry-run` option just creates the yaml file without deploying the image to Kubernetes:
+The `deployment.yaml` file contains the declarative definition of the deployment. Take a look using:
 
 ```
-kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app@$IMG_SHA -n dev --dry-run -o yaml > deployment.yaml
+cat ops/deployment.yaml
 ```{{execute}}
 
-The `deployment.yaml` defines the Kubernetes deployment, including replica set and pod. You will also need to create a service, so that you can expose the application via an accessible IP address.
-
-Use the `kubectl create` command to create the service yaml file. In orer to do so, you must first deploy the image to Kubernetes:
+In order to make the application accessible outside of the Kubernetes cluster, we need to expose it using a service. Run the following command to create the service _imperatively_ and save the _declarative_ definition of the service at the same time:
 
 ```
-kubectl apply -f deployment.yaml
-kubectl expose deployment go-sample-app --port 8080 --target-port 8080 -n dev --dry-run -o yaml > service.yaml
+kubectl expose deployment go-sample-app --port 8080 --target-port 8080 -n dev -o yaml > ops/service.yaml
 ```{{execute}}
+
+We will be using the deployment and service YAML files in the next step. Before moving on the the next step, let's test the deployed application.
 
 ## Test the app
-To test the app, you must also deploy the service:
-```
-kubectl apply -f service.yaml -n=dev
-```{{execute}}
-
-The service exposes the app outside of the cluster. You can now use port-forwarding to forward traffic from `localhost:8080`. for example, to the service you just created. Use the `kubectl port-forward` command, as follows. We will run the port-forwarding in the background so that we can test the app in this same terminal window:
+To test the app, you can use port-forwarding to forward traffic from a local endpoint (e.g. localhost:8080) to the service you just created. Run the following command to start a port-forwarding process in the background andd send a request to the app. Validate that the app responds with "Hello, world!":
 
 ```
 kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
-```{{execute}}
-
-Now, test the app. You should get a response of "Hello, world!":
-```
 curl localhost:8080
 ```{{execute}}
 
 ## Cleanup
 Stop the port-forwarding process:
+
 ```
 pkill kubectl
 ```{{execute}}

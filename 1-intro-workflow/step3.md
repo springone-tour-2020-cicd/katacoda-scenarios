@@ -1,4 +1,4 @@
-# ROUND 3 - make our deployment environment-specific
+# ROUND 3 - make the deployment environment-specific
 
 In this step, you will:
 1. Introduce a new environment
