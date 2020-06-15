@@ -83,8 +83,8 @@ kubectl create ns dev
 Next, create a directory in which to save the ops files:
 
 ```
-mkdir -p /workspace/go-sample-app-ops
-cd /workspace/go-sample-app-ops
+mkdir ops
+cd ops
 ```{{execute}}
 
 You could use the image tag from above (1.0.0) to deploy the image, but let's use the image digest instead. Use the following command to get the image digest:
@@ -97,7 +97,7 @@ echo $IMG_SHA
 Use the `kubectl create` command to create the deployment yaml file. The `--dry-run` option just creates the yaml file without deploying the image to Kubernetes:
 
 ```
-kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app@$IMG_SHA --dry-run -o yaml > deployment.yaml
+kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app@$IMG_SHA -n dev --dry-run -o yaml > deployment.yaml
 ```{{execute}}
 
 The `deployment.yaml` defines the Kubernetes deployment, including replica set and pod. You will also need to create a service, so that you can expose the application via an accessible IP address.
@@ -105,8 +105,8 @@ The `deployment.yaml` defines the Kubernetes deployment, including replica set a
 Use the `kubectl create` command to create the service yaml file. In orer to do so, you must first deploy the image to Kubernetes:
 
 ```
-kubectl apply -f deployment.yaml -n=dev
-kubectl expose deployment go-sample-app -n=dev --port=8080 --target-port=8080 --dry-run -o yaml > service.yaml
+kubectl apply -f deployment.yaml
+kubectl expose deployment go-sample-app --port 8080 --target-port 8080 -n dev --dry-run -o yaml > service.yaml
 ```{{execute}}
 
 ## Test the app
@@ -118,7 +118,7 @@ kubectl apply -f service.yaml -n=dev
 The service exposes the app outside of the cluster. You can now use port-forwarding to forward traffic from `localhost:8080`. for example, to the service you just created. Use the `kubectl port-forward` command, as follows. We will run the port-forwarding in the background so that we can test the app in this same terminal window:
 
 ```
-kubectl port-forward service/go-sample-app 8080:8080 -n=dev 2>&1 > /dev/null &
+kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 
 Now, test the app. You should get a response of "Hello, world!":

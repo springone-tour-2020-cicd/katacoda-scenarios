@@ -9,6 +9,7 @@ Our `deployment.yaml` and `service.yaml` currently have a reference to the `dev`
 Let's start by making a production copy of our deployment and service yamls.
 
 ```
+cd ops
 cp deployment.yaml deployment-prod.yaml
 cp service.yaml service-prod.yaml
 ```{{execute}}
@@ -16,6 +17,13 @@ cp service.yaml service-prod.yaml
 We need to change the namespace value in the metadata sections.
 We can easily do this using `sed -i “s/dev/prod/g” deployment-prod.yaml`, although this is error prone.
 The `yq` command line tool is better suited for the job as it understands the yaml structure.
+
+Let's first install `yq`.
+
+```
+wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
+chmod +x /usr/local/bin/yq
+```{{execute}}
 
 ```
 yq w -i deployment-prod.yaml "metadata.namespace" "prod"
@@ -31,10 +39,10 @@ kubectl apply -f .
 We can now test the production deployment.
 
 ```
-kubectl port-forward service/go-sample-app 8080:8080 -n=prod 2>&1 > /dev/null &
+kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
 ```{{execute}}
 
-Test the app. This time you should get a response of "Hello, sunshine!":
+Test the app.
 ```
 curl localhost:8080
 ```{{execute}}
@@ -45,67 +53,54 @@ Stop the port-forwarding process:
 ```
 pkill kubectl
 ```{{execute}}
-```
-We've now successfully deployed our application to our new production namespace.
-However, we've duplicated our code and had to mess around with imperative find and replace.
-It's not very clear what the differences are between the environments either.
 
-Let's take a look at other solutions.
+Now this was fairly straightforward.
+However, as we introduce more differences between environments, the complexity of this approach will become unmanageable.
+We've duplicated our code and had to mess around with imperative find and replace.
 
-Kustomize allows us to declaratively specify the differences between environments, in a Kubernetes-native way using CRDs (Custom Resource Definitions).
+Let's say that in the production environment we want to customize the following:
 
-Create the following directory structure:
-
-It contains a `base` subdirectory and two `overlay` subdirectories, one for development and one for production.
-
-```
-$ tree /workspace/go-sample-app
-.
-├── base
-│   └── kustomization.yaml
-└── overlays
-    ├── dev
-    │   ├── env.properties
-    │   └── kustomization.yaml
-    └── prod
-        ├── env.properties
-        └── kustomization.yaml
-```
-
-In the production environment we want to customize the following:
-
-- add application specific configuration for this Spring Boot application
-- configure prod DB access configuration
+- customize the namespace
+- add an environment variable being displayed on the HTTP endpoint
 - resource names to be prefixed by 'prod-'.
 - resources to have 'env: prod' labels.
-- JVM memory to be properly set.
+- memory to be properly set.
 - health check and readiness check.
 
-Let's first move the
+If we're going to do this, we should look beyond search and replace tools.
+
+# Let's take a look at other solutions
+
+Kustomize allows us to declaratively specify the differences between environments, in a Kubernetes-native way using CRDs (Custom Resource Definitions).
+In fact,
+
+First, let's get rid of our duplicated production yamls.
+
+```
+rm *-prod.yaml
+```{{execute}}
+
+Next, let's move the main Kubernetes resource definitions inside `base` folder.
+
+```
+mkdir base
+mv *.yaml base
+ls base
+```{{execute}}
 
 ### Initialize kustomization.yaml
 
-The `kustomize` program gets its instructions from
-a file called `kustomization.yaml`.
+The `kustomize` program gets its instructions from a file called `kustomization.yaml`.
+We have to inform `kustomize` of which files to track.
 
-Start this file:
-
-<!-- @kustomizeYaml @testAgainstLatestRelease -->
 ```
-touch $DEMO_HOME/kustomization.yaml
-```
-
-### Add the resources
-
-<!-- @addResources @testAgainstLatestRelease -->
-```
-cd $DEMO_HOME
-
-kustomize edit add resource service.yaml
-kustomize edit add resource deployment.yaml
+cd base
+touch kustomization.yaml
+kubectl kustomize edit add resource service.yaml
+kubectl kustomize edit add resource deployment.yaml
 
 cat kustomization.yaml
-```
+```{{execute}}
 
 `kustomization.yaml`'s resources section should contain:
 
@@ -115,17 +110,30 @@ cat kustomization.yaml
 > - deployment.yaml
 > ```
 
-### Add configMap generator
+### Add namespace
 
-<!-- @addConfigMap @testAgainstLatestRelease -->
+Let's add the namespace for each of the environments.
+
+Create two other `kustomize.yaml` files in environment-specific subfolders.
+
 ```
-echo "app.name=Kustomize Demo" >$DEMO_HOME/application.properties
+cd ..
+mkdir -p overlays/dev
+mkdir overlays/prod
+touch overlays/dev/kustomization.yaml
+touch overlays/prod/kustomization.yaml
+```{{execute}}
+
+
+```
+
+echo "app.name=Kustomize Demo" > application.properties
 
 kustomize edit add configmap demo-configmap \
   --from-file application.properties
 
 cat kustomization.yaml
-```
+```{{execute}}
 
 `kustomization.yaml`'s configMapGenerator section should contain:
 
@@ -136,7 +144,7 @@ cat kustomization.yaml
 >   name: demo-configmap
 > ```
 
-### Customize configMap
+### Add environment variable
 
 We want to add database credentials for the prod environment. In general, these credentials can be put into the file `application.properties`.
 However, for some cases, we want to keep the credentials in a different file and keep application specific configs in `application.properties`.
@@ -178,7 +186,7 @@ kustomize edit add configmap \
   demo-configmap --from-file application-prod.properties
 
 cat kustomization.yaml
-```
+```{{execute}}
 
 `kustomization.yaml`'s configMapGenerator section should contain:
 > ```
@@ -195,11 +203,10 @@ Arrange for the resources to begin with prefix
 _prod-_ (since they are meant for the _production_
 environment):
 
-<!-- @customizeLabel @testAgainstLatestRelease -->
 ```
 cd $DEMO_HOME
 kustomize edit set nameprefix 'prod-'
-```
+```{{execute}}
 
 `kustomization.yaml` should have updated value of namePrefix field:
 
@@ -211,10 +218,9 @@ This `namePrefix` directive adds _prod-_ to all
 resource names, as can be seen by building the
 resources:
 
-<!-- @build1 @testAgainstLatestRelease -->
 ```
 kustomize build $DEMO_HOME | grep prod-
-```
+```{{execute}}
 
 ### Label Customization
 
@@ -226,13 +232,12 @@ selector.
 add a label, but one can always edit
 `kustomization.yaml` directly:
 
-<!-- @customizeLabels @testAgainstLatestRelease -->
 ```
 cat <<EOF >>$DEMO_HOME/kustomization.yaml
 commonLabels:
   env: prod
 EOF
-```
+```{{execute}}
 
 Confirm that the resources now all have names prefixed
 by `prod-` and the label tuple `env:prod`:
@@ -240,7 +245,7 @@ by `prod-` and the label tuple `env:prod`:
 <!-- @build2 @testAgainstLatestRelease -->
 ```
 kustomize build $DEMO_HOME | grep -C 3 env
-```
+```{{execute}}
 
 ### Download Patch for JVM memory
 
@@ -251,13 +256,12 @@ set JVM options accordingly.
 
 Download the patch `memorylimit_patch.yaml`. It contains the memory limits setup.
 
-<!-- @downloadPatch @testAgainstLatestRelease -->
 ```
 curl -s  -o "$DEMO_HOME/#1.yaml" \
   "$CONTENT/overlays/production/{memorylimit_patch}.yaml"
 
 cat $DEMO_HOME/memorylimit_patch.yaml
-```
+```{{execute}}
 
 The output contains
 
@@ -289,13 +293,12 @@ has end points such as `/actuator/health` for this. We can customize the k8s dep
 
 Download the patch `healthcheck_patch.yaml`. It contains the liveness probes and readyness probes.
 
-<!-- @downloadPatch @testAgainstLatestRelease -->
 ```
 curl -s  -o "$DEMO_HOME/#1.yaml" \
   "$CONTENT/overlays/production/{healthcheck_patch}.yaml"
 
 cat $DEMO_HOME/healthcheck_patch.yaml
-```
+```{{execute}}
 
 The output contains
 
@@ -332,7 +335,7 @@ Add these patches to the kustomization:
 cd $DEMO_HOME
 kustomize edit add patch memorylimit_patch.yaml
 kustomize edit add patch healthcheck_patch.yaml
-```
+```{{execute}}
 
 `kustomization.yaml` should have patches field:
 
@@ -350,4 +353,4 @@ create the production environment.
 <!-- @finalBuild @testAgainstLatestRelease -->
 ```
 kustomize build $DEMO_HOME  # | kubectl apply -f -
-```
+```{{execute}}
