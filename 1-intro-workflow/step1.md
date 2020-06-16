@@ -32,7 +32,7 @@ Test it locally to see how it behaves. First, start the 'hello-server' process i
 go run hello-server.go &
 ```{{execute}}
 
-Next, send a request. Validate that the app responds with "Hello, world!"
+Next, send a request. Validate that the app responds with "Hello, world!" (if it fails initially, give the server a couple of seconds to finish starting up, and try again).
 
 ```
 curl localhost:8080
@@ -47,7 +47,7 @@ pkill hello-server
 ## Build app image
 In order to deploy the app to Kubernetes, it needs to be packaged as a container image.
 
-There are various ways to turn an app into an image, ranging from Dockerfile scripts to higher level abstractions. In this step, you will use the Dockerfile script included in the app repo. The `docker build` command will find the file called `Dockerfile` automatically:
+There are various ways to turn an app into an image, ranging from Dockerfile scripts to higher level abstractions. In this step, you will use a Dockerfile script included in the app repo. The `docker build` command will find the file called `Dockerfile` automatically. The build will pull a base image called 'golang' from Docker Hub, us it to build the app into a binary, and then use 'scratch' as a base to produce a small final image with only the binary in it.
 
 ```
 docker build . -t go-sample-app
@@ -63,37 +63,35 @@ docker images | grep go-sample-app
 ## Publish image to a registry
 The scenario environment is pre-configured with access to a Kubernetes cluster. In order to deploy the image to the cluster, you must publish the image to a registry that the cluster can access. For this purpose, we will use Docker Hub.
 
-To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the registry address and the repository name. It is also good practice to tag the image with a version. The Docker Hub registry address is the default, so you can simply tag the image using the repository name and a version.
-
-First, for convenience, copy the following command to the terminal and replace `<YOUR_DH_USERNAME>` with your Docker Hub username:
+To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. docker.io/<namespace>/<image-name>). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace and a version to the `go-sample-app` image. For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and past the following command into the terminal window, then delete the placeholder and replace it with your namespace:
 
 ```
-IMG_REPO=<YOUR_DH_USERNAME>
+IMG_NS=<YOUR_DH_NAMESPACE>
 ```{{copy}}
 
 Next, log in to Docker Hub. At the prompt, enter your access token.
 
 ```
-docker login -u $IMG_REPO
+docker login -u $IMG_NS
 ```{{execute}}
 
-Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub:
+Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub. Notice that we are assignng a version of `1.0.0` to the image as well. It is good practice to tag the image with a version.
 
 ```
-docker tag go-sample-app $IMG_REPO/go-sample-app:1.0.0
-docker push $IMG_REPO/go-sample-app:1.0.0
+docker tag go-sample-app $IMG_NS/go-sample-app:1.0.0
+docker push $IMG_NS/go-sample-app:1.0.0
 ```{{execute}}
 
 You can see the new repository created in the registry:
 
-https://hub.docker.com/repository/docker/$IMG_REPO/go-sample-app/tags
+https://hub.docker.com/repository/docker/$IMG_NS/go-sample-app/tags
 
 ## Deploy image to Kubernetes
 You are now ready to deploy the image to Kubernetes.
 
 A deployment can be done _imperatively_ using a CLI and command-line options operating on running resources, or _declaratively_ using a config file that describes the desired deployment. The latter is aligned with an "infrastructure as code" methodology, wherein the config files serve as a blueprint and "source of truth" for deployments, and they enable configuration of any aspect of the resource (as opposed to being limited to those exposed through the CLI).
 
-Using the following commands, you will create config files that express - or declare, as it were - the desired deployment. You will be using these declarative config files throughout this course. You'll note that we are using imperative commands to create the yaml config files, but we are using the flags `--dry-run` and `-o yaml` to simply write the declarative configuration to a file rather than create any resources on Kubernetes.
+Using the following commands, you will create config files that express - or declare, as it were - the desired deployment. You will be using these declarative config files throughout this course. You'll notice that we are using imperative commands to create the yaml config files, but we are using the flags `--dry-run` and `-o yaml` to simply write the declarative configuration to a file rather than create any resources on Kubernetes.
 
 First, create a yaml for a new namespace called `dev`:
 
@@ -102,10 +100,10 @@ mkdir ops
 kubectl create namespace dev --dry-run -o yaml > ops/namespace.yaml
 ```{{execute}}
 
-Then, create a yaml for the deployment. The deployment will eventually create three Kubernetes resources: deployment, replica set, and pod.
+Then, create a yaml for the deployment. The deployment will eventually create three resources in Kubernetes: deployment, replica set, and pod.
 
 ```
-kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app:1.0.0 -n dev --dry-run -o yaml > ops/deployment.yaml
+kubectl create deployment go-sample-app --image=$IMG_NS/go-sample-app:1.0.0 -n dev --dry-run -o yaml > ops/deployment.yaml
 ```{{execute}}
 
 In order to make the application accessible outside of the Kubernetes cluster, you need to expose it using a service. Run the following command to create the declarative definition of the service:

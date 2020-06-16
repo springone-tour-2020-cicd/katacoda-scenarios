@@ -1,12 +1,12 @@
 # ROUND 2 - make a code change and re-deploy
 
 Objective:
-Understand the basic workflow of deploying an **update** to the application using a declarative approach. In subsequent steps, we will continue to build on this flow.
+Understand the basic workflow of deploying an **update** to the application. In subsequent steps, we will continue to build on this flow.
 
 In this step, you will:
 1. Make a code change to the app
 2. Re-build the image
-3. Update the ops files
+3. Update the deployment ops file
 4. Deploy the new image & re-test
 
 ## Make a code change to the app
@@ -20,8 +20,8 @@ sed -i 's/world/sunshine/g' hello-server.go
 Re-build the image and push it to the registry as version 1.0.1:
 
 ```
-docker build . -t go-sample-app -t $IMG_REPO/go-sample-app:1.0.1
-docker push $IMG_REPO/go-sample-app:1.0.1
+docker build . -t go-sample-app -t $IMG_NS/go-sample-app:1.0.1
+docker push $IMG_NS/go-sample-app:1.0.1
 ```{{execute}}
 
 ## Update ops yamls
@@ -32,7 +32,7 @@ sed -i 's|1.0.0|1.0.1|g' ops/deployment.yaml
 ```{{execute}}
 
 ## Re-deploy the image
-This time, apply the _declarative_ definitions of the deployment and service. Kubernetes will update the resources that have changed (in this case, just the deployment):
+You can run `kubectl apply` using the directory containing all of the ops files. Kubernetes will update only the resources that have changed (in this case, just the deployment):
 
 ```
 kubectl apply -f ops

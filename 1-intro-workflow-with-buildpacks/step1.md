@@ -23,16 +23,16 @@ You will build the image and publish it to Docker Hub on one easy step, but firs
 Copy the following command to the terminal and replace `<YOUR_DH_USERNAME>` with your Docker Hub username:
 
 ```
-IMG_REPO=<YOUR_DH_USERNAME>
+IMG_NS=<YOUR_DH_USERNAME>
 ```{{copy}}
 
 Next, log in to Docker Hub and enter your access token at the prompt:
-docker login -u $IMG_REPO
+docker login -u $IMG_NS
 
 Now, use the `pack build` command to build the image. The `builder` will produce the image, and the `--publish` flag instructs `pack` to publish the image to the registry:
 
 ```
-pack build $IMG_REPO/go-sample-app:1.0.0 \
+pack build $IMG_NS/go-sample-app:1.0.0 \
      --path go-sample-app \
      --builder gcr.io/paketo-buildpacks/builder:base \
      --publish
@@ -55,14 +55,14 @@ cd go-sample-app-ops
 You could use the image tag from above (1.0.0) to deploy the image, but let's use the image digest instead. Use the following command to get the image digest:
 
 ```
-IMG_SHA=$(curl --silent -X GET https://hub.docker.com/v2/repositories/$IMG_REPO/go-sample-app/tags/1.0.0 | jq '.images[].digest' -r)
+IMG_SHA=$(curl --silent -X GET https://hub.docker.com/v2/repositories/$IMG_NS/go-sample-app/tags/1.0.0 | jq '.images[].digest' -r)
 echo $IMG_SHA
 ```{{execute}}
 
 Use the `kubectl create` command to create the deployment yaml file. The `--dry-run` option just creates the yaml file without deploying the image to Kubernetes:
 
 ```
-kubectl create deployment go-sample-app --image=$IMG_REPO/go-sample-app@$IMG_SHA --dry-run -o yaml > go-sample-app-ops/deployment.yaml
+kubectl create deployment go-sample-app --image=$IMG_NS/go-sample-app@$IMG_SHA --dry-run -o yaml > go-sample-app-ops/deployment.yaml
 ```{{execute}}
 
 The `deployment.yaml` will create a Kubernetes deployment, replica set, and pod(s). You will also need to create a service, so that you can expose the application via an accessible IP address.

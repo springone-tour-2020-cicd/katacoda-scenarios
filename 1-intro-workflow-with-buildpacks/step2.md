@@ -16,7 +16,7 @@ sed -i '' 's/world/sunshine/g' go-sample-app/hello-server.go
 Re-build the image:
 
 ```
-pack build $IMG_REPO/go-sample-app:1.0.0 \
+pack build $IMG_NS/go-sample-app:1.0.0 \
      --path go-sample-app \
      --builder gcr.io/paketo-buildpacks/builder:base \
      --publish
@@ -26,7 +26,7 @@ pack build $IMG_REPO/go-sample-app:1.0.0 \
 The only value that needs to be updated is the image digest:
 ```
 IMG_SHA_OLD=$IMG_SHA
-IMG_SHA=$(curl --silent -X GET https://hub.docker.com/v2/repositories/$IMG_REPO/go-sample-app/tags/1.0.1 | jq '.images[].digest' -r); echo $IMG_SHA
+IMG_SHA=$(curl --silent -X GET https://hub.docker.com/v2/repositories/$IMG_NS/go-sample-app/tags/1.0.1 | jq '.images[].digest' -r); echo $IMG_SHA
 sed -i '' "s|$IMG_SHA_OLD|$IMG_SHA|g" go-sample-app-ops/deployment.yaml
 ```{{execute}}
 
