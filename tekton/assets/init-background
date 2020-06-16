@@ -4,16 +4,15 @@ mkdir -p /root/init-env
 cd /root/init-env
 
 # Redirect output to log file
-exec &>>  init-env.log
+exec &>>  /root/init-env/init-env.log
 
-printf "" > init-env.status
+printf "" > /root/init-env/init-env.status
 echo "$(date)"
 ########## NO CHANGES ABOVE THIS LINE ##########
 
-#echo "### Create a workspace directory and cd into it"
-#mkdir workspace
-#cd workspace
-#echo "### Create setting up workspace directory"
+echo "### Creating workspace directory (cd into it in init-foreground, not here)"
+mkdir /workspace
+echo "### Finished creating workspace directory"
 
 git clone https://github.com/springone-tour-2020-cicd/tekton-labs.git /root/tekton-labs
 curl -LO https://github.com/tektoncd/cli/releases/download/v0.7.1/tkn_0.7.1_Linux_x86_64.tar.gz
@@ -24,4 +23,4 @@ chmod +x /usr/local/bin/yq
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
-echo "done" >> init-env.status
+echo "done" >> /root/init-env/init-env.status

@@ -6,7 +6,7 @@ cd kustomize-labs/simple
 ```{{execute}}
 <br>
 
-The main file that drives Kustomize is `kustomization.yaml`  Open the file `/root/kustomize-labs/simple/kustomization.yaml`{{open}} in the editor.
+The main file that drives Kustomize is `kustomization.yaml`  Open the file `/workspace/kustomize-labs/simple/kustomization.yaml`{{open}} in the editor.
 
 The contents of `kustomization.yaml` are:
 
@@ -37,7 +37,7 @@ kubectl apply -k . --dry-run=client -o yaml > manifest.yaml
 ```{{execute}}
 <br>
 
-Open the ``/root/kustomize-labs/simple/manifest.yaml`{{open}} in the editor and have a look around to see how the `namePrefix` and `commonLabels` field was used in the definition of the Kubernetes `Service` and `Deployment` resources. 
+Open the ``/workspace/kustomize-labs/simple/manifest.yaml`{{open}} in the editor and have a look around to see how the `namePrefix` and `commonLabels` field was used in the definition of the Kubernetes `Service` and `Deployment` resources. 
 
 Now let's create the resources and apply them to the cluster.
 

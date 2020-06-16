@@ -8,7 +8,7 @@ kubectl create namespace production
 
 Create another Argo CD 'Application', this time using the `argocd` CLI:
 ```
-argocd app create spring-sample-app-production --repo https://github.com/${MY_GITHUB_ORG}/spring-sample-app-ops.git --path overlays/production --dest-namespace production --dest-server https://kubernetes.default.svc --sync-policy automated
+argocd app create spring-sample-app-production --repo https://github.com/${GITHUB_NS}/spring-sample-app-ops.git --path overlays/production --dest-namespace production --dest-server https://kubernetes.default.svc --sync-policy automated
 ```{{execute}}
 
 Go back to the UI and click on `Applications`. You should see the new applicaiton there.

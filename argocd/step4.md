@@ -12,7 +12,7 @@ kubectl create namespace dev
 
 In the UI, click on `+ NEW APP`.
 
-Fill in the form as follows, using details pertaining to your fork of the sample app. Make sure to replace the placeholder `YOUR-GITHUB-ORG` with the proper value. Leave any fields not mentioned below at their default value.
+Fill in the form as follows, using details pertaining to your fork of the sample app. Make sure to replace the placeholder `GITHUB_NS` with the proper value. Leave any fields not mentioned below at their default value.
 ```
 GENERAL
 Application Name: spring-sample-app-dev
@@ -20,7 +20,7 @@ Project: default
 SYNC POLICY: Automatic
 
 SOURCE
-Repository URL: https://github.com/<YOUR-GITHUB-ORG>/spring-sample-app-ops.git
+Repository URL: https://github.com/<GITHUB_NS>/spring-sample-app-ops.git
 Revision: HEAD
 Path: overlays/dev
 

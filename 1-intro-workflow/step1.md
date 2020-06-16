@@ -67,7 +67,7 @@ To publish the image to a registry, you need to assign it an alias (aka a tag) t
  For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
 
 ```
-IMG_NS=<YOUR_DH_NAMESPACE>
+IMG_NS=<YOUR_DH_USERNAME_OR_ORG>
 ```{{copy}}
 
 Next, log in to Docker Hub. At the prompt, enter your access token.

@@ -7,7 +7,7 @@ cat echo-task.yaml
 ```{{execute}}
 
 Or open the file in the editor
-Open the file `/root/tekton-labs/lab-1/echo-task.yaml`{{open}}
+Open the file `/workspace/tekton-labs/lab-1/echo-task.yaml`{{open}}
 
 **NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
 

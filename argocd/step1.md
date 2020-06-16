@@ -15,11 +15,11 @@ You should see the usage guide for argocd CLI displayed.
 You'll also need to clone the GitHub sample ops repository you forked in the [prerequisites scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow).
 
 For simplicity, set the following environment variable to your GitHub org name:
-```export MY_GITHUB_ORG=```{{copy}}
+```export GITHUB_NS=```{{copy}}
 
 Run the following command to clone your fork of the [sample ops](https://github.com/springone-tour-2020-cicd/spring-sample-app-ops.git) repo:
 ```
-git clone https://github.com/${MY_GITHUB_ORG}/spring-sample-app-ops.git
+git clone https://github.com/${GITHUB_NS}/spring-sample-app-ops.git
 ```{{execute}}
 
 

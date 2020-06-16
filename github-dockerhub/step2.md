@@ -1,6 +1,6 @@
 We will now make a change to the Controller.
 
-Open the file `/root/spring-sample-app/src/main/java/com/example/springsampleapp/HelloController.java`{{open}}
+Open the file `/workspace/spring-sample-app/src/main/java/com/example/springsampleapp/HelloController.java`{{open}}
 
 **NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
 

@@ -3,11 +3,11 @@ An [off-the-shelf configuration](https://github.com/kubernetes-sigs/kustomize/bl
 Let's begin by changing into the `off-the-shelf` directory.
 
 ```
-cd /root/kustomize-labs/off-the-shelf
+cd /workspace/kustomize-labs/off-the-shelf
 ```{{execute}}
 <br>
 
-Open the file `/root/kustomize-labs/off-the-shelf/kustomization.yaml`{{open}} in the editor.
+Open the file `/workspace/kustomize-labs/off-the-shelf/kustomization.yaml`{{open}} in the editor.
 
 The first field to look at is the `resources:` field which points to a GitHub repository and its version.  
 

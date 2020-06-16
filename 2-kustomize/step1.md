@@ -14,12 +14,12 @@ Please wait until `Environment ready!` appears in the terminal window.
 Start by cloning the GitHub repo you created in the prerequisite scenario.  For convenience, set the following environment variable to your GitHub namespace (your user or org name). You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
                                                                            
 ```
-GH_NS=<YOUR_GH_NAMESPACE>
+GITHUB_NS=<YOUR_GH_USERNAME_OR_ORG>
 ```{{copy}}
 
 Next, clone your fork of the sample app repo:
 ```
-git clone https://github.com/$GH_NS/go-sample-app.git
+git clone https://github.com/$GITHUB_NS/go-sample-app.git
 ```{{execute}}
 
 In the prerequisite scenario, you created two sets of ops files corresponding to two deployment environments, dev and prod, and you used `yq` to change the value of the metadata.namespace nodes for prod.

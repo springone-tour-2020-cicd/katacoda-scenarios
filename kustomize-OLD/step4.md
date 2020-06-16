@@ -14,7 +14,7 @@ Now clone your fork of the (https://github.com/springone-tour-2020-cicd/spring-s
 
 
 ```
-git clone https://github.com/<YOUR GITHUB NAME HERE>/spring-sample-app-ops
+git clone https://github.com/<GITHUB_NS>/spring-sample-app-ops
 ```{{execute}}
 <br>
 
@@ -42,7 +42,7 @@ $ tree
 
 ## Look at the directory structure 
 
-Open the file `/root/spring-sample-app-ops/overlay/dev/kustomization.yaml`
+Open the file `/workspace/spring-sample-app-ops/overlay/dev/kustomization.yaml`
 
 In that file refer to your container image and its version.
 
@@ -61,7 +61,7 @@ resources:
   - ../../base
 ```
  
-The file `/root/spring-sample-app-ops/base/kustomization.yaml`{{open}} contains a reference to the off-the-shelf customization hosted on GitHub.
+The file `/workspace/spring-sample-app-ops/base/kustomization.yaml`{{open}} contains a reference to the off-the-shelf customization hosted on GitHub.
 
 ```
 resources:
