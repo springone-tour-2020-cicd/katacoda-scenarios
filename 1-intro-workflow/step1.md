@@ -8,7 +8,7 @@ In this step, you will:
 - Test the app locally
 - Build an image for the app
 - Publish the image to Docker Hub
-- Deploy the app to Kubernetes
+- Deploy the image to Kubernetes
 - Save the deployment definitions as yaml-formatted "ops" files
 - Test the deployed app
 
@@ -18,7 +18,7 @@ Please wait until `Environment ready!` appears in the terminal window.
 ## Clone app repo
 We will be working with a sample app that is publicly available on GitHub.
 
-Start by cloning the app repo and listing the contents:
+Start by cloning the app repo and listing the contents. The app is a simple application written in Go.
 
 ```
 git clone https://github.com/springone-tour-2020-cicd/go-sample-app.git /workspace/go-sample-app
@@ -26,10 +26,15 @@ cd /workspace/go-sample-app
 ls
 ```{{execute}}
 
-This is a simple "hello world" app written in Go. Test it locally by running the following commands to start the 'hello-server' process in the background and send a request. Validate that the app responds with "Hello, world!":
+Test it locally to see how it behaves. First, start the 'hello-server' process in the background:
 
 ```
 go run hello-server.go &
+```{{execute}}
+
+Next, send a request. Validate that the app responds with "Hello, world!"
+
+```
 curl localhost:8080
 ```{{execute}}
 
