@@ -68,7 +68,7 @@ EOF
 We can now add the `golangci-lint` Task to validate our Go package.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: run-lint
@@ -88,7 +88,7 @@ EOF
 Next up is the `golang-test` Task to run unit-tests on our Go package.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: run-test
@@ -109,7 +109,7 @@ Notice we also run this Task after `fetch-repo`, which means it will be done in 
 We can also add the `golang-build` Task in parallel to compile our code while our linter and test is running.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: run-build
@@ -129,7 +129,7 @@ EOF
 After fetching the repository, running the tests and linters, and building the code, we can now build the image and push to Docker Hub.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
   - name: kaniko
@@ -167,7 +167,7 @@ Finally, we should verify whether our push was successful.
 We can do this by adding a task that verifies the digest.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
   - name: verify-digest
@@ -175,7 +175,7 @@ spec:
     - kaniko
     params:
     - name: digest
-      value: $(tasks.kaniko.results.IMAGE-DIGEST)
+      value: \$(tasks.kaniko.results.IMAGE-DIGEST)
     taskSpec:
       params:
       - name: digest
