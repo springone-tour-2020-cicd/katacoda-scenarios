@@ -4,7 +4,7 @@
 Please wait until `Environment ready!` appears in the terminal window.
 
 ## Install Tekton
-Let's begin by installing Tekton's Custom Resource Definitions (CRDs). 
+Let's begin by installing Tekton's Custom Resource Definitions (CRDs).
 
 ```
 cd tekton-labs/lab-1
@@ -12,7 +12,7 @@ cd tekton-labs/lab-1
 
 Install the CRDs using the `kubectl` command line
 ```
-kubectl apply -f release-0.13.2.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.10.2/release.yaml
 ```{{execute}}
 
 View the custom resources that were installed
@@ -26,6 +26,6 @@ Now let's view the tasks installed in your cluster.
 tkn task list
 ```{{execute}}
 
-No tasks are found because we have not yet created them. 
+No tasks are found because we have not yet created them.
 In the next step, we will create a 'hello world' task and run it.
 
