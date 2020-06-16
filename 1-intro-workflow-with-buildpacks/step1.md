@@ -59,10 +59,10 @@ IMG_SHA=$(curl --silent -X GET https://hub.docker.com/v2/repositories/$IMG_NS/go
 echo $IMG_SHA
 ```{{execute}}
 
-Use the `kubectl create` command to create the deployment yaml file. The `--dry-run` option just creates the yaml file without deploying the image to Kubernetes:
+Use the `kubectl create` command to create the deployment yaml file. The `--dry-run=client` option just creates the yaml file without deploying the image to Kubernetes:
 
 ```
-kubectl create deployment go-sample-app --image=$IMG_NS/go-sample-app@$IMG_SHA --dry-run -o yaml > go-sample-app-ops/deployment.yaml
+kubectl create deployment go-sample-app --image=$IMG_NS/go-sample-app@$IMG_SHA --dry-run=client -o yaml > go-sample-app-ops/deployment.yaml
 ```{{execute}}
 
 The `deployment.yaml` will create a Kubernetes deployment, replica set, and pod(s). You will also need to create a service, so that you can expose the application via an accessible IP address.
@@ -71,7 +71,7 @@ Use the `kubectl create` command to create the service yaml file. In orer to do 
 
 ```
 kubectl apply -f go-sample-app-ops/deployment.yaml -n=dev
-kubectl expose deployment go-sample-app --port=8080 --target-port=8080 --dry-run -o yaml > go-sample-app-ops/service.yaml
+kubectl expose deployment go-sample-app --port=8080 --target-port=8080 --dry-run=client -o yaml > go-sample-app-ops/service.yaml
 ```{{execute}}
 
 ## Test the app

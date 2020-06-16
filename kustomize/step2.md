@@ -33,7 +33,7 @@ We will walk though this file line by line.
 You can see the output of running Kustomize on this file by executing the following command
 
 ```
-kubectl apply -k . --dry-run -o yaml > manifest.yaml
+kubectl apply -k . --dry-run=client -o yaml > manifest.yaml
 ```{{execute}}
 <br>
 

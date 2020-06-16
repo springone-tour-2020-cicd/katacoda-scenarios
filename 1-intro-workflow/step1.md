@@ -93,25 +93,25 @@ You are now ready to deploy the image to Kubernetes.
 
 A deployment can be done _imperatively_ using a CLI and command-line options operating on running resources, or _declaratively_ using a config file that describes the desired deployment. The latter is aligned with an "infrastructure as code" methodology, wherein the config files serve as a blueprint and "source of truth" for deployments, and they enable configuration of any aspect of the resource (as opposed to being limited to those exposed through the CLI).
 
-Using the following commands, you will create config files that express - or declare, as it were - the desired deployment. You will be using these declarative config files throughout this course. You'll notice that we are using imperative commands to create the yaml config files, but we are using the flags `--dry-run` and `-o yaml` to simply write the declarative configuration to a file rather than create any resources on Kubernetes.
+Using the following commands, you will create config files that express - or declare, as it were - the desired deployment. You will be using these declarative config files throughout this course. You'll notice that we are using imperative commands to create the yaml config files, but we are using the flags `--dry-run=client` and `-o yaml` to simply write the declarative configuration to a file rather than create any resources on Kubernetes.
 
 First, create a yaml for a new namespace called `dev`:
 
 ```
 mkdir ops
-kubectl create namespace dev --dry-run -o yaml > ops/namespace.yaml
+kubectl create namespace dev --dry-run=client -o yaml > ops/namespace.yaml
 ```{{execute}}
 
 Then, create a yaml for the deployment. The deployment will eventually create three resources in Kubernetes: deployment, replica set, and pod.
 
 ```
-kubectl create deployment go-sample-app --image=$IMG_NS/go-sample-app:1.0.0 -n dev --dry-run -o yaml > ops/deployment.yaml
+kubectl create deployment go-sample-app --image=$IMG_NS/go-sample-app:1.0.0 -n dev --dry-run=client -o yaml > ops/deployment.yaml
 ```{{execute}}
 
 In order to make the application accessible outside of the Kubernetes cluster, you need to expose it using a service. Run the following command to create the declarative definition of the service:
 
 ```
-kubectl create service clusterip go-sample-app --tcp=8080:8080 -n dev --dry-run -o yaml > ops/service.yaml
+kubectl create service clusterip go-sample-app --tcp=8080:8080 -n dev --dry-run=client -o yaml > ops/service.yaml
 ```{{execute}}
 
 You can review the declarative definitions of these resources:
