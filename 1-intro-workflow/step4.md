@@ -42,7 +42,7 @@ ls base
 We also have to remove the environment-specific namespace setting from the base yaml files.
 
 ```
-sed -i '/namespace: dev/d' ../../base/*.yaml
+sed -i '/namespace: dev/d' base/*.yaml
 ```{{execute}}
 
 ### Customize the namespace
@@ -163,7 +163,7 @@ cat kustomization.yaml
 We can now apply and test our new environment variable.
 
 ```
-kustomize build --load_restrictor none ./ | kubectl apply -f -
+kustomize build --load_restrictor none . | kubectl apply -f -
 
 kubectl rollout status deployment/go-sample-app -n prod
 kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
@@ -197,45 +197,59 @@ kustomize edit set nameprefix 'prod-'
 This `namePrefix` directive adds _prod-_ to all resource names, as can be seen by building the resources:
 
 ```
-kustomize build ./ | grep prod-
+kustomize build --load_restrictor none . | grep prod-
 ```{{execute}}
 
 Let's apply and verify.
+Confirm that the resources now all have names prefixed by `prod-`
 
 ```
-kustomize build --load_restrictor none ./ | kubectl apply -f -
+kustomize build --load_restrictor none . | kubectl apply -f -
 
 kubectl rollout status deployment/prod-go-sample-app -n prod
 kubectl get all -n prod
+```{{execute}}
+
+We can now get rid of the old service and deployment on production.
+
+```
+kubectl delete deployment go-sample-app -n prod
+kubectl delete service go-sample-app -n prod
 ```{{execute}}
 
 ### Label Customization
 
 We want resources in production environment to have certain labels so that we can query them by label selector.
 
-`kustomize` does not have `edit set label` command to add a label, but one can always edit `kustomization.yaml` directly:
+`kustomize` does not have `edit set label` command to add a label, but we can always edit `kustomization.yaml` directly:
 
 ```
-cat <<EOF >>$DEMO_HOME/kustomization.yaml
+cat <<EOF >>kustomization.yaml
 commonLabels:
   env: prod
 EOF
 ```{{execute}}
 
-Confirm that the resources now all have names prefixed
-by `prod-` and the label tuple `env:prod`:
+Verify whether all the resources now have the label tuple `env:prod`:
 
-<!-- @build2 @testAgainstLatestRelease -->
 ```
-kustomize build $DEMO_HOME | grep -C 3 env
+kustomize build --load_restrictor none . | grep -C 3 env
+```{{execute}}
+
+We can now apply the changes and verify the resources on the cluster.
+
+```
+kustomize build --load_restrictor none . | kubectl apply -f -
+
+kubectl get all -n prod --show-labels
 ```{{execute}}
 
 ### Download Patch for JVM memory
 
-When a Spring Boot application is deployed in a k8s cluster, the JVM is running inside a container. We want to set memory limit for the container and make sure
-the JVM is aware of that limit. In K8s deployment, we can set the resource limits for containers and inject these limits to
-some environment variables by downward API. When the container starts to run, it can pick up the environment variables and
-set JVM options accordingly.
+When a Go application is deployed in a Kubernetes cluster, the Go process is running inside a container.
+We want to set memory limit for the container and make sure the Go app is aware of that limit.
+In a Kubernetes deployment, we can set the resource limits for containers and inject these limits to some environment variables by the downward API.
+When the container starts to run, it can pick up the environment variables and set JVM options accordingly.
 
 Download the patch `memorylimit_patch.yaml`. It contains the memory limits setup.
 
