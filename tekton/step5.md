@@ -155,11 +155,20 @@ This task needs a new parameter called `image`.
 Let's add it as well to the parameter section.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline.yaml - <<EOF
 spec:
   params:
   - name: image
     description: reference of the image to build
+EOF
+```{{execute}}
+
+In order to push to Docker Hub, we need to share our build-bot `ServiceAccount` with the `Pipeline`.
+
+```
+yq m -i pipeline.yaml - <<EOF
+spec:
+  serviceAccountName: build-bot
 EOF
 ```{{execute}}
 
