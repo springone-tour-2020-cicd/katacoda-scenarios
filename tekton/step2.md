@@ -87,7 +87,7 @@ You will see the log from the `echo` step
 
 ```
 [echo] hello world
-``
+```
 
 Hello Tekton! 
 
