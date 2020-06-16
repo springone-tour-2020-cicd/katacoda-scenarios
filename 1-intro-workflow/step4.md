@@ -2,9 +2,8 @@
 
 In this step, you will:
 1. Introduce Kustomize
-2. Customize the namespace
-3. Use `yq` to manipulate resources
-4. Deploy both environments to Kubernetes and test it
+2. Customize resources using overlays
+3. Deploy everything to Kubernetes
 
 The previous step was fairly straightforward.
 However, as we introduce more differences between environments, the complexity of this approach will become unmanageable.
@@ -12,12 +11,12 @@ We've duplicated our resource yamls and had to mess around with imperative find 
 
 Let's say that in the production environment we want to customize the following:
 
-- customize the namespace
-- add an environment variable being displayed on the HTTP endpoint
-- resource names to be prefixed by 'prod-'.
-- resources to have 'env: prod' labels.
-- memory to be properly set.
-- health check and readiness check.
+- Customize the namespace
+- Add an environment variable being displayed on the HTTP endpoint
+- Resource names to be prefixed by 'prod-'
+- Resources to have 'env: prod' labels
+- Memory to be properly set
+- Health check and readiness check
 
 If we're going to do this, we should look beyond search and replace tools like `sed` or `yq`.
 
