@@ -1,28 +1,31 @@
-First validate that the Kubernetes cluster is up and running.
-Wait for the progress bar to complete.  You will see a prompt such as
+# Installing Tekton
 
+## Local environment setup
+Please wait until `Environment ready!` appears in the terminal window.
 
-```
- ~
-$
-```
-
-The tilde will show that `git status` of the directory you are in.
-
-Then execute
+## Install Tekton
+Let's begin by installing Tekton's Custom Resource Definitions (CRDs). 
 
 ```
-minikube status
+cd tekton-labs/lab-1
 ```{{execute}}
-<br>
 
-You should see no errors in the output.
+Install the CRDs using the `kubectl` command line
 ```
-host: Running
-kubelet: Running
-apiserver: Running
-kubeconfig: Configured
-```
-<br>
+kubectl apply -f release-0.10.1.yaml
+```{{execute}}
 
-Now onto the real stuff!
+View the custom resources that were installed
+```
+kubectl api-resources --api-group='tekton.dev'
+```{{execute}}
+
+The `tkn` CLI lets you interact more easily with Tekton's custom resources vs. using kubectl directly.
+Now let's view the tasks installed in your cluster.
+```
+tkn task list
+```{{execute}}
+
+No tasks are found because we have not yet created them. 
+In the next step, we will create a 'hello world' task and run it.
+

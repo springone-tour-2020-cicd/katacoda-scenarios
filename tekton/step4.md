@@ -1,109 +1,87 @@
-We will now install some supporting Kubernetes resources in order to run a Task that will build a container containing the Spring Boot sample applications and push it to Docker Hub.
+# Run the jib-maven task
 
-Tekton has a [catalog of pre-built tasks](https://github.com/tektoncd/catalog) that cover common cases in a CI system.  
+In this step we will create a `TaskRun` that creates a container image of a Spring Boot application and publish it to Docker Hub.
 
-From that catalog, we will use the `jib-maven` task as the means to create the image and push it to Docker Hub.
-The [jib maven plugin](https://github.com/GoogleContainerTools/jib/tree/master/jib-maven-plugin) provides an easy and quick way to create a container image that is ties into the maven build lifecycle.
-
-
-To use the `jib-maven` task there are a few things we need to setup in the Kubernetes cluster.
-
-1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the .m2 cache will available when new Pods are created to execute the build.
-1. Create a secret that contains your Docker Hub credentials.
-1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
-
-## Install `jib-maven` task prerequisites
-
-Let's change to the `lab-2` directory and execute a few `kubectl` commands to install the task prerequisites.
-
-```
-cd /root/tekton-labs/lab-2
-```{{execute}}
-<br>
-
-Create the Persistent Volume Claim:
-
-```
-kubectl apply -f cache-pvc.yaml
-```{{execute}}
-<br>
-
-Login to your Docker Hub account using the `docker` CLI:
-
-```
-docker login
-```{{execute}}
-
-This creates a `config.json` file that caches your Docker Hub credentials.
-
-```
-more /root/.docker/config.json
-```{{execute}}
-
-<br>
-
-You can [create a secret from existing credentials](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) with the following command.
-
-```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
-```{{execute}}
-<br>
-
-Now create the service account.  The name of the service account is `build-bot` and will be references in Tekton's TaskRun resource that will run the task.
-
-```
-kubectl apply -f service-account.yaml
-```{{execute}}
-<br>
-
-## Install jib-maven task
-
-The `lab-2` directory contains a copy of the `jib-maven` task that is found in the Tekton catalog.
-
-Open the file `/root/tekton-labs/lab-2/jib-maven-task.yaml`{{open}} and take a look around.
+Open the file `/root/tekton-labs/lab-2/jib-maven-taskrun.yaml`{{open}} and take a look around.
 
 **NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
 
-Now, install the `jib-maven` task
+There are two values in the YAML document that need to be changed.
+
+The task run defines the `git` resource and `image` resource as embedded resources to the `TaskRun`.
+
+The git resource is defined in the input section
 
 ```
-kubectl apply -f jib-maven-task.yaml
+inputs:
+  resources:
+    - name: source
+      resourceSpec:
+        type: git
+        params:
+          - name: url
+            value: # REPLACE https://github.com/markpollack/spring-sample-app
+          - name: revision
+            value: master
+```
+**The `url` parameter value should be set to the URL of your forked repository of the sample application**
+
+The image resource is defined in the output section
+
+```
+outputs:
+  resources:
+    - name: image
+      resourceSpec:
+        type: image
+        params:
+          - name: url
+            value: # REPLACE markpollack/spring-sample-app:1.0.0
+```
+
+**The `url` parameter value should be set to the Docker Hub repository name.  The version `1.0.0` should match what you have in the `pom.xml` file in your github repository of the sample application.**
+
+After changing the two `url` values, execute the taskrun
+
+```
+kubectl apply -f jib-maven-taskrun.yaml
 ```{{execute}}
-<br>
-
-Now if you list the tasks installed in the cluster you will see the `jib-maven` task along with the `echo-hello-world` task from the previous step.
-
-```
-$ tkn task list
-NAME               AGE
-echo-hello-world   10 minutes ago
-jib-maven          6 seconds ago
-```
 
 
-Looking into the YAML for the task, it is using the container image
+Now let's get a description of the `TaskRun` that was created.
 
 ```
-gcr.io/cloud-builders/mvn
-``` 
+tkn taskrun describe jib-maven-taskrun
+```{{execute}}
 
-that has `maven` installed on it.
-The command that the task executes is shown below from the `jib-maven-task` YAML.
+
+To view the logs
 
 ```
-steps:
-- name: build-and-push
-  image: gcr.io/cloud-builders/mvn
-  command:
-  - mvn
-  - -B
-  - compile
-  - com.google.cloud.tools:jib-maven-plugin:build
-  - -Duser.home=/tekton/home
-  - -Djib.to.image=$(outputs.resources.image.url)
+tkn taskrun logs --follow jib-maven-taskrun
+```{{execute}}
+
+
+After a bit of time to download the images that the task will use has completed, you will see many log entries for the downloading of maven artifacts.
+
+At the end of the log, you will see a successful push of the image to Docker Hub as shown below.
+
+
+```
+[build-and-push] [INFO] Built and pushed image as markpollack/spring-sample-app:1.0.0
+[build-and-push] [INFO] 
+[build-and-push] [INFO] ------------------------------------------------------------------------
+[build-and-push] [INFO] BUILD SUCCESS
+[build-and-push] [INFO] ------------------------------------------------------------------------
+[build-and-push] [INFO] Total time:  5.269 s
+[build-and-push] [INFO] Finished at: 2020-02-15T23:05:09Z
+[build-and-push] [INFO] ------------------------------------------------------------------------
 ```
 
-The value of the property `jib.to.image` will be set when we create the TaskRun resource that references this Task.
+If you navigate to your account on [Docker Hub](https://hub.docker.com/), you will see your published image.
 
-With these prerequisites installed in the cluster, we can now run the Task by creating a TaskRun resource in the next step.
+Now, instead of running a once off task, let's create a pipeline that is more typical in a CI scenario of multiple steps.  On to the next step!
+
+
+
 

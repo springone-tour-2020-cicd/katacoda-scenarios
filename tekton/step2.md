@@ -1,28 +1,94 @@
-Let's begin by installing Tekton's Custom Resource Definitions (CRDs). 
+# Executing a simple Task
+
+View the echo Task that will simply print 'hello world' to the console.
 
 ```
-cd tekton-labs/lab-1
+cat echo-task.yaml
 ```{{execute}}
-<br>
 
-Install the CRDs using the `kubectl` command line
+Or open the file in the editor
+Open the file `/root/tekton-labs/lab-1/echo-task.yaml`{{open}}
+
+**NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
+
+
+
+The echo task uses the image `ubuntu` and then simply executes the command `echo hello world`.
+
+## Install the task definition
+
+Use `kubectl` to install the task definition into the cluster.
+
 ```
-kubectl apply -f release-0.10.1.yaml
+kubectl apply -f echo-task.yaml
 ```{{execute}}
-<br>
 
-View the custom resources that were installed
-```
-kubectl api-resources --api-group='tekton.dev'
-```{{execute}}
-<br>
 
-The `tkn` CLI lets you interact more easily with Tekton's custom resources vs. using kubectl directly.
-Now let's view the tasks installed in your cluster.
+You can list the installed tasks in the cluster using the `tkn` CLI.
 ```
 tkn task list
 ```{{execute}}
 
-No tasks are found because we have not yet created them. 
-In the next step, we will create a 'hello world' task and run it.
+
+More information about the task can be obtained using the `describe` command.
+```
+tkn tasks describe echo-hello-world
+```{{execute}}
+
+
+## Execute the task
+
+To execute this task directly, we can use the `tkn` CLI or create a `TaskRun` resource in a YAML file.
+We will create the `TaskRun` resource using a YAML file.
+Look at the `echo-taskrun.yaml` file.
+
+```
+cat echo-taskrun.yaml
+```{{execute}}
+You can also navigate to this file in the editor that is above the terminal.
+
+
+
+There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
+You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/taskruns.md)
+
+```
+kubectl apply -f echo-taskrun.yaml
+```{{execute}}
+
+
+Now let's get a description of the `TaskRun` that was created.
+
+```
+tkn taskrun describe echo-hello-world-task-run
+```{{execute}}
+
+
+You should see in the last part of the output of this command the status of the pod that is running the echo command
+
+
+```
+🦶 Steps
+
+ NAME     STATUS
+ ∙ echo   PodInitializing
+ ```
+
+Keep executing the `tkn taskrun describe` command and you will eventually see that the pod status is `COMPLETED`.
+
+
+Now look at the output of `TaskRun`
+
+```
+tkn taskrun logs echo-hello-world-task-run
+```{{execute}}
+
+You will see the log from the `echo` step
+
+```
+[echo] hello world
+``
+
+Hello Tekton! 
+
 
