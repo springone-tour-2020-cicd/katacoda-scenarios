@@ -1,14 +1,14 @@
-# ROUND 3 - make the deployment environment-specific
+# Promote to production
 
 In this step, you will:
-1. Introduce a new environment
+1. Introduce a prod environment
 2. Duplicate the service and deployment yamls
-3. Use `yq` to manipulate resources
-4. Deploy both environments to Kubernetes and test it
+3. Use `yq` to manipulate the YAML resources
+4. Deploy the image to the prod environment and test it
 
-## Introduce new environment
+## Introduce prod environment
 
-For the purpose of this lab we will simply create a new namespace `prod` which will act as our production environment.
+Begin by creating a new namespace called `prod` that will serve as our production environment:
 
 ```
 kubectl create namespace prod
@@ -16,59 +16,55 @@ kubectl create namespace prod
 
 ## Duplicate the yamls
 
-Our `deployment.yaml` and `service.yaml` currently have a reference to the `dev` namespace, which should be changed for the production environment.
-Let's start by making a production copy of our deployment and service yamls.
+Your `deployment.yaml` and `service.yaml` files currently have a reference to the `dev` namespace, which needs to be changed for the production environment.
+
+Start by making a production copy of your ops files.
 
 ```
-cd ops
-cp deployment.yaml deployment-prod.yaml
-cp service.yaml service-prod.yaml
+mv ops ops-dev
+cp -r ops-dev ops-prod
 ```{{execute}}
 
 ## Manipulate resources with `yq`
 
-We need to change the namespace value in the metadata sections.
-We can easily do this using `sed -i “s/dev/prod/g” deployment-prod.yaml`, although this is error prone.
-The `yq` command line tool is better suited for the job as it understands the yaml structure.
+We need to change the namespace in the prod files. We could do this using `sed -i “s/dev/prod/g” deployment-prod.yaml`, but this is error prone. The `yq` command line tool is better suited for the job as it understands the yaml structure and can be used to make more controlled changes.
 
-Let's first install `yq`.
+Run the following commands to update the value of the namespace field in the metadata section of the prod yaml files:
 
 ```
-wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
-chmod +x /usr/local/bin/yq
-```{{execute}}
-
-We can now update the namespace in the yaml files.
-
-```
-yq w -i deployment-prod.yaml "metadata.namespace" "prod"
-yq w -i service-prod.yaml "metadata.namespace" "prod"
+yq w -i ops-prod/deployment.yaml "metadata.namespace" "prod"
+yq w -i ops-prod/service.yaml "metadata.namespace" "prod"
 ```{{execute}}
 
 ## Deploy and test
 
-Let's apply the changes to our Kubernetes cluster.
+Deploy the image to the production namespace:
 
 ```
-kubectl apply -f .
+kubectl apply -f ops-prod
 ```{{execute}}
 
-We can now test the production deployment.
+Wait for the deployment to finish:
 
 ```
 kubectl rollout status deployment/go-sample-app -n prod
+```{{execute}}
+
+Set up port-forwarding again and test the app:
+
+```
 kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
 ```{{execute}}
 
-Test the app.
+Send a request. Validate that the app responds with "Hello, sunshine!"
+
 ```
 curl localhost:8080
 ```{{execute}}
 
 ## Cleanup
-
 Stop the port-forwarding process:
+
 ```
 pkill kubectl && wait $!
 ```{{execute}}
-

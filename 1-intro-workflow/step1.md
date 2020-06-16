@@ -1,4 +1,4 @@
-# ROUND 1 - initial build & deploy
+# Initial build & deploy
 
 Objective:
 Understand the basic workflow of deploying an application to Kubernetes. In subsequent steps, we will build on this basic flow.
@@ -21,8 +21,7 @@ We will be working with a sample app that is publicly available on GitHub.
 Start by cloning the app repo and listing the contents. The app is a simple application written in Go.
 
 ```
-git clone https://github.com/springone-tour-2020-cicd/go-sample-app.git /workspace/go-sample-app
-cd /workspace/go-sample-app
+git clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go-sample-app
 ls
 ```{{execute}}
 

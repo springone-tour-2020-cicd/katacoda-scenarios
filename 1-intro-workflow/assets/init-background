@@ -24,15 +24,15 @@ curl -L https://github.com/github/hub/releases/download/v$HUB_VERSION/hub-linux-
      rm -rf hub-linux-amd64-$HUB_VERSION
 echo "### Finished installing hub CLI"
 
-echo "### Installing Kustomize CLI"
-curl -LO https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv3.5.4/kustomize_v3.5.4_linux_amd64.tar.gz
-tar xvzf kustomize_v3.5.4_linux_amd64.tar.gz -C /usr/local/bin/ kustomize
-echo "### Finished installing Kustomize CLI"
+echo "### Installing yq CLI"
+wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
+chmod +x /usr/local/bin/yq
+echo "### Finished installing yq CLI"
 
-#echo "### Create a workspace directory and cd into it"
-#mkdir /workspace
-#cd /workspace
-#echo "### Create setting up workspace directory"
+echo "### Create a workspace directory and cd into it"
+mkdir /workspace
+cd /workspace
+echo "### Create setting up workspace directory"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line

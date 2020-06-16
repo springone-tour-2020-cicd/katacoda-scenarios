@@ -1,4 +1,4 @@
-# ROUND 2 - make a code change and re-deploy
+# Make a code change and re-deploy
 
 Objective:
 Understand the basic workflow of deploying an **update** to the application. In subsequent steps, we will continue to build on this flow.
@@ -46,13 +46,13 @@ Once again, wait for the deployment to finish:
 kubectl rollout status deployment/go-sample-app -n dev
 ```{{execute}}
 
-Set up port-forwarding again and test the app. This time you should get a response of "Hello, sunshine!":
+Set up port-forwarding again and test the app:
 
 ```
 kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 
-Send a request. Validate that the app responds with "Hello, sunshine!"
+Send a request.  This time you should get a response of "Hello, sunshine!"
 
 ```
 curl localhost:8080
