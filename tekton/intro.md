@@ -2,7 +2,7 @@
 
 This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
 
-**Prerequisite:** 
+**Prerequisites** 
 
 Please complete the [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario first.
 

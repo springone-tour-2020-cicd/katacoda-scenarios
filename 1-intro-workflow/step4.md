@@ -105,7 +105,6 @@ The directory structure should look like this.
 .
 ├── base
 │   ├── deployment.yaml
-│   ├── namespace.yaml
 │   └── service.yaml
 └── overlays
     ├── dev

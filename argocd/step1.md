@@ -12,7 +12,7 @@ You should see the usage guide for argocd CLI displayed.
 
 # Additional assets
 
-You'll also need to clone the GitHub sample ops repository you forked in the [pre-requisites scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow).
+You'll also need to clone the GitHub sample ops repository you forked in the [prerequisites scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow).
 
 For simplicity, set the following environment variable to your GitHub org name:
 ```export MY_GITHUB_ORG=```{{copy}}

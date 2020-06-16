@@ -2,7 +2,7 @@ With Kubernetes, everything from deployment to monitoring to scaling is more sta
 
 In this course, we'll explore some options for Kubernetes-centric tooling, including Tekton, Kustomize, and ArgoCD, and see how GitOps can be leveraged for CI/CD.
 
-**Pre-requisites**
+**Prerequisites**
 
 To complete this course, you will need:
 - A [GitHub](https://github.com) account

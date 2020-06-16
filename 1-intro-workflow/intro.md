@@ -8,7 +8,7 @@ Throughout these scenarios, we'll explore some options for Kubernetes-centric to
 
 By the end of this scenario, you will have a new GitHub repo with sample app source code and "ops" deployment files. You will also understand the basic flow that needs to be automated: _**change code --> build image --> update ops files --> deploy**_.
 
-**Pre-requisites**
+**Prerequisites**
 
 To complete this course, you will need:
 - A [GitHub](https://github.com) account
