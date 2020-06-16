@@ -1,5 +1,5 @@
 #!/bin/bash
 
-export PS1="\n\[\033[0m\]\w\$ "
+export PS1="\n\[\e[1m\]\[\e[33m\w\]\[\e[33m\] $ \[\e[0m\]"
 export JAVA_HOME=/usr/lib/jvm/default-java/jre
 export MY_GITHUB_ORG=springone-tour-2020-cicd
