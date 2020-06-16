@@ -1,0 +1,24 @@
+#!/bin/bash
+
+mkdir -p /root/init-env
+cd /root/init-env
+
+# Redirect output to log file
+exec &>>  init-env.log
+
+printf "" > init-env.status
+echo "$(date)"
+########## NO CHANGES ABOVE THIS LINE ##########
+
+echo "### Installing some required tool"
+# ... install/configure the necessary tool
+echo "### Finished installing some required tool"
+
+#echo "### Setting up workspace directory"
+#mkdir /workspace
+#cd /workspace
+#echo "### Finished setting up workspace directory"
+
+########## NO CHANGES BELOW THIS LINE ##########
+# The following must be the last line
+echo "done" >> init-env.status
