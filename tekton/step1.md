@@ -12,7 +12,7 @@ cd tekton-labs/lab-1
 
 Install the CRDs using the `kubectl` command line
 ```
-kubectl apply -f release-0.10.1.yaml
+kubectl apply -f release-0.13.2.yaml
 ```{{execute}}
 
 View the custom resources that were installed

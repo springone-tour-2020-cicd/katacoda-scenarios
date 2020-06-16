@@ -50,7 +50,7 @@ You can also navigate to this file in the editor that is above the terminal.
 
 
 There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
-You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/taskruns.md)
+You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.13.2/docs/taskruns.md)
 
 ```
 kubectl apply -f echo-taskrun.yaml
