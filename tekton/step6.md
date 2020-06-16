@@ -18,7 +18,7 @@ spec:
     persistentvolumeclaim:
       claimName: tekton-tasks-pvc
 EOF
-```
+```{{execute}}
 
 We also have to set a value for each parameter that each Task expects.
 
@@ -34,13 +34,13 @@ For the version we can use the current date and time as a quick solution.
 
 ```
 BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
-yq m -i pipeline.yaml - <<EOF
+yq m -i pipeline-run.yaml - <<EOF
 spec:
   params:
   - name: image
     value: ${IMG_NS}/go-sample-app:${BUILD_DATE}
 EOF
-```
+```{{execute}}
 
 For the `git-clone` Task, we need to know your git repository containing the Go application.
 You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your GitHub username or org:
@@ -52,25 +52,25 @@ GITHUB_NS=<YOUR_GH_USERNAME_OR_ORG>
 Let's add the repository URL to the list of parameters.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline-run.yaml - <<EOF
 spec:
   params:
   - name: repo-url
-    value: github.com/${GITHUB_NS}/go-sample-app
+    value: github.com/${GITHUB_NS}/go-sample-app.git
 EOF
-```
+```{{execute}}
 
 Finally, we'll need to tell the `git-clone` Task which branch to clone.
 Let's take `master` for now.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i -a pipeline-run.yaml - <<EOF
 spec:
   params:
   - name: branch-name
     value: master
 EOF
-```
+```{{execute}}
 
 Let's take a look at our entire `PipelineRun` resource.
 
@@ -82,6 +82,22 @@ If you're ready to execute the pipeline, issue the following command.
 
 ```
 kubectl apply -f pipeline-run.yaml
+```{{execute}}
+
+The new pipelinerun should now be executing.
+You can track its status by taking a look at the pipelineruns list.
+
 ```
+tkn pipelineruns list
+```{{execute}}
+
+More details are available by describing the Pipelinerun.
+
+```
+tkn pipelineruns describe tekton-go-pipeline-run
+```{{execute}}
+
+
+
 
 If you navigate to your account on [Docker Hub](https://hub.docker.com/), you will see your published image.
