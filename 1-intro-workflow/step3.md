@@ -69,6 +69,6 @@ curl localhost:8080
 
 Stop the port-forwarding process:
 ```
-pkill kubectl
+pkill kubectl && echo
 ```{{execute}}
 

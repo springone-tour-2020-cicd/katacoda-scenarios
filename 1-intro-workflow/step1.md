@@ -41,7 +41,7 @@ curl localhost:8080
 Stop the app:
 
 ```
-pkill hello-server
+pkill hello-server && echo
 ```{{execute}}
 
 ## Build app image
@@ -160,5 +160,5 @@ curl localhost:8080
 Stop the port-forwarding process:
 
 ```
-pkill kubectl
+pkill kubectl && echo
 ```{{execute}}
