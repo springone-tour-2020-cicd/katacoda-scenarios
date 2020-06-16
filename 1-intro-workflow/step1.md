@@ -115,7 +115,7 @@ cat ops/deployment.yaml
 Apply the yaml file to deploy the image to Kubernetes:
 
 ```
-kubectl apply ops/deployment.yaml
+kubectl apply -f ops/deployment.yaml
 ```{{execute}}
 
 The deployment creates three Kubernetes resources: deployment, replica set, and pod. You can list the deployed resources using:
@@ -130,7 +130,7 @@ In order to make the application accessible outside of the Kubernetes cluster, y
 
 ```
 kubectl expose deployment go-sample-app --port 8080 --target-port 8080 -n dev --dry-run -o yaml > ops/service.yaml
-kubectl apply ops/service.yaml
+kubectl apply -f ops/service.yaml
 ```{{execute}}
 
 ## Test the app
