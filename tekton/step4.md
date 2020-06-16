@@ -1,10 +1,78 @@
-# Run the jib-maven task
+# Run the tasks
 
-In this step we will create a `TaskRun` that creates a container image of a Spring Boot application and publish it to Docker Hub.
+In this step we will create `TaskRun` resources that lint, test and build the go application, as well as building the container image of the application and publishing it to Docker Hub.
 
-Open the file `/root/tekton-labs/lab-2/jib-maven-taskrun.yaml`{{open}} and take a look around.
+## Lint step
 
-**NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
+Let's create a TaskRun to run the `golangci-lint` Task to validate our Go package.
+
+```
+cat <<EOF >lint-taskrun.yaml
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: lint-my-code
+spec:
+  taskRef:
+    name: golangci-lint
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  - name: flags
+    value: --verbose
+EOF
+kubectl apply -f lint-taskrun.yaml
+```{{execute}}
+
+Let's create a TaskRun to run the `test-my-code` Task to run unit-tests on our Go package.
+
+```
+cat <<EOF >test-taskrun.yaml
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: test-my-code
+spec:
+  taskRef:
+    name: golang-test
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+  - name: packages
+    value: ./pkg/...
+EOF
+kubectl apply -f test-taskrun.yaml
+```{{execute}}
+
+This TaskRun runs the Task to compile commands from tektoncd/pipeline. golangci-lint.
+
+```
+cat <<EOF >build-taskrun.yaml
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: build-my-code
+spec:
+  taskRef:
+    name: golang-build
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: my-source
+  params:
+  - name: package
+    value: github.com/tektoncd/pipeline
+EOF
+kubectl apply -f build-taskrun.yaml
+```{{execute}}
 
 There are two values in the YAML document that need to be changed.
 
@@ -69,7 +137,7 @@ At the end of the log, you will see a successful push of the image to Docker Hub
 
 ```
 [build-and-push] [INFO] Built and pushed image as markpollack/spring-sample-app:1.0.0
-[build-and-push] [INFO] 
+[build-and-push] [INFO]
 [build-and-push] [INFO] ------------------------------------------------------------------------
 [build-and-push] [INFO] BUILD SUCCESS
 [build-and-push] [INFO] ------------------------------------------------------------------------

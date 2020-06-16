@@ -1,4 +1,4 @@
-# Install prerequisites the jib-maven task
+# Install prerequisites for the tasks
 
 We will now install some supporting Kubernetes resources in order to run a Task that will build a container containing the Go sample applications and push it to Docker Hub.
 
@@ -60,6 +60,13 @@ spec:
 EOF
 ```{{execute}}
 
+Apply both and verify whether the Persistent Volume Claim is bound.
+
+```
+kubectl apply -f .
+kubectl get pvc
+```{{execute}}
+
 Login to your Docker Hub account using the `docker` CLI:
 
 ```
@@ -82,57 +89,66 @@ Now create the service account.
 The name of the service account is `build-bot` and will be references in Tekton's TaskRun resource that will run the task.
 
 ```
-kubectl apply -f service-account.yaml
+cat <<EOF >sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-bot
+secrets:
+  - name: regcred
+EOF
+kubectl apply -f sa.yaml
 ```{{execute}}
 
 ## Install golang task
 
-The `lab-2` directory contains a copy of the `jib-maven` task that is found in the Tekton catalog.
-
-Open the file `/root/tekton-labs/lab-2/jib-maven-task.yaml`{{open}} and take a look around.
-
-**NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
-
-Now, install the `jib-maven` task
+Go ahead and install the predefined `golang` and `kaniko` tasks.
 
 ```
-kubectl apply -f jib-maven-task.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
 ```{{execute}}
 
 
-Now if you list the tasks installed in the cluster you will see the `jib-maven` task along with the `echo-hello-world` task from the previous step.
+Now if you list the tasks installed in the cluster you will see three new tasks along with the `echo-hello-world` task from the previous step.
 
 ```
 $ tkn task list
 NAME               AGE
 echo-hello-world   10 minutes ago
-jib-maven          6 seconds ago
+golang-build       6 seconds ago
+golang-test        6 seconds ago
+golangci-lint      6 seconds ago
 ```
 
-
-Looking into the YAML for the task, it is using the container image
+Let's take a look at the `golang-build` task.
 
 ```
-gcr.io/cloud-builders/mvn
-```
+curl https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
+```{{execute}}
 
-that has `maven` installed on it.
-The command that the task executes is shown below from the `jib-maven-task` YAML.
+The command that the task executes is mentioned under the `build` step.
 
 ```
 steps:
-- name: build-and-push
-  image: gcr.io/cloud-builders/mvn
-  command:
-  - mvn
-  - -B
-  - compile
-  - com.google.cloud.tools:jib-maven-plugin:build
-  - -Duser.home=/tekton/home
-  - -Djib.to.image=$(outputs.resources.image.url)
+  - name: build
+    image: golang:$(params.version)
+    workingDir: $(workspaces.source.path)
+    script: |
+      go build $(params.flags) $(params.packages)
+    env:
+    - name: GOPATH
+      value: /workspace
+    - name: GOOS
+      value: "$(params.GOOS)"
+    - name: GOARCH
+      value: "$(params.GOARCH)"
+    - name: GO111MODULE
+      value: "$(params.GO111MODULE)"
 ```
 
-The value of the property `jib.to.image` will be set when we create the TaskRun resource that references this Task.
+The value of the properties and environment variables will be set when we create the TaskRun resource that references this Task.
 
 With these prerequisites installed in the cluster, we can now run the Task by creating a TaskRun resource in the next step.
-
