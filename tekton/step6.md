@@ -56,7 +56,7 @@ yq m -i -a pipeline-run.yaml - <<EOF
 spec:
   params:
   - name: repo-url
-    value: github.com/${GITHUB_NS}/go-sample-app.git
+    value: https://github.com/${GITHUB_NS}/go-sample-app.git
 EOF
 ```{{execute}}
 
