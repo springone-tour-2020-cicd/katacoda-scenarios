@@ -30,7 +30,7 @@ cp service.yaml service-prod.yaml
 
 We need to change the namespace in the prod files. We could do this using `sed -i '' "s/dev/prod/g" *-prod.yaml`, but this is error prone. The `yq` command line tool is better suited for the job as it understands the yaml structure and can be used to make more controlled changes.
 
-Run the following commands to update the value of the namespace field in the metadata section of the prod yaml files:
+Run the following commands to update the value of the metadata.namespace nodes in the prod yaml files:
 
 ```
 yq w -i deployment-prod.yaml "metadata.namespace" "prod"
