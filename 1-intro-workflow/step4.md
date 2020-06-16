@@ -244,92 +244,67 @@ kustomize build --load_restrictor none . | kubectl apply -f -
 kubectl get all -n prod --show-labels
 ```{{execute}}
 
-### Download Patch for JVM memory
+### Patch for memory limits
 
-When a Go application is deployed in a Kubernetes cluster, the Go process is running inside a container.
-We want to set memory limit for the container and make sure the Go app is aware of that limit.
-In a Kubernetes deployment, we can set the resource limits for containers and inject these limits to some environment variables by the downward API.
-When the container starts to run, it can pick up the environment variables and set JVM options accordingly.
-
-Download the patch `memorylimit_patch.yaml`. It contains the memory limits setup.
+Create a new patch containing the memory limits setup.
 
 ```
-curl -s  -o "$DEMO_HOME/#1.yaml" \
-  "$CONTENT/overlays/production/{memorylimit_patch}.yaml"
-
-cat $DEMO_HOME/memorylimit_patch.yaml
+cat <<EOF >memorylimit_patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-sample-app
+spec:
+  template:
+    spec:
+      containers:
+        - name: go-sample-app
+          resources:
+            limits:
+              memory: 256Mi
+            requests:
+              memory: 256Mi
+EOF
 ```{{execute}}
 
-The output contains
+### Patch for health check
 
-> ```
-> apiVersion: apps/v1
-> kind: Deployment
-> metadata:
->   name: sbdemo
-> spec:
->   template:
->     spec:
->       containers:
->         - name: sbdemo
->           resources:
->             limits:
->               memory: 1250Mi
->             requests:
->               memory: 1250Mi
->           env:
->           - name: MEM_TOTAL_MB
->             valueFrom:
->               resourceFieldRef:
->                 resource: limits.memory
-> ```
+We also want to add liveness check and readiness check in the production environment.
+We can customize the Kubernetes deployment resource to talk to our endpoint.
 
-### Download Patch for health check
-We also want to add liveness check and readiness check in the production environment. Spring Boot application
-has end points such as `/actuator/health` for this. We can customize the k8s deployment resource to talk to Spring Boot end point.
-
-Download the patch `healthcheck_patch.yaml`. It contains the liveness probes and readyness probes.
+Create a new patch containing the liveness probes and readiness probes.
 
 ```
-curl -s  -o "$DEMO_HOME/#1.yaml" \
-  "$CONTENT/overlays/production/{healthcheck_patch}.yaml"
-
-cat $DEMO_HOME/healthcheck_patch.yaml
+cat <<EOF >healthcheck_patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-sample-app
+spec:
+  template:
+    spec:
+      containers:
+        - name: go-sample-app
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 4
+            periodSeconds: 3
+          readinessProbe:
+            initialDelaySeconds: 4
+            periodSeconds: 10
+            httpGet:
+              path: /
+              port: 8080
+EOF
 ```{{execute}}
-
-The output contains
-
-> ```
-> apiVersion: apps/v1
-> kind: Deployment
-> metadata:
->   name: sbdemo
-> spec:
->   template:
->     spec:
->       containers:
->         - name: sbdemo
->           livenessProbe:
->             httpGet:
->               path: /actuator/health
->               port: 8080
->             initialDelaySeconds: 10
->             periodSeconds: 3
->           readinessProbe:
->             initialDelaySeconds: 20
->             periodSeconds: 10
->             httpGet:
->               path: /actuator/info
->               port: 8080
-> ```
 
 ### Add patches
 
 Add these patches to the kustomization:
 
-<!-- @addPatch @testAgainstLatestRelease -->
 ```
-cd $DEMO_HOME
 kustomize edit add patch memorylimit_patch.yaml
 kustomize edit add patch healthcheck_patch.yaml
 ```{{execute}}
@@ -343,11 +318,28 @@ kustomize edit add patch healthcheck_patch.yaml
 > - healthcheck_patch.yaml
 > ```
 
-The output of the following command can now be applied
-to the cluster (i.e. piped to `kubectl apply`) to
-create the production environment.
+We can now apply all of these patches on our production environment.
 
-<!-- @finalBuild @testAgainstLatestRelease -->
 ```
-kustomize build $DEMO_HOME  # | kubectl apply -f -
+kustomize build --load_restrictor none . | kubectl apply -f -
+
+kubectl rollout status deployment/prod-go-sample-app -n prod
+kubectl get all -n prod
+```{{execute}}
+
+Verify if our app still works.
+
+```
+kubectl port-forward service/prod-go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
+```{{execute}}
+
+Our endpoint should now respond with the environment variable.
+
+```
+curl localhost:8080
+```{{execute}}
+
+Stop the port-forwarding process:
+```
+pkill kubectl
 ```{{execute}}
