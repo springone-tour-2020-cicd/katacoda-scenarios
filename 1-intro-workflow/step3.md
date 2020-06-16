@@ -21,27 +21,28 @@ Your `deployment.yaml` and `service.yaml` files currently have a reference to th
 Start by making a production copy of your ops files.
 
 ```
-mv ops ops-dev
-cp -r ops-dev ops-prod
+cd ops
+cp deployment.yaml deployment-prod.yaml
+cp service.yaml service-prod.yaml
 ```{{execute}}
 
 ## Manipulate resources with `yq`
 
-We need to change the namespace in the prod files. We could do this using `sed -i “s/dev/prod/g” deployment-prod.yaml`, but this is error prone. The `yq` command line tool is better suited for the job as it understands the yaml structure and can be used to make more controlled changes.
+We need to change the namespace in the prod files. We could do this using `sed -i '' "s/dev/prod/g" *-prod.yaml`, but this is error prone. The `yq` command line tool is better suited for the job as it understands the yaml structure and can be used to make more controlled changes.
 
 Run the following commands to update the value of the namespace field in the metadata section of the prod yaml files:
 
 ```
-yq w -i ops-prod/deployment.yaml "metadata.namespace" "prod"
-yq w -i ops-prod/service.yaml "metadata.namespace" "prod"
+yq w -i deployment-prod.yaml "metadata.namespace" "prod"
+yq w -i service-prod.yaml "metadata.namespace" "prod"
 ```{{execute}}
 
 ## Deploy and test
 
-Deploy the image to the production namespace:
+Apply the new ops files in order to deploy the app to the production namespace:
 
 ```
-kubectl apply -f ops-prod
+kubectl apply -f *-prod.yaml
 ```{{execute}}
 
 Wait for the deployment to finish:
@@ -63,8 +64,9 @@ curl localhost:8080
 ```{{execute}}
 
 ## Cleanup
-Stop the port-forwarding process:
+Stop the port-forwarding process and return to the app's root directory:
 
 ```
 pkill kubectl && wait $!
+cd ..
 ```{{execute}}
