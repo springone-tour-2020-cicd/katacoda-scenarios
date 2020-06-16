@@ -63,7 +63,7 @@ docker images | grep go-sample-app
 ## Publish image to a registry
 The scenario environment is pre-configured with access to a Kubernetes cluster. In order to deploy the image to the cluster, you must publish the image to a registry that the cluster can access. For this purpose, we will use Docker Hub.
 
-To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. docker.io/<namespace>/<image-name>). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace and a version to the `go-sample-app` image. For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and past the following command into the terminal window, then delete the placeholder and replace it with your namespace:
+To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. docker.io/<namespace>/<image-name>). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace and a version to the `go-sample-app` image. For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
 
 ```
 IMG_NS=<YOUR_DH_NAMESPACE>
