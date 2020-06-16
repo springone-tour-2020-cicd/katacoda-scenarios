@@ -1,14 +1,22 @@
-The [Tekton Pipeliens](https://github.com/tektoncd/pipeline/tree/v0.13.2/docs#tekton-pipelines) project provides Kubernetes-style resources for declaring CI/CD-style pipelines.
+**Course Overview**
 
-In this tutorial, you will learn how to use Tekton to create a simple pipeline that builds a container image of a Spring Boot application and publish it to Docker Hub.
+This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow).
 
-**Prerequisite:** Follow the tutorial [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow)
+**Prerequisite:** 
 
-After this tutorial you will have:
+Please complete the [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario first.
 
-* Installed Tekon and use the CLI tool `tkn` to execute a simple 'echo' task.
-* Created and execute a Tekton Task to build a container image and publish it.
-* Created and execute a Tekton Pipeline to build a container image and publish it.
+**Scenario Overview: Getting Started with Tekton**
+
+[Tekton](https://tekton.dev) is a Kubernetes-native framework for creating CI/CD systems. It includes [pipeline](https://github.com/tektoncd/pipeline) resources for declaring CI/CD workflows.
+
+In this scenario, you will learn how to use Tekton to create a simple pipeline that builds a container image and publishes it to Docker Hub.
+
+By the end of this scenario, you will have:
+
+* Installed Tekton
+* Used the `tkn` CLI to execute a simple 'echo' task
+* Created and executed a Tekton Task to build a container image and publish it
+* Created and executed a Tekton Pipeline to build a container image and publish it
 
 Let's begin!
-
