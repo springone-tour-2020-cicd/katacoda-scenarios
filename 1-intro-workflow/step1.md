@@ -75,7 +75,7 @@ Next, log in to Docker Hub. At the prompt, enter your access token.
 docker login -u $IMG_NS
 ```{{execute}}
 
-Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub. Notice that we are assignng a version of `1.0.0` to the image as well. It is good practice to tag the image with a version.
+Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub. Notice that we are assigning a version of `1.0.0` to the image as well. It is good practice to tag the image with a version.
 
 ```
 docker tag go-sample-app $IMG_NS/go-sample-app:1.0.0
