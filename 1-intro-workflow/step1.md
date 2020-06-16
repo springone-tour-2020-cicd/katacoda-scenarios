@@ -136,8 +136,6 @@ You can list the deployed resources using:
 kubectl get all -n dev
 ```{{execute}}
 
-Re-run the above command every few seconds until the deployment status is 1/1.
-
 To test the app, you can use port-forwarding to forward traffic from a local endpoint (e.g. localhost:8080) to the service you just created. Run the following command to start a port-forwarding process in the background:
 
 ```

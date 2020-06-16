@@ -39,6 +39,12 @@ mv *.yaml base
 ls base
 ```{{execute}}
 
+We also have to remove the environment-specific namespace setting from the base yaml files.
+
+```
+sed -i '/namespace: dev/d' ../../base/*.yaml
+```{{execute}}
+
 ### Customize the namespace
 
 Let's add the namespace for each of the environments.
@@ -47,7 +53,6 @@ The `kustomize` program gets its instructions from a file called `kustomization.
 Create two `kustomize.yaml` files in environment-specific subfolders.
 
 ```
-cd ..
 mkdir -p overlays/dev
 mkdir overlays/prod
 touch overlays/dev/kustomization.yaml
@@ -76,8 +81,8 @@ cat kustomization.yaml
 
 > ```
 > resources:
-> - service.yaml
-> - deployment.yaml
+> - ../../base/service.yaml
+> - ../../base/deployment.yaml
 > ```
 
 Now let's do the same for the dev environment.
