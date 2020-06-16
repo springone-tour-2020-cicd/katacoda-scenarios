@@ -22,7 +22,7 @@ spec:
   workspaces:
   tasks:
 EOF
-```
+```{{execute}}
 
 As a first task, we need to clone the code.
 Let's add the `git-clone` task to our pipeline.
@@ -42,7 +42,7 @@ cat <<EOF >>pipeline.yaml
     - name: revision
       value: \$(params.branch-name)
 EOF
-```
+```{{execute}}
 
 Also note that we require a workspace to write our cloned files into.
 Let's add the parameters and the workspace using `yq`.
@@ -63,7 +63,8 @@ spec:
       This workspace will receive the cloned git repo and be passed
       to the next Task for the repo's README.md file to be read.
 EOF
-```
+```{{execute}}
+
 We can now add the `golangci-lint` Task to validate our Go package.
 
 ```
@@ -144,7 +145,7 @@ spec:
       workspace: shared-workspace
     params:
     - name: IMAGE
-      value: $(params.image)
+      value: \$(params.image)
     - name: EXTRA_ARGS
       value: "--skip-tls-verify"
 EOF
@@ -182,8 +183,8 @@ spec:
       - name: bash
         image: ubuntu
         script: |
-          echo $(params.digest)
-          case .$(params.digest) in
+          echo \$(params.digest)
+          case .\$(params.digest) in
             ".sha"*) exit 0 ;;
             *)       echo "Digest value is not correct" && exit 1 ;;
           esac
