@@ -12,7 +12,7 @@ cd tekton-labs/lab-1
 
 Install the CRDs using the `kubectl` command line
 ```
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.10.2/release.yaml
 ```{{execute}}
 
 View the custom resources that were installed
