@@ -4,12 +4,9 @@ We will now install some supporting Kubernetes resources in order to run a Task 
 
 Tekton has a [catalog of pre-built tasks](https://github.com/tektoncd/catalog) that cover common cases in a CI system.
 
-From that catalog, we will use the `goland` and `kaniko` tasks as the means to build the app, create the image and push it to Docker Hub.
-The [golang tasks](https://github.com/tektoncd/catalog/blob/v1beta1/golang/README.md) provide an easy and quick way to lint, build and test Go apps.
-The [kaniko task](https://github.com/tektoncd/catalog/blob/v1beta1/kaniko/README.md) builds source into a container image using Google's [kaniko](https://github.com/GoogleCloudPlatform/kaniko) tool.
+From that catalog, we will use the `git`, `golang` and `kaniko` tasks as the means to build the app, create the image and push it to Docker Hub.
 
-
-To use the `golang` and `kaniko` tasks there are a few things we need to setup in the Kubernetes cluster.
+To use these tasks there are a few things we need to setup in the Kubernetes cluster.
 
 1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the build cache will available when new Pods are created to execute the build.
 1. Create a secret that contains your Docker Hub credentials.
@@ -100,55 +97,4 @@ EOF
 kubectl apply -f sa.yaml
 ```{{execute}}
 
-## Install golang task
-
-Go ahead and install the predefined `golang` and `kaniko` tasks.
-
-```
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
-```{{execute}}
-
-
-Now if you list the tasks installed in the cluster you will see three new tasks along with the `echo-hello-world` task from the previous step.
-
-```
-$ tkn task list
-NAME               AGE
-echo-hello-world   10 minutes ago
-golang-build       6 seconds ago
-golang-test        6 seconds ago
-golangci-lint      6 seconds ago
-```
-
-Let's take a look at the `golang-build` task.
-
-```
-curl https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
-```{{execute}}
-
-The command that the task executes is mentioned under the `build` step.
-
-```
-steps:
-  - name: build
-    image: golang:$(params.version)
-    workingDir: $(workspaces.source.path)
-    script: |
-      go build $(params.flags) $(params.packages)
-    env:
-    - name: GOPATH
-      value: /workspace
-    - name: GOOS
-      value: "$(params.GOOS)"
-    - name: GOARCH
-      value: "$(params.GOARCH)"
-    - name: GO111MODULE
-      value: "$(params.GO111MODULE)"
-```
-
-The value of the properties and environment variables will be set when we create the TaskRun resource that references this Task.
-
-With these prerequisites installed in the cluster, we can now run the Task by creating a TaskRun resource in the next step.
+With these prerequisites installed in the cluster, we can now start creating the required Tasks.

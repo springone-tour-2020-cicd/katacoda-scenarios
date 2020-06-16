@@ -1,155 +1,67 @@
-# Run the tasks
+# Install the tasks
 
-In this step we will create `TaskRun` resources that lint, test and build the go application, as well as building the container image of the application and publishing it to Docker Hub.
+We can now install the required tasks that will be part of our pipeline.
 
-## Lint step
+The [git task](https://github.com/tektoncd/catalog/blob/v1beta1/git/git-clone.yaml) can be leveraged to provide Tekton the source code.
+The [golang tasks](https://github.com/tektoncd/catalog/blob/v1beta1/golang/README.md) provide an easy and quick way to lint, build and test Go apps.
+The [kaniko task](https://github.com/tektoncd/catalog/blob/v1beta1/kaniko/README.md) builds source into a container image using Google's [kaniko](https://github.com/GoogleCloudPlatform/kaniko) tool.
 
-Let's create a TaskRun to run the `golangci-lint` Task to validate our Go package.
+## Install tasks
 
-```
-cat <<EOF >lint-taskrun.yaml
-apiVersion: tekton.dev/v1beta1
-kind: TaskRun
-metadata:
-  name: lint-my-code
-spec:
-  taskRef:
-    name: golangci-lint
-  workspaces:
-  - name: source
-    persistentVolumeClaim:
-      claimName: my-source
-  params:
-  - name: package
-    value: github.com/tektoncd/pipeline
-  - name: flags
-    value: --verbose
-EOF
-kubectl apply -f lint-taskrun.yaml
-```{{execute}}
-
-Let's create a TaskRun to run the `test-my-code` Task to run unit-tests on our Go package.
+Go ahead and install the predefined `git`, `golang` and `kaniko` tasks.
 
 ```
-cat <<EOF >test-taskrun.yaml
-apiVersion: tekton.dev/v1beta1
-kind: TaskRun
-metadata:
-  name: test-my-code
-spec:
-  taskRef:
-    name: golang-test
-  workspaces:
-  - name: source
-    persistentVolumeClaim:
-      claimName: my-source
-  params:
-  - name: package
-    value: github.com/tektoncd/pipeline
-  - name: packages
-    value: ./pkg/...
-EOF
-kubectl apply -f test-taskrun.yaml
-```{{execute}}
-
-This TaskRun runs the Task to compile commands from tektoncd/pipeline. golangci-lint.
-
-```
-cat <<EOF >build-taskrun.yaml
-apiVersion: tekton.dev/v1beta1
-kind: TaskRun
-metadata:
-  name: build-my-code
-spec:
-  taskRef:
-    name: golang-build
-  workspaces:
-  - name: source
-    persistentVolumeClaim:
-      claimName: my-source
-  params:
-  - name: package
-    value: github.com/tektoncd/pipeline
-EOF
-kubectl apply -f build-taskrun.yaml
-```{{execute}}
-
-There are two values in the YAML document that need to be changed.
-
-The task run defines the `git` resource and `image` resource as embedded resources to the `TaskRun`.
-
-The git resource is defined in the input section
-
-```
-inputs:
-  resources:
-    - name: source
-      resourceSpec:
-        type: git
-        params:
-          - name: url
-            value: # REPLACE https://github.com/markpollack/spring-sample-app
-          - name: revision
-            value: master
-```
-**The `url` parameter value should be set to the URL of your forked repository of the sample application**
-
-The image resource is defined in the output section
-
-```
-outputs:
-  resources:
-    - name: image
-      resourceSpec:
-        type: image
-        params:
-          - name: url
-            value: # REPLACE markpollack/spring-sample-app:1.0.0
-```
-
-**The `url` parameter value should be set to the Docker Hub repository name.  The version `1.0.0` should match what you have in the `pom.xml` file in your github repository of the sample application.**
-
-After changing the two `url` values, execute the taskrun
-
-```
-kubectl apply -f jib-maven-taskrun.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
 ```{{execute}}
 
 
-Now let's get a description of the `TaskRun` that was created.
+Now if you list the tasks installed in the cluster you will see five new tasks along with the `echo-hello-world` task from the previous step.
 
 ```
-tkn taskrun describe jib-maven-taskrun
+tkn task list
 ```{{execute}}
 
+```
+$ tkn task list
+NAME               AGE
+echo-hello-world   10 minutes ago
+git-clone          6 seconds ago
+golang-build       6 seconds ago
+golang-test        6 seconds ago
+golangci-lint      6 seconds ago
+kaniko             6 seconds ago
+```
 
-To view the logs
+Let's take a closer look at the `golang-build` task.
 
 ```
-tkn taskrun logs --follow jib-maven-taskrun
+curl https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
 ```{{execute}}
 
-
-After a bit of time to download the images that the task will use has completed, you will see many log entries for the downloading of maven artifacts.
-
-At the end of the log, you will see a successful push of the image to Docker Hub as shown below.
-
+The command that the task executes is mentioned under the `build` step.
 
 ```
-[build-and-push] [INFO] Built and pushed image as markpollack/spring-sample-app:1.0.0
-[build-and-push] [INFO]
-[build-and-push] [INFO] ------------------------------------------------------------------------
-[build-and-push] [INFO] BUILD SUCCESS
-[build-and-push] [INFO] ------------------------------------------------------------------------
-[build-and-push] [INFO] Total time:  5.269 s
-[build-and-push] [INFO] Finished at: 2020-02-15T23:05:09Z
-[build-and-push] [INFO] ------------------------------------------------------------------------
+steps:
+  - name: build
+    image: golang:$(params.version)
+    workingDir: $(workspaces.source.path)
+    script: |
+      go build $(params.flags) $(params.packages)
+    env:
+    - name: GOPATH
+      value: /workspace
+    - name: GOOS
+      value: "$(params.GOOS)"
+    - name: GOARCH
+      value: "$(params.GOARCH)"
+    - name: GO111MODULE
+      value: "$(params.GO111MODULE)"
 ```
 
-If you navigate to your account on [Docker Hub](https://hub.docker.com/), you will see your published image.
+The value of the properties and environment variables will be set when we create the TaskRun resource that references this Task.
 
-Now, instead of running a once off task, let's create a pipeline that is more typical in a CI scenario of multiple steps.  On to the next step!
-
-
-
-
+With these prerequisites installed in the cluster, we can now run the Tasks by creating TaskRun resources in the next step.
