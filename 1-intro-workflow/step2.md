@@ -50,11 +50,15 @@ Set up port-forwarding again and test the app. This time you should get a respon
 
 ```
 kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
+```{{execute}}
+
+Send a request. Validate that the app responds with "Hello, sunshine!"
+
+```
 curl localhost:8080
 ```{{execute}}
 
 ## Cleanup
-
 Stop the port-forwarding process:
 
 ```
