@@ -34,7 +34,7 @@ For the version we can use the current date and time as a quick solution.
 
 ```
 BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   params:
   - name: image
@@ -52,7 +52,7 @@ GITHUB_NS=<YOUR_GH_USERNAME_OR_ORG>
 Let's add the repository URL to the list of parameters.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   params:
   - name: repo-url
@@ -64,7 +64,7 @@ Finally, we'll need to tell the `git-clone` Task which branch to clone.
 Let's take `master` for now.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   params:
   - name: branch-name

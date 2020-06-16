@@ -48,7 +48,7 @@ Also note that we require a workspace to write our cloned files into.
 Let's add the parameters and the workspace using `yq`.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   params:
   - name: repo-url
@@ -68,7 +68,7 @@ EOF
 We can now add the `golangci-lint` Task to validate our Go package.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: run-lint
@@ -88,7 +88,7 @@ EOF
 Next up is the `golang-test` Task to run unit-tests on our Go package.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: run-test
@@ -109,7 +109,7 @@ Notice we also run this Task after `fetch-repo`, which means it will be done in 
 We can also add the `golang-build` Task in parallel to compile our code while our linter and test is running.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: run-build
@@ -129,7 +129,7 @@ EOF
 After fetching the repository, running the tests and linters, and building the code, we can now build the image and push to Docker Hub.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   tasks:
   - name: kaniko
@@ -155,7 +155,7 @@ This task needs a new parameter called `image`.
 Let's add it as well to the parameter section.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   params:
   - name: image
@@ -167,7 +167,7 @@ Finally, we should verify whether our push was successful.
 We can do this by adding a task that verifies the digest.
 
 ```
-yq m pipeline.yaml - <<EOF
+yq m -i pipeline.yaml - <<EOF
 spec:
   tasks:
   - name: verify-digest
