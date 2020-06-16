@@ -6,7 +6,7 @@ Throughout these scenarios, we'll explore some options for Kubernetes-centric to
 
 **Scenario Overview: Intro Workflow and Prerequisites Setup**
 
-By the end of this scenario, you will have a new GitHub repo with sample app source code and "ops" deployment files. You will also understand the basic flow that needs to be automated: _**change code --> build image --> update ops files --> deploy**_.
+By the end of this scenario, you will have a new GitHub repo with sample app source code and "ops" deployment files. You will also understand the basic flow that needs to be automated: _**change code --> build image --> update ops files --> deploy to dev --> promote to prod**_.
 
 **Prerequisites**
 
