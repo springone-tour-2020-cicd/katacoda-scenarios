@@ -99,7 +99,7 @@ First, create a yaml for a new namespace called `dev`:
 
 ```
 mkdir ops
-kubectl create namespace dev --dry-run -o yaml > ops/namepsace.yaml
+kubectl create namespace dev --dry-run -o yaml > ops/namespace.yaml
 ```{{execute}}
 
 Then, create a yaml for the deployment. The deployment will eventually create three Kubernetes resources: deployment, replica set, and pod.
