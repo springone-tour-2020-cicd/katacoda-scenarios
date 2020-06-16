@@ -40,10 +40,15 @@ kubectl apply -f ops
 
 # Re-test the app
 
-Set up port-forwarding again and test the app. This time you should get a response of "Hello, sunshine!":
+Once again, wait for the deployment to finish:
 
 ```
 kubectl rollout status deployment/go-sample-app -n dev
+```{{execute}}
+
+Set up port-forwarding again and test the app. This time you should get a response of "Hello, sunshine!":
+
+```
 kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 curl localhost:8080
 ```{{execute}}

@@ -47,7 +47,7 @@ pkill hello-server
 ## Build app image
 In order to deploy the app to Kubernetes, it needs to be packaged as a container image.
 
-There are various ways to turn an app into an image, ranging from Dockerfile scripts to higher level abstractions. In this step, you will use a Dockerfile script included in the app repo. The `docker build` command will find the file called `Dockerfile` automatically. The build will pull a base image called 'golang' from Docker Hub, us it to build the app into a binary, and then use 'scratch' as a base to produce a small final image with only the binary in it.
+There are various ways to turn an app into an image, ranging from Dockerfile scripts to higher level abstractions. In this step, you will use a Dockerfile script included in the app repo. The `docker build` command will find the file called `Dockerfile` automatically. The build will pull a base image called 'golang' from Docker Hub, build the app into a binary, and then copy the binary into a minimal _scratch_-based final image.
 
 ```
 docker build . -t go-sample-app
@@ -63,7 +63,9 @@ docker images | grep go-sample-app
 ## Publish image to a registry
 The scenario environment is pre-configured with access to a Kubernetes cluster. In order to deploy the image to the cluster, you must publish the image to a registry that the cluster can access. For this purpose, we will use Docker Hub.
 
-To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. docker.io/<namespace>/<image-name>). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace and a version to the `go-sample-app` image. For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
+To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. _docker.io/some_namespace/image_name_). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace to the image name. It is also good practice to tag the image with a version.
+
+ For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
 
 ```
 IMG_NS=<YOUR_DH_NAMESPACE>
@@ -75,7 +77,7 @@ Next, log in to Docker Hub. At the prompt, enter your access token.
 docker login -u $IMG_NS
 ```{{execute}}
 
-Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub. Notice that we are assigning a version of `1.0.0` to the image as well. It is good practice to tag the image with a version.
+Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub. Notice that we are assigning a version of `1.0.0` to the image.
 
 ```
 docker tag go-sample-app $IMG_NS/go-sample-app:1.0.0
@@ -136,10 +138,15 @@ You can list the deployed resources using:
 kubectl get all -n dev
 ```{{execute}}
 
-To test the app, you can use port-forwarding to forward traffic from a local endpoint (e.g. localhost:8080) to the service you just created. Run the following command to start a port-forwarding process in the background:
+You can also use the following command to wait until the deployment "rollout" succeeds:
 
 ```
 kubectl rollout status deployment/go-sample-app -n dev
+```{{execute}}
+
+To test the app, you can use port-forwarding to forward traffic from a local endpoint (e.g. localhost:8080) to the service you just created. Run the following command to start a port-forwarding process in the background:
+
+```
 kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 
