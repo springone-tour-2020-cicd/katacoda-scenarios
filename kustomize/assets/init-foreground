@@ -1,8 +1,0 @@
-#!/bin/bash
-
-export PS1="\n\[\e[1m\]\[\e[33m\w\]\[\e[33m\] $ \[\e[0m\]"
-
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-
-# enable bash completion
-source /etc/bash_completion
