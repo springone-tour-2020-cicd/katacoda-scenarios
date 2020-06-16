@@ -182,18 +182,13 @@ spec:
   - name: verify-digest
     runAfter:
     - kaniko
-    params:
-    - name: digest
-      value: \$(tasks.kaniko.results.IMAGE-DIGEST)
     taskSpec:
-      params:
-      - name: digest
       steps:
       - name: bash
         image: ubuntu
         script: |
-          echo \$(params.digest)
-          case .\$(params.digest) in
+          echo \$(tasks.kaniko.results.IMAGE-DIGEST)
+          case .\$(tasks.kaniko.results.IMAGE-DIGEST) in
             ".sha"*) exit 0 ;;
             *)       echo "Digest value is not correct" && exit 1 ;;
           esac
