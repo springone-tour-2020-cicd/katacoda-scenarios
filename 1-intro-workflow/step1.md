@@ -143,6 +143,7 @@ Re-run the above command every few seconds until the deployment status is 1/1.
 To test the app, you can use port-forwarding to forward traffic from a local endpoint (e.g. localhost:8080) to the service you just created. Run the following command to start a port-forwarding process in the background:
 
 ```
+kubectl rollout status deployment/go-sample-app -n dev
 kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 

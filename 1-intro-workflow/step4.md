@@ -39,33 +39,12 @@ mv *.yaml base
 ls base
 ```{{execute}}
 
-### Initialize kustomization.yaml
-
-The `kustomize` program gets its instructions from a file called `kustomization.yaml`.
-We have to inform `kustomize` of which files to track.
-
-```
-cd base
-touch kustomization.yaml
-kustomize edit add resource service.yaml
-kustomize edit add resource deployment.yaml
-
-cat kustomization.yaml
-```{{execute}}
-
-`kustomization.yaml`'s resources section should contain:
-
-> ```
-> resources:
-> - service.yaml
-> - deployment.yaml
-> ```
-
 ### Customize the namespace
 
 Let's add the namespace for each of the environments.
 
-Create two other `kustomize.yaml` files in environment-specific subfolders.
+The `kustomize` program gets its instructions from a file called `kustomization.yaml`.
+Create two `kustomize.yaml` files in environment-specific subfolders.
 
 ```
 cd ..
@@ -84,67 +63,123 @@ cd ../prod
 kustomize edit set namespace prod
 ```{{execute}}
 
-We can now apply the Kustomization.
+We have to inform `kustomize` of which files to customize.
 
 ```
-
-```
-
-Let's test this out.
-
-
-
-### Add environment variable
-
-<!-- @customizeConfigMap @testAgainstLatestRelease -->
-```
-cat <<EOF >$DEMO_HOME/patch.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: sbdemo
-spec:
-  template:
-    spec:
-      containers:
-        - name: sbdemo
-          env:
-          - name: spring.profiles.active
-            value: prod
-EOF
-
-kustomize edit add patch patch.yaml
-
-cat <<EOF >$DEMO_HOME/application-prod.properties
-spring.jpa.hibernate.ddl-auto=update
-spring.datasource.url=jdbc:mysql://<prod_database_host>:3306/db_example
-spring.datasource.username=root
-spring.datasource.password=admin
-EOF
-
-kustomize edit add configmap \
-  demo-configmap --from-file application-prod.properties
+kustomize edit add base ../../base/deployment.yaml
+kustomize edit add base ../../base/service.yaml
 
 cat kustomization.yaml
 ```{{execute}}
 
-`kustomization.yaml`'s configMapGenerator section should contain:
+`kustomization.yaml`'s resources section should contain:
+
 > ```
-> configMapGenerator:
-> - files:
->   - application.properties
->   - application-prod.properties
->   name: demo-configmap
+> resources:
+> - service.yaml
+> - deployment.yaml
 > ```
+
+Now let's do the same for the dev environment.
+
+```
+cd ../dev
+kustomize edit add base ../../base/deployment.yaml
+kustomize edit add base ../../base/service.yaml
+```{{execute}}
+
+Let's take a look at the entire ops directory.
+
+```
+cd ../..
+tree .
+```{{execute}}
+
+The directory structure should look like this.
+
+```
+.
+├── base
+│   ├── deployment.yaml
+│   ├── namespace.yaml
+│   └── service.yaml
+└── overlays
+    ├── dev
+    │   └── kustomization.yaml
+    └── prod
+        └── kustomization.yaml
+```
+
+Let's see how Kustomize changed our Kubernetes resources.
+
+```
+kustomize build --load_restrictor none overlays/dev
+kustomize build --load_restrictor none overlays/prod
+```{{execute}}
+
+We can now apply the Kustomizations.
+
+```
+kustomize build --load_restrictor none overlays/dev | kubectl apply -f -
+kustomize build --load_restrictor none overlays/prod | kubectl apply -f -
+```{{execute}}
+
+### Add environment variable
+
+We can now use an overlay to add an environment variable specifically in prod.
+For this we need to create a Kustomize patch.
+
+```
+cd overlays/prod
+cat <<EOF >patch.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-sample-app
+spec:
+  template:
+    spec:
+      containers:
+        - name: go-sample-app
+          env:
+          - name: environment
+            value: production
+EOF
+```{{execute}}
+
+Let's register our patch in the `kustomization.yaml` file.
+
+```
+kustomize edit add patch patch.yaml
+
+cat kustomization.yaml
+```{{execute}}
+
+We can now apply and test our new environment variable.
+
+```
+kustomize build --load_restrictor none ./ | kubectl apply -f -
+
+kubectl rollout status deployment/go-sample-app -n prod
+kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
+```{{execute}}
+
+Our endpoint should now respond with the environment variable.
+
+```
+curl localhost:8080
+```{{execute}}
+
+Stop the port-forwarding process:
+```
+pkill kubectl
+```{{execute}}
 
 ### Customize the name
 
-Arrange for the resources to begin with prefix
-_prod-_ (since they are meant for the _production_
-environment):
+Arrange for the resources to begin with prefix _prod-_ (so we never alter or delete resources in the _production_ environment by mistake):
 
 ```
-cd $DEMO_HOME
 kustomize edit set nameprefix 'prod-'
 ```{{execute}}
 
@@ -154,23 +189,26 @@ kustomize edit set nameprefix 'prod-'
 > namePrefix: prod-
 > ```
 
-This `namePrefix` directive adds _prod-_ to all
-resource names, as can be seen by building the
-resources:
+This `namePrefix` directive adds _prod-_ to all resource names, as can be seen by building the resources:
 
 ```
-kustomize build $DEMO_HOME | grep prod-
+kustomize build ./ | grep prod-
+```{{execute}}
+
+Let's apply and verify.
+
+```
+kustomize build --load_restrictor none ./ | kubectl apply -f -
+
+kubectl rollout status deployment/prod-go-sample-app -n prod
+kubectl get all -n prod
 ```{{execute}}
 
 ### Label Customization
 
-We want resources in production environment to have
-certain labels so that we can query them by label
-selector.
+We want resources in production environment to have certain labels so that we can query them by label selector.
 
-`kustomize` does not have `edit set label` command to
-add a label, but one can always edit
-`kustomization.yaml` directly:
+`kustomize` does not have `edit set label` command to add a label, but one can always edit `kustomization.yaml` directly:
 
 ```
 cat <<EOF >>$DEMO_HOME/kustomization.yaml

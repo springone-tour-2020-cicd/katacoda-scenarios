@@ -56,6 +56,7 @@ kubectl apply -f .
 We can now test the production deployment.
 
 ```
+kubectl rollout status deployment/go-sample-app -n prod
 kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
 ```{{execute}}
 
