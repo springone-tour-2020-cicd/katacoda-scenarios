@@ -1,17 +1,6 @@
 # Executing a simple Task
 
-View the echo Task that will simply print 'hello world' to the console.
-
-```
-cat echo-task.yaml
-```{{execute}}
-
-Or open the file in the editor
-Open the file `/workspace/tekton-labs/lab-1/echo-task.yaml`{{open}}
-
-**NOTE:  ** You may need to select the filename in the editor tree window to have the contents appear in the editor.
-
-
+Let's create an echo Task that will simply print 'hello world' to the console.
 
 The echo task uses the image `ubuntu` and then simply executes the command `echo hello world`.
 
@@ -20,7 +9,20 @@ The echo task uses the image `ubuntu` and then simply executes the command `echo
 Use `kubectl` to install the task definition into the cluster.
 
 ```
-kubectl apply -f echo-task.yaml
+cat <<EOF | kubectl apply -f -
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: echo-hello-world
+spec:
+  steps:
+    - name: echo
+      image: ubuntu
+      command:
+        - echo
+      args:
+        - "hello world"
+EOF
 ```{{execute}}
 
 
@@ -40,22 +42,21 @@ tkn tasks describe echo-hello-world
 
 To execute this task directly, we can use the `tkn` CLI or create a `TaskRun` resource in a YAML file.
 We will create the `TaskRun` resource using a YAML file.
-Look at the `echo-taskrun.yaml` file.
 
 ```
-cat echo-taskrun.yaml
+cat <<EOF | kubectl apply -f -
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: echo-hello-world-task-run
+spec:
+  taskRef:
+    name: echo-hello-world
+EOF
 ```{{execute}}
-You can also navigate to this file in the editor that is above the terminal.
-
-
 
 There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
 You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.13.2/docs/taskruns.md)
-
-```
-kubectl apply -f echo-taskrun.yaml
-```{{execute}}
-
 
 Now let's get a description of the `TaskRun` that was created.
 

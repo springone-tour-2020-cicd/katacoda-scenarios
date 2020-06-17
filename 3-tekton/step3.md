@@ -14,8 +14,6 @@ To use these tasks there are a few things we need to setup in the Kubernetes clu
 
 ## Install prerequisites
 
-Let's change to the `lab-2` directory and execute a few `kubectl` commands to install the task prerequisites.
-
 First we need to create a Persistent Volume.
 
 ```

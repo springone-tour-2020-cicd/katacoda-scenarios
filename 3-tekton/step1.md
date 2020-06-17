@@ -6,10 +6,6 @@ Please wait until `Environment ready!` appears in the terminal window.
 ## Install Tekton
 Let's begin by installing Tekton's Custom Resource Definitions (CRDs).
 
-```
-cd tekton-labs/lab-1
-```{{execute}}
-
 Install the CRDs using the `kubectl` command line
 ```
 kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
