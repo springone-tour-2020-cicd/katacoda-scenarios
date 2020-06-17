@@ -11,29 +11,11 @@ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut
 
 Copy the password displayed on the screen, and use it to log into the CLI. Assuming you set the value of the environment variable ARGOCD_SERVER in the previous step, you can run the following command:
 ```
-argocd login $ARGOCD_SERVER --insecure --username admin
-```{{execute}}
-
-Set up port-forwarding again and test the app:
-
-```
-kubectl port-forward --address 0.0.0.0 pod/argocd-server-6766455855-vm2vf 8080:8080 -n argocd 2>&1 > /dev/null &
+argocd login localhost:8080 --insecure --username admin
 ```{{execute}}
 
 Copy the password displayed on the screen, and use it to log into the CLI.
 Log into ArgoCD.
-
-```
-argocd login localhost:8080 --insecure --username admin
-```{{execute}}
-
-## Cleanup
-Stop the port-forwarding process and return to the app's root directory:
-
-```
-pkill kubectl && wait $!
-cd ..
-```{{execute}}
 
 When prompted, copy and paste the password from the previous command.
 
@@ -48,7 +30,7 @@ Click on the tab titled `Dashboard`. This tab is defaulting to localhost:80 in t
 
 You can also use the following link to open the Argo CD UI in a new tab if you prefer:
 
-https://[[HOST_SUBDOMAIN]]-80-[[KATACODA_HOST]].environments.katacoda.com
+https://[[HOST_SUBDOMAIN]]-8080-[[KATACODA_HOST]].environments.katacoda.com
 
 Enter the same credentials you used for the CLI.
 

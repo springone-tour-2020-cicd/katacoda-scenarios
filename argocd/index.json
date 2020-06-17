@@ -53,7 +53,7 @@
   "environment": {
     "uilayout": "terminal-iframe",
     "showdashboard": true,
-    "dashboards": [{"name": "ArgoCD UI", "port": 8080}],
+    "dashboards": [{"name": "ArgoCD UI", "port": 8080}]
   },
   "backend": {
     "imageid": "kubernetes-cluster-running:1.18",

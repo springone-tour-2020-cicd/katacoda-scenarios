@@ -53,13 +53,6 @@ EOF
 ```{{execute}}
 
 For the `git-clone` Task, we need to know your git repository containing the Go application.
-You can copy and paste the following command into the terminal window, then append your GitHub username or org:
-
-```
-# Fill this in with your GitHub username or org
-GITHUB_NS=
-```{{copy}}
-
 Let's add the repository URL to the list of parameters.
 
 ```
