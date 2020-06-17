@@ -10,7 +10,7 @@ Use the `hub` CLI to fork the sample repo and push your changes to GitHub. Enter
 hub fork --remote-name origin
 ```{{execute}}
 
-`hub` automatically updates your `origin` remote to point to your fork of the repo, so you can simply commit and push the changes you made throughout this scenario:
+`hub` automatically updates your `origin` remote to point to your fork of the repo, so you can simply commit and push the changes you made throughout this scenario. Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
 
 ```
 git add -A
