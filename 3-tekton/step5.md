@@ -71,7 +71,7 @@ We can now add the `golangci-lint` Task to validate our Go package.
 yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
-    - name: run-lint
+    - name: lint
       taskRef:
         name: golangci-lint
       runAfter:
@@ -91,7 +91,7 @@ Next up is the `golang-test` Task to run unit-tests on our Go package.
 yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
-    - name: run-test
+    - name: test
       taskRef:
         name: golang-test
       runAfter:
@@ -112,7 +112,7 @@ We can also add the `golang-build` Task in parallel to compile our code while ou
 yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
-    - name: run-build
+    - name: build
       taskRef:
         name: golang-build
       runAfter:
@@ -137,9 +137,9 @@ spec:
       name: kaniko
     runAfter:
     - fetch-repository
-    - run-lint
-    - run-test
-    - run-build
+    - lint
+    - test
+    - build
     workspaces:
     - name: source
       workspace: shared-workspace
