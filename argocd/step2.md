@@ -34,8 +34,9 @@ kubectl get applications,appprojects -n argocd
 
 `argocd-server` is the API endpoint with which the CLI and UI will communicate, so it makes sense to port-forward the corresponding service. To do so, run the following command:
 ```
+kubectl rollout status deployment/argocd-server -n argocd
 kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &
-```{{execute}}s
+```{{execute}}
 
 As a final sanity check, you can make sure all Argo CD pods are in `Running` state:
 ```

@@ -26,7 +26,7 @@ You can use ```argocd account update-password```{{execute}} to update the passwo
 
 Next, let's log into UI.
 
-Click on the tab titled `Dashboard`. This tab is defaulting to localhost:80 in the tutorial environment, so it will automatically open the Argo CD dashboard UI when the service EXTERNAL IP becomes ready.
+Click on the tab titled `ArgoCD UI`. This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI.
 
 You can also use the following link to open the Argo CD UI in a new tab if you prefer:
 
