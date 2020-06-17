@@ -45,7 +45,8 @@ yq w -i service-prod.yaml "metadata.namespace" "prod"
 Apply the new ops files in order to deploy the app to the production namespace:
 
 ```
-kubectl apply -f *-prod.yaml
+kubectl apply -f deployment-prod.yaml
+kubectl apply -f deployment-prod.yaml
 ```{{execute}}
 
 Wait for the deployment to finish:

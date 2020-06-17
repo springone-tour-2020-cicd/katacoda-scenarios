@@ -4,11 +4,15 @@ You will need your repo and the new files you've created for the labs ahead. In 
 
 ## Fork the GitHub repo and push your changes
 
-Use the `hub` CLI to fork the sample repo and push your changes to GitHub.
-You will need your GitHub access token to authenticate against GitHub.
+Use the `hub` CLI to fork the sample repo and push your changes to GitHub. Enter your GitHub username and access token at the prompt to authenticate against GitHub.
 
 ```
 hub fork --remote-name origin
+```{{execute}}
+
+`hub` automatically updates your `origin` remote to point to your fork of the repo, so you can simply commit and push the changes you made throughout this scenario:
+
+```
 git commit -am 'changes from scenario 1'
 git push origin master
 ```{{execute}}
