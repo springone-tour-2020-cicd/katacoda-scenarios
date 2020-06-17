@@ -1,5 +1,8 @@
 # Promote to production
 
+Objective:
+Understand the basic workflow of **promoting** a deployment to a downstream environment. In subsequent scenarios, we will continue to build on this flow.
+
 In this step, you will:
 1. Introduce a prod environment
 2. Duplicate the service and deployment yamls

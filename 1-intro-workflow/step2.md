@@ -32,7 +32,7 @@ sed -i 's|1.0.0|1.0.1|g' ops/deployment.yaml
 ```{{execute}}
 
 ## Re-deploy the image
-You can run `kubectl apply` using the directory containing all of the ops files. Kubernetes will update only the resources that have changed (in this case, just the deployment):
+You can run `kubectl apply` using the directory containing the ops files:
 
 ```
 kubectl apply -f ops
