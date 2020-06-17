@@ -44,19 +44,13 @@ We can now apply and test our new environment variable.
 ```
 kustomize build --load_restrictor none . | kubectl apply -f -
 
-kubectl rollout status deployment/go-sample-app -n prod
-kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
+kubectl rollout status deployment/prod-go-sample-app -n prod
 ```{{execute}}
 
-Our endpoint should now respond with the environment variable.
+The container should now have printed the environment variable.
 
 ```
-curl localhost:8080
-```{{execute}}
-
-Stop the port-forwarding process:
-```
-pkill kubectl && wait $!
+kubectl logs $(kubectl get pods -n prod -o jsonpath="{.items[0].metadata.name}") -n prod
 ```{{execute}}
 
 ## Patch for memory limits

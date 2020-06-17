@@ -42,6 +42,15 @@ spec:
 EOF
 ```{{execute}}
 
+In order to push to Docker Hub, we need to share our build-bot `ServiceAccount` with the `Pipeline`.
+
+```
+yq m -i pipeline-run.yaml - <<EOF
+spec:
+  serviceAccountName: build-bot
+EOF
+```{{execute}}
+
 For the `git-clone` Task, we need to know your git repository containing the Go application.
 You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your GitHub username or org:
 

@@ -46,7 +46,7 @@ Apply the new ops files in order to deploy the app to the production namespace:
 
 ```
 kubectl apply -f deployment-prod.yaml
-kubectl apply -f deployment-prod.yaml
+kubectl apply -f service-prod.yaml
 ```{{execute}}
 
 Wait for the deployment to finish:

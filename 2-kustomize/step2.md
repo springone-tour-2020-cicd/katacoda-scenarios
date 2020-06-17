@@ -11,7 +11,7 @@ In this step, you will:
 
 ## Eliminate duplication
 
-Kustomize enables you to specify this configuration declaratively without duplicated the common elements of our ops files. It does this in a Kubernetes-native way, allowing you to use Custom Resource Definitions (CRDs) to configure the differences, rather than variable-replacement.
+Kustomize enables you to specify this configuration declaratively without duplicating the common elements of our ops files. It does this in a Kubernetes-native way, allowing you to use Custom Resource Definitions (CRDs) to configure the differences, rather than variable-replacement.
 
 First, get rid of the production yamls, which contain mostly duplicated configuration.
 
@@ -111,6 +111,7 @@ Go back to the ops directory and view the entire ops directory structure:
 ```
 cd ../..
 tree
+cd -
 ```{{execute}}
 
 The directory structure should look like this:

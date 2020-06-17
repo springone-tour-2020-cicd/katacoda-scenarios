@@ -163,15 +163,6 @@ spec:
 EOF
 ```{{execute}}
 
-In order to push to Docker Hub, we need to share our build-bot `ServiceAccount` with the `Pipeline`.
-
-```
-yq m -i pipeline.yaml - <<EOF
-spec:
-  serviceAccountName: build-bot
-EOF
-```{{execute}}
-
 Finally, we should verify whether our push was successful.
 We can do this by adding a task that verifies the digest.
 
