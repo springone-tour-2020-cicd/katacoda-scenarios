@@ -13,7 +13,8 @@ hub fork --remote-name origin
 `hub` automatically updates your `origin` remote to point to your fork of the repo, so you can simply commit and push the changes you made throughout this scenario:
 
 ```
-git commit -am 'changes from scenario 1'
+git add .
+git commit -m 'changes from scenario 1'
 git push origin master
 ```{{execute}}
 
