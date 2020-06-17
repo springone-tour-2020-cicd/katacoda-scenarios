@@ -27,7 +27,7 @@ You can copy and paste the following command into the terminal window, then appe
 
 ```
 # Fill this in with your DockerHub username or org
-IMG_NS=<YOUR_DH_USERNAME_OR_ORG>
+IMG_NS=
 ```{{copy}}
 
 Now we can set the correct image name.
