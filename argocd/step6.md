@@ -26,6 +26,12 @@ Send a request. Validate that the app responds with "Hello, sunshine!"
 curl localhost:8080
 ```{{execute}}
 
+The container should now have printed the environment variable for production.
+
+```
+kubectl logs $(kubectl get pods -n prod -o jsonpath="{.items[0].metadata.name}") -n prod
+```{{execute}}
+
 ## Cleanup
 Stop the port-forwarding process for our application.
 

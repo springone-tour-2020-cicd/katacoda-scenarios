@@ -28,4 +28,4 @@ If you have two-factor authentication set up on your GitHub account, you can [cr
 
 Now sit back and watch Argo CD update the deployment of spring-sample-app-dev.
 
-You can veryfy the new deployment in the UI by clicking into the application `spring-sample-app-dev` and clicking on `History and Rollback`. You should see two entries.
+You can verify the new deployment in the UI by clicking into the application `spring-sample-app-dev` and clicking on `History and Rollback`. You should see two entries.
