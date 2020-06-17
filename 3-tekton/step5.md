@@ -146,8 +146,6 @@ spec:
     params:
     - name: IMAGE
       value: \$(params.image)
-    - name: EXTRA_ARGS
-      value: "--skip-tls-verify"
 EOF
 ```{{execute}}
 
