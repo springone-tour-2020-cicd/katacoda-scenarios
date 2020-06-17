@@ -27,7 +27,7 @@ GITHUB_NS=
 
 Next, clone your fork of the sample app repo:
 ```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git
+git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
 ```{{execute}}
 
 ### Create a Persistent Volume

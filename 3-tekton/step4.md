@@ -2,8 +2,8 @@
 
 We can now install the required tasks that will be part of our pipeline.
 
-The [git task](https://github.com/tektoncd/catalog/blob/v1beta1/git/git-clone.yaml) can be leveraged to provide Tekton the source code.
-The [golang tasks](https://github.com/tektoncd/catalog/blob/v1beta1/golang/README.md) provide an easy and quick way to lint, build and test Go apps.
+The [git task](https://github.com/tektoncd/catalog/blob/v1beta1/git/git-clone.yaml) can be leveraged to provide Tekton the source code.  
+The [golang tasks](https://github.com/tektoncd/catalog/blob/v1beta1/golang/README.md) provide an easy and quick way to lint, build and test Go apps.  
 The [kaniko task](https://github.com/tektoncd/catalog/blob/v1beta1/kaniko/README.md) builds source into a container image using Google's [kaniko](https://github.com/GoogleCloudPlatform/kaniko) tool.
 
 ## Install tasks

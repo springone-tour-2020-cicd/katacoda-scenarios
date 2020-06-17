@@ -11,7 +11,7 @@ Install the CRDs using the `kubectl` command line
 kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
 ```{{execute}}
 
-View the custom resources that were installed
+View the custom resources that were installed.
 ```
 kubectl api-resources --api-group='tekton.dev'
 ```{{execute}}

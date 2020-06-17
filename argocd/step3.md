@@ -14,6 +14,27 @@ Copy the password displayed on the screen, and use it to log into the CLI. Assum
 argocd login $ARGOCD_SERVER --insecure --username admin
 ```{{execute}}
 
+Set up port-forwarding again and test the app:
+
+```
+kubectl port-forward --address 0.0.0.0 pod/argocd-server-6766455855-vm2vf 8080:8080 -n argocd 2>&1 > /dev/null &
+```{{execute}}
+
+Copy the password displayed on the screen, and use it to log into the CLI.
+Log into ArgoCD.
+
+```
+argocd login localhost:8080 --insecure --username admin
+```{{execute}}
+
+## Cleanup
+Stop the port-forwarding process and return to the app's root directory:
+
+```
+pkill kubectl && wait $!
+cd ..
+```{{execute}}
+
 When prompted, copy and paste the password from the previous command.
 
 OPTIONAL:
