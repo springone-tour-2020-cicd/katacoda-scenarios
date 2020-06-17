@@ -4,14 +4,14 @@ Objective:
 Eliminate the duplication of configuration information.
 
 In this step, you will:
-1. Introduce Kustomize
-2. Create a common base set of resources (deployment and service)
-2. Customize dev and prod resources using overlays
-3. Deploy dev and prod resources to Kubernetes
+1. Create a common _base_ set of resource files (deployment and service)
+2. Customize dev and prod resource files using _overlay_ configuration
+3. Use kustomize to generate environment-specific yaml from the base and overlay files
+4. Use the generated yaml to deploy dev and prod resources to Kubernetes
 
 ## Eliminate duplication
 
-Kustomize enables you to specify this configuration declaratively without duplicating the common elements of our ops files. It does this in a Kubernetes-native way, allowing you to use Custom Resource Definitions (CRDs) to configure the differences, rather than variable-replacement.
+Kustomize enables you to specify configuration declaratively without duplicating common elements of yaml configuration files. It does this in a Kubernetes-native way, allowing you to use Custom Resource Definitions (CRDs) to configure the differences, rather than variable-replacement.
 
 First, get rid of the production yamls, which contain mostly duplicated configuration.
 

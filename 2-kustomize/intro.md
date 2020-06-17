@@ -15,6 +15,6 @@ In this scenario, you will learn how to use several features of Kustomize to bet
 By the end of this scenario, you will have:
 
 * Used a simple "kustomization" to understand the basic feature set of Kustomize
-* Deployed the sample Go application to dev and prod using , with different resource specifications per environment.
+* Deployed the sample Go application to prod using different resource customizations
 
 Let's begin!
