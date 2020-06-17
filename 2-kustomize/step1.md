@@ -24,7 +24,7 @@ git clone https://github.com/$GITHUB_NS/go-sample-app.git
 
 In the prerequisite scenario, you created two sets of ops files corresponding to two deployment environments, dev and prod, and you used `yq` to change the value of the metadata.namespace node for prod.
 
-Use the following command to confirm that the dev and prod configuration files are identical, save for the name of the namespace.
+Use the following command to confirm that the dev and prod configuration files are identical, except for the name of the namespace.
 
 ```
 cd go-sample-app/ops
