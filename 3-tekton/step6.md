@@ -23,9 +23,10 @@ EOF
 We also have to set a value for each parameter that each Task expects.
 
 For starters, we need your Docker Hub namespace (your user or org name).
-You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
+You can copy and paste the following command into the terminal window, then append your namespace:
 
 ```
+# Fill this in with your DockerHub username or org
 IMG_NS=<YOUR_DH_USERNAME_OR_ORG>
 ```{{copy}}
 
@@ -52,10 +53,11 @@ EOF
 ```{{execute}}
 
 For the `git-clone` Task, we need to know your git repository containing the Go application.
-You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your GitHub username or org:
+You can copy and paste the following command into the terminal window, then append your GitHub username or org:
 
 ```
-GITHUB_NS=<YOUR_GH_USERNAME_OR_ORG>
+# Fill this in with your GitHub username or org
+GITHUB_NS=
 ```{{copy}}
 
 Let's add the repository URL to the list of parameters.

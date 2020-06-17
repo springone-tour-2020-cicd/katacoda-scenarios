@@ -8,7 +8,7 @@ From that catalog, we will use the `git`, `golang` and `kaniko` tasks as the mea
 
 To use these tasks there are a few things we need to setup in the Kubernetes cluster.
 
-1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the build cache will available when new Pods are created to execute the build.
+1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the build cache will be available when new Pods are created to execute the build.
 1. Create a secret that contains your Docker Hub credentials.
 1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
 
@@ -81,7 +81,7 @@ kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.dock
 ```{{execute}}
 
 Now create the service account.
-The name of the service account is `build-bot` and will be references in Tekton's TaskRun resource that will run the task.
+The name of the service account is `build-bot` and will be referenced in Tekton's TaskRun resource that will run the task.
 
 ```
 cat <<EOF >sa.yaml
