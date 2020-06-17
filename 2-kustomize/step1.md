@@ -8,13 +8,16 @@ In this step, you will:
 - Validate the duplication in the ops files
 
 ## Local environment setup
+
 Please wait until `Environment ready!` appears in the terminal window.
 
-## Clone repo
-Start by cloning the GitHub repo you created in the prerequisite scenario.  For convenience, set the following environment variable to your GitHub namespace (your user or org name). You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
-                                                                           
+### Clone repo
+
+Start by cloning the GitHub repo you created in the [previous](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.  For convenience, set the following environment variable to your GitHub namespace (your user or org name). You can copy and paste the following command into the terminal window, then append your GitHub username or org:
+
 ```
-GITHUB_NS=<YOUR_GH_USERNAME_OR_ORG>
+# Fill this in with your GitHub username or org
+GITHUB_NS=
 ```{{copy}}
 
 Next, clone your fork of the sample app repo:

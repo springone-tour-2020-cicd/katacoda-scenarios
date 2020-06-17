@@ -14,11 +14,29 @@ To use these tasks there are a few things we need to setup in the Kubernetes clu
 
 ## Install prerequisites
 
+Please wait until `Environment ready!` appears in the terminal window.
+
+### Clone repo
+
+Start by cloning the GitHub repo you created in the [previous](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.  For convenience, set the following environment variable to your GitHub namespace (your user or org name). You can copy and paste the following command into the terminal window, then append your GitHub username or org:
+
+```
+# Fill this in with your GitHub username or org
+GITHUB_NS=
+```{{copy}}
+
+Next, clone your fork of the sample app repo:
+```
+git clone https://github.com/$GITHUB_NS/go-sample-app.git
+```{{execute}}
+
+### Create a Persistent Volume
+
 First we need to create a Persistent Volume.
 
 ```
-mkdir prereqs
-cd prereqs
+mkdir tekton
+cd tekton
 cat <<EOF >pv.yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -62,7 +80,9 @@ kubectl apply -f .
 kubectl get pvc
 ```{{execute}}
 
-Login to your Docker Hub account using the `docker` CLI:
+### Create a ServiceAccount
+
+Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
 
 ```
 docker login
