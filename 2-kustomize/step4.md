@@ -140,11 +140,6 @@ Verify if our app still works.
 
 ```
 kubectl port-forward service/prod-go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
-```{{execute}}
-
-Our endpoint should now respond with the environment variable.
-
-```
 curl localhost:8080
 ```{{execute}}
 

@@ -4,7 +4,7 @@ Any change to the ops repo on GitHub will cause Argo CD to update the deployment
 
 As an example, let's try changing the image tag to simulate an application upgrade deployment. We have made the new app image available on Docker Hub already, so you just need to change the tag value in the ops repo.
 
-spring-sample-app-ops/overlays/dev/kustomization.yaml
+go-sample-app/overlays/dev/kustomization.yaml
 
 Run the following command:
 ```

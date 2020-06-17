@@ -27,6 +27,9 @@ chmod +x argocd-linux-amd64
 mv argocd-linux-amd64 /usr/local/bin/argocd
 echo "### Finished installing argocd CLI"
 
+wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
+chmod +x /usr/local/bin/yq
+
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
 echo "done" >> /root/init-env/init-env.status

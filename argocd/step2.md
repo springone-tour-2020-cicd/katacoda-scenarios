@@ -30,6 +30,20 @@ You can always list resources created by Argo CD by querying for these CRDs. We 
 kubectl get applications,appprojects -n argocd
 ```{{execute}}
 
+## Disable the Kustomize load restrictor
+
+Kustomize v3 allows us to disable the [security check introduced in Kustomize v2](https://kubernetes-sigs.github.io/kustomize/faq/#security-file-foo-is-not-in-or-below-bar) that prevents kustomizations from reading files outside their own directory root.
+This was meant to help protect the person inclined to download kustomization directories from the web and use them without inspection to control their production cluster.
+In our case we can safely disable this feature and preserve our folder structure.
+
+```
+yq m <(kubectl get cm argocd-cm -o yaml -n argocd) <(cat << EOF
+data:
+  kustomize.buildOptions: --load_restrictor none
+EOF
+) | kubectl apply -f -
+```{{execute}}
+
 ## Port-forward the Argo CD Server
 
 `argocd-server` is the API endpoint with which the CLI and UI will communicate, so it makes sense to port-forward the corresponding service. To do so, run the following command:

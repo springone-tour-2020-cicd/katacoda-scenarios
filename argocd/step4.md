@@ -15,12 +15,12 @@ In the UI, click on `+ NEW APP`.
 Fill in the form as follows, using details pertaining to your fork of the sample app. Make sure to replace the placeholder `GITHUB_NS` with the proper value. Leave any fields not mentioned below at their default value.
 ```
 GENERAL
-Application Name: spring-sample-app-dev
+Application Name: go-sample-app-dev
 Project: default
 SYNC POLICY: Automatic
 
 SOURCE
-Repository URL: https://github.com/<GITHUB_NS>/spring-sample-app-ops.git
+Repository URL: https://github.com/<GITHUB_NS>/go-sample-app.git
 Revision: HEAD
 Path: overlays/dev
 
@@ -29,12 +29,12 @@ Cluster: https://kubernetes.default.svc
 Namespace: dev
 ```
 
-Notice that the repo we have provided is the gitops repo, not the app source code repo. The gitops repo contains a reference to the app image, which Argo CD assumes has been created already:
+The Kustomize files contain a reference to the app image, which Argo CD assumes has been created already:
 ```
-head -n 4 spring-sample-app-ops/overlays/dev/kustomization.yaml
+head -n 4 go-sample-app/ops/overlays/dev/kustomization.yaml
 ```{{execute}}
 
-Additionally, if you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. You'll notice also that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support other yaml file layouts as well.
+Additionally, if you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. By now you will have noticed that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support other yaml file layouts as well.
 
 Finally, note that the cluster we specified as our destination (aliased as  "in-cluster" by Argo CD by default) refers to the same cluster into which Argo CD is installed. It is possible to attach other clusters to Argo CD and deploy to those as well. Since we only have one cluster, we will just use the "in-cluster" option.
 
@@ -47,31 +47,36 @@ Wait till you see the new app appear. If you don't see it within a few moments, 
 
 ## Try it out
 
-```
-kubectl -n dev port-forward service/mark-service 81:80
-```{{execute T1}}
-
-Then curl the port-forwarded endpoint
+Wait for the deployment to finish:
 
 ```
-curl localhost:81
-```{{execute T2}}
-
-You should see output such as:
-```
-"hello, world.  {app name='spring-sample-app', version='1.0.0', profile='dev'}"
-```
-
-Notice the value of the profile is coming from the env properties file in the `overlays/dev` directory that we specified when creating the Application:
-```
-echo ""
-cat spring-sample-app-ops/overlays/dev/env.properties
+kubectl rollout status deployment/go-sample-app -n prod
 ```{{execute}}
 
-Stop the port-forwarding by executing `# Ctrl-C`{{execute interrupt T1}}
+Set up port-forwarding again and test the app:
 
+```
+kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
+APP_PID=$!
+```{{execute}}
 
+Send a request. Validate that the app responds with "Hello, sunshine!"
 
-Congrats! You've created your first app!
+```
+curl localhost:8080
+```{{execute}}
+
+The container should now have printed the environment variable for development.
+
+```
+kubectl logs $(kubectl get pods -n dev -o jsonpath="{.items[0].metadata.name}") -n dev
+```{{execute}}
+
+## Cleanup
+Stop the port-forwarding process for our application.
+
+```
+kill -9 ${APP_PID} && wait $!
+```{{execute}}
 
 Let's explore what's happened...

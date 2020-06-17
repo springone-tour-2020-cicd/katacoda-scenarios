@@ -1,45 +1,37 @@
 # Deploy to production environment
 
-Create a namespace called `production` to simulate a production environment for deployment:
+Create a namespace called `prod` to simulate a production environment for deployment:
 
 ```
-kubectl create namespace production
+kubectl create namespace prod
 ```{{execute}}
 
 Create another Argo CD 'Application', this time using the `argocd` CLI:
 ```
-argocd app create spring-sample-app-production --repo https://github.com/${GITHUB_NS}/spring-sample-app-ops.git --path overlays/production --dest-namespace production --dest-server https://kubernetes.default.svc --sync-policy automated
+argocd app create go-sample-app-prod --repo https://github.com/${GITHUB_NS}/go-sample-app.git --path ops/overlays/prod --dest-namespace prod --dest-server https://kubernetes.default.svc --sync-policy automated
 ```{{execute}}
 
-Go back to the UI and click on `Applications`. You should see the new applicaiton there.
+Go back to the UI and click on `Applications`. You should see the new application there.
 
 ## Try it out
-```
-kubectl -n production port-forward service/mark-service 81:80
-```{{execute T1}}
 
-Then curl the port-forwarded endpoint
 ```
-curl localhost:81
-```{{execute T2}}
-
-You should see output such as:
-```
-"hello, world.  {app name='spring-sample-app', version='1.0.0', profile='production'}
-```
-
-In this case the value of the profile is coming from the env properties file in the `overlays/production ` directory that we specified when creating the Application:
-```
-echo ""
-cat spring-sample-app-ops/overlays/production/env.properties
+kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
+APP_PID=$!
 ```{{execute}}
 
-Stop the port-forwarding by executing `# Ctrl-C`{{execute interrupt T1}}
+Send a request. Validate that the app responds with "Hello, sunshine!"
 
+```
+curl localhost:8080
+```{{execute}}
 
+## Cleanup
+Stop the port-forwarding process for our application.
 
-
-
+```
+kill -9 ${APP_PID} && wait $!
+```{{execute}}
 
 
 
