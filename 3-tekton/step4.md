@@ -64,4 +64,5 @@ steps:
 
 The value of the properties and environment variables will be set when we create the TaskRun resource that references this Task.
 
-With these prerequisites installed in the cluster, we can now run the Tasks by creating TaskRun resources in the next step.
+With these predefined Tasks installed in the cluster, we can now compose these Tasks in a Pipeline.
+

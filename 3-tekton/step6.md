@@ -106,7 +106,4 @@ More details are available by describing the Pipelinerun.
 tkn pipelineruns describe tekton-go-pipeline-run
 ```{{execute}}
 
-
-
-
-If you navigate to your account on [Docker Hub](https://hub.docker.com/), you will see your published image.
+Once all the steps have successfully finished, you can navigate to your account on [Docker Hub](https://hub.docker.com/), and see your published image with the new tag.
