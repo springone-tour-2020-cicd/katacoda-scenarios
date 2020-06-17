@@ -13,7 +13,7 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 ```{{execute}}
 
 
-### What was installed?
+## What was installed?
 
 Review the output of the `kubectl apply` command to see the list of resources created. Notice that it includes a handful of deployments. You can get more info using:
 ```
@@ -30,7 +30,7 @@ You can always list resources created by Argo CD by querying for these CRDs. We 
 kubectl get applications,appprojects -n argocd
 ```{{execute}}
 
-### Expose Argo CD Server
+## Expose Argo CD Server
 
 Notice in the output of the `kubectl get all` command above that none of the services have EXTERNAL-IPs assigned. `argocd-server` is the API endpoint with which the CLI and UI will communicate, so it makes sense to expose the corresponding service. To do so, run the following command:
 ```

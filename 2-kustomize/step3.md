@@ -1,4 +1,16 @@
-### Add environment variable
+# Customize production deployment
+
+Objective:
+Explore additional customizations that can be done using Kustomize.
+
+In this step, you will make further customizations to the production deployment:
+1. Add prefix 'prod-' to all resource names
+2. Add label 'env: prod' to all resources
+3. Set memory properly
+4. Configure health and readiness checks
+5. Set an environment variable that is used by the app
+
+##Add environment variable
 
 We can now use an overlay to add an environment variable specifically in prod.
 For this we need to create a Kustomize patch.
@@ -49,7 +61,7 @@ Stop the port-forwarding process:
 pkill kubectl && wait $!
 ```{{execute}}
 
-### Customize the name
+##Customize the name
 
 Arrange for the resources to begin with prefix _prod-_ (so we never alter or delete resources in the _production_ environment by mistake):
 
@@ -86,7 +98,7 @@ kubectl delete deployment go-sample-app -n prod
 kubectl delete service go-sample-app -n prod
 ```{{execute}}
 
-### Label Customization
+##Label Customization
 
 We want resources in production environment to have certain labels so that we can query them by label selector.
 
@@ -113,7 +125,7 @@ kustomize build --load_restrictor none . | kubectl apply -f -
 kubectl get all -n prod --show-labels
 ```{{execute}}
 
-### Patch for memory limits
+##Patch for memory limits
 
 Create a new patch containing the memory limits setup.
 
@@ -136,7 +148,7 @@ spec:
 EOF
 ```{{execute}}
 
-### Patch for health check
+##Patch for health check
 
 We also want to add liveness check and readiness check in the production environment.
 We can customize the Kubernetes deployment resource to talk to our endpoint.
@@ -169,7 +181,7 @@ spec:
 EOF
 ```{{execute}}
 
-### Add patches
+##Add patches
 
 Add these patches to the kustomization:
 

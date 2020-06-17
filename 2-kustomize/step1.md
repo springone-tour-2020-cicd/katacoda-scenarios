@@ -1,7 +1,7 @@
 # Prepare environment
 
 Objective:
-In this step you will review the problem of duplicated ops files.
+Review the ops files created in the prerequisite scenario and understand the challenge of managing a growing and diverging set of configuration files.
 
 In this step, you will:
 - Clone your app repo
@@ -28,8 +28,8 @@ Use the following command to confirm that the files are identical save for the n
 
 ```
 cd go-sample-app/ops
-diff deployment.yaml deployment-prod.yaml
-diff service.yaml service-prod.yaml
+diff -b deployment.yaml deployment-prod.yaml
+diff -b service.yaml service-prod.yaml
 ```{{execute}}
 
 Using `yq` to change a single node for one set of yaml files is fairly straightforward. However, this approach can become complex and difficult to manage as you introduce more environments, and more differences between environments. In addition, using `yq` means you are making imperative changes, which breaks the declarative quality of the initial configuration.

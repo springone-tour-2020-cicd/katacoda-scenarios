@@ -1,22 +1,17 @@
 # Use overlays to transform resources
 
-Let's say that in the production environment, you want to customize the following:
-
-- Namespace of 'prod'
-- Add prefix 'prod-' to all resource names
-- Add label 'env: prod' to all resources
-- Set memory properly
-- Configure health and readiness checks
-- Set an environment variable that is used by the app
-
-Kustomize enables you to specify this configuration declaratively without duplicated the common elements of our ops files. It does this in a Kubernetes-native way, allowing you to use Custom Resource Definitions (CRDs) to configure the differences, rather than variable-replacement.
+Objective:
+Eliminate the duplication of configuration information.
 
 In this step, you will:
 1. Introduce Kustomize
-2. Customize resources using overlays
-3. Deploy everything to Kubernetes
+2. Create a common base set of resources (deployment and service)
+2. Customize dev and prod resources using overlays
+3. Deploy dev and prod resources to Kubernetes
 
 ## Eliminate duplication
+
+Kustomize enables you to specify this configuration declaratively without duplicated the common elements of our ops files. It does this in a Kubernetes-native way, allowing you to use Custom Resource Definitions (CRDs) to configure the differences, rather than variable-replacement.
 
 First, get rid of the production yamls, which contain mostly duplicated configuration.
 

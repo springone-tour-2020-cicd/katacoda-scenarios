@@ -2,7 +2,7 @@
 
 There are two ways to interact with Argo CD: the CLI and the UI. Lets' begin by logging into each of them.
 
-### The CLI
+## The CLI
 
 First, we need to obtain login credentials. The default admin username is `admin`. In order to get the default admin password, run:
 ```
@@ -19,7 +19,7 @@ When prompted, copy and paste the password from the previous command.
 OPTIONAL:
 You can use ```argocd account update-password```{{execute}} to update the password to something that's easier to remember.
 
-### The UI
+## The UI
 
 Next, let's log into UI.
 
