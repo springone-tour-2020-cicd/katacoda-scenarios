@@ -28,7 +28,7 @@ ls
 Test it locally to see how it behaves. First, start the 'hello-server' process in the background:
 
 ```
-go run hello-server.go &
+go run hello-server.go 2>&1 > /dev/null &
 ```{{execute}}
 
 Next, send a request. Validate that the app responds with "Hello, world!" (if it fails initially, give the server a couple of seconds to finish starting up, and try again).
@@ -64,10 +64,11 @@ The scenario environment is pre-configured with access to a Kubernetes cluster. 
 
 To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. _docker.io/some_namespace/image_name_). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace to the image name. It is also good practice to tag the image with a version.
 
- For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and paste the following command into the terminal window, then delete the placeholder and replace it with your namespace:
+ For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name). You can copy and paste the following command into the terminal window, then append your Docker Hub username or org:
 
 ```
-IMG_NS=<YOUR_DH_USERNAME_OR_ORG>
+# Fill this in with your Docker Hub username or org
+IMG_NS=
 ```{{copy}}
 
 Next, log in to Docker Hub. At the prompt, enter your access token.
