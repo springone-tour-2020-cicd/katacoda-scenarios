@@ -31,7 +31,7 @@ Namespace: dev
 
 The Kustomize files contain a reference to the app image, which Argo CD assumes has been created already:
 ```
-head -n 4 go-sample-app/ops/overlays/dev/kustomization.yaml
+grep -r image go-sample-app/ops
 ```{{execute}}
 
 Additionally, if you look through the contents of the repo, you'll see it specifies all of the necessary information that Kubernetes needs for deployment. By now you will have noticed that we've chosen to lay out our gitops yaml using Kustomize, which has advantages for re-use and simplicity at scale, but Argo CD would support other yaml file layouts as well.

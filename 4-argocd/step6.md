@@ -16,7 +16,7 @@ Go back to the UI and click on `Applications`. You should see the new applicatio
 ## Try it out
 
 ```
-kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
+kubectl port-forward service/prod-go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
 APP_PID=$!
 ```{{execute}}
 
