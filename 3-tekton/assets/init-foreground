@@ -11,4 +11,3 @@ cd /workspace
 
 # export env vars
 export JAVA_HOME=/usr/lib/jvm/default-java/jre
-export GITHUB_NS=springone-tour-2020-cicd
