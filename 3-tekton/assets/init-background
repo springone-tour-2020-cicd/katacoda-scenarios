@@ -4,7 +4,7 @@ mkdir -p /root/init-env
 cd /root/init-env
 
 # Redirect output to log file
-exec &>>  /root/init-env/init-env.log
+exec &>> /root/init-env/init-env.log
 
 printf "" > /root/init-env/init-env.status
 echo "$(date)"
@@ -14,12 +14,16 @@ echo "### Creating workspace directory (cd into it in init-foreground, not here)
 mkdir /workspace
 echo "### Finished creating workspace directory"
 
+echo "### Installing Tekton CLI (tkn)"
 git clone https://github.com/springone-tour-2020-cicd/tekton-labs.git /root/tekton-labs
 curl -LO https://github.com/tektoncd/cli/releases/download/v0.7.1/tkn_0.7.1_Linux_x86_64.tar.gz
 sudo tar xvzf tkn_0.7.1_Linux_x86_64.tar.gz -C /usr/local/bin/ tkn
+echo "### Finished installing Tekton CLI (tkn)"
 
+echo "### Installing yq"
 wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
 chmod +x /usr/local/bin/yq
+echo "### Finished installing yq"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line

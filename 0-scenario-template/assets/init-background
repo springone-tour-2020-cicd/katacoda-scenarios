@@ -4,7 +4,7 @@ mkdir -p /root/init-env
 cd /root/init-env
 
 # Redirect output to log file
-exec &>>  /root/init-env/init-env.log
+exec &>> /root/init-env/init-env.log
 
 printf "" > /root/init-env/init-env.status
 echo "$(date)"
