@@ -2,22 +2,34 @@
   "courses": [],
   "scenarios": [
     {
-      "id": "4-argocd"
-    },
-    {
-      "id": "5-manage-triggers"
-    },
-    {
-      "id": "6-buildpacks"
-    },
-    {
+      "title": "Intro Workflow and Prerequisites Setup",
+      "description": "Set up the prerequisites for the course as you go through a manual build & deploy workflow",
       "id": "1-intro-workflow"
     },
     {
+      "title": "Getting Started with Kustomize",
+      "description": "Use Kustomize to wrangle your YAML",
       "id": "2-kustomize"
     },
     {
+      "title": "Getting Started with Tekton",
+      "description": "Use Tekton to build a container image",
       "id": "3-tekton"
+    },
+    {
+      "title": "Getting Started with Argo CD",
+      "description": "Use Argo CD to deploy to Kubernetes",
+      "id": "4-argocd"
+    },
+    {
+      "title": "Manage Triggers to Pull It All Together",
+      "description": "Use Tekton triggers to complete the workflow automation",
+      "id": "5-manage-triggers"
+    },
+    {
+      "title": "Improve Image Lifecycle with Buildpacks",
+      "description": "Use Cloud Native Buildpacks to increase consistency, security, and governance of container images",
+      "id": "6-buildpacks"
     }
   ]
 }

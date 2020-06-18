@@ -1,4 +1,5 @@
 {
+  "noindex": true,
   "title": "Scenario Template",
   "description": "Template for creating new scenarios",
   "difficulty": "Beginner",
