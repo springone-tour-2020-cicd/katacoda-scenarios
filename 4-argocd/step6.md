@@ -16,6 +16,7 @@ Go back to the UI and click on `Applications`. You should see the new applicatio
 ## Try it out
 
 ```
+kubectl rollout status deployment/prod-go-sample-app -n prod
 kubectl port-forward service/prod-go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
 APP_PID=$!
 ```{{execute}}
