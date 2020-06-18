@@ -21,9 +21,11 @@ git config --global user.email "guest@example.com"
 git config --global user.name "Guest User"
 echo "### Finished configuring git global settings"
 
-echo "### Installing some required tool"
-# ... install/configure the necessary tool
-echo "### Finished installing some required tool"
+echo "### Installing Tekton CLI (tkn)"
+git clone https://github.com/springone-tour-2020-cicd/tekton-labs.git /root/tekton-labs
+curl -LO https://github.com/tektoncd/cli/releases/download/v0.7.1/tkn_0.7.1_Linux_x86_64.tar.gz
+sudo tar xvzf tkn_0.7.1_Linux_x86_64.tar.gz -C /usr/local/bin/ tkn
+echo "### Finished installing Tekton CLI (tkn)"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line

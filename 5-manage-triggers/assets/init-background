@@ -21,9 +21,22 @@ git config --global user.email "guest@example.com"
 git config --global user.name "Guest User"
 echo "### Finished configuring git global settings"
 
-echo "### Installing some required tool"
-# ... install/configure the necessary tool
-echo "### Finished installing some required tool"
+echo "### Installing Tekton CLI (tkn)"
+git clone https://github.com/springone-tour-2020-cicd/tekton-labs.git /root/tekton-labs
+curl -LO https://github.com/tektoncd/cli/releases/download/v0.7.1/tkn_0.7.1_Linux_x86_64.tar.gz
+sudo tar xvzf tkn_0.7.1_Linux_x86_64.tar.gz -C /usr/local/bin/ tkn
+echo "### Finished installing Tekton CLI (tkn)"
+
+echo "### Installing argocd CLI"
+wget https://github.com/argoproj/argo-cd/releases/download/v1.4.2/argocd-linux-amd64
+chmod +x argocd-linux-amd64
+mv argocd-linux-amd64 /usr/local/bin/argocd
+echo "### Finished installing argocd CLI"
+
+echo "### Installing yq"
+wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
+chmod +x /usr/local/bin/yq
+echo "### Finished installing yq"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line

@@ -1,6 +1,6 @@
 {
-  "title": "Scenario Template",
-  "description": "Template for creating new scenarios",
+  "title": "Manage Triggers to Pull It All Together",
+  "description": "Use Tekton triggers to complete the workflow automation",
   "difficulty": "Beginner",
   "time": "30",
   "details": {
