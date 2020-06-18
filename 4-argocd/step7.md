@@ -8,7 +8,7 @@ Run the following command:
 
 ```
 cd go-sample-app/ops/overlays/dev
-yq m -i -a kustomization.yaml - <<EOF
+yq m -i -x kustomization.yaml - <<EOF
 images:
   - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
     newTag: 1.0.0
