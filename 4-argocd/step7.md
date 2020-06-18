@@ -27,3 +27,31 @@ If you have two-factor authentication set up on your GitHub account, you can [cr
 Now sit back and watch Argo CD update the deployment of go-sample-app-dev.
 
 You can verify the new deployment in the UI by clicking into the application `go-sample-app-dev` and clicking on `History and Rollback`. You should see two entries.
+
+## Try it out
+
+Wait for the deployment to finish:
+
+```
+kubectl rollout status deployment/go-sample-app -n dev
+```{{execute}}
+
+Set up port-forwarding again and test the app:
+
+```
+kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
+APP_PID=$!
+```{{execute}}
+
+Send a request. Validate that the app responds with "Hello, world!" again.
+
+```
+curl localhost:8080
+```{{execute}}
+
+## Cleanup
+Stop the port-forwarding process for our application.
+
+```
+kill -9 ${APP_PID} && wait $!
+```{{execute}}
