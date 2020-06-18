@@ -14,9 +14,21 @@ echo "### Creating workspace directory (cd into it in init-foreground, not here)
 mkdir /workspace
 echo "### Finished creating workspace directory"
 
+echo "### Configuring git global settings"
+git config --global hub.protocol https
+git config --global credential.helper cache
+git config --global user.email "guest@example.com"
+git config --global user.name "Guest User"
+echo "### Finished configuring git global settings"
+
+echo "### Cloning kustomize labs repo"
 git clone https://github.com/springone-tour-2020-cicd/kustomize-labs.git /root/kustomize-labs
+echo "### Finished cloning kustomize labs repo"
+
+echo "### Installing Kustomize CLI"
 curl -LO https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv3.5.4/kustomize_v3.5.4_linux_amd64.tar.gz
-sudo tar xvzf kustomize_v3.5.4_linux_amd64.tar.gz -C /usr/local/bin/ kustomize
+tar xvzf kustomize_v3.5.4_linux_amd64.tar.gz -C /usr/local/bin/ kustomize
+echo "### Finished installing Kustomize CLI"
 
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line

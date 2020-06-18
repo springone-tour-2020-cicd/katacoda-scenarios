@@ -15,7 +15,7 @@ mkdir /workspace
 echo "### Finished creating workspace directory"
 
 echo "### Configuring git global settings"
-#git config --global hub.protocol https
+git config --global hub.protocol https
 git config --global credential.helper cache
 git config --global user.email "guest@example.com"
 git config --global user.name "Guest User"
