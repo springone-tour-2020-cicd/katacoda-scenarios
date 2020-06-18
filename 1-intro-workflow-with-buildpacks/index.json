@@ -1,4 +1,5 @@
 {
+  "noindex": true,
   "title": "Intro Workflow and Prerequisites Setup",
   "description": "Set up the prerequisites for the course as you go through a manual build & deploy workflow.",
   "difficulty": "Beginner",
