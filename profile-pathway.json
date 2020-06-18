@@ -1,0 +1,23 @@
+{
+  "courses": [],
+  "scenarios": [
+    {
+      "id": "4-argocd"
+    },
+    {
+      "id": "5-manage-triggers"
+    },
+    {
+      "id": "6-buildpacks"
+    },
+    {
+      "id": "1-intro-workflow"
+    },
+    {
+      "id": "2-kustomize"
+    },
+    {
+      "id": "3-tekton"
+    }
+  ]
+}
