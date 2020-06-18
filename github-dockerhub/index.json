@@ -1,4 +1,5 @@
 {
+  "noindex": true,
   "title": "Creating a project on GitHub and Docker Hub",
   "description": "Create GitHub repo with a sample Spring Boot application and a registry on Docker Hub",
   "difficulty": "Beginner",

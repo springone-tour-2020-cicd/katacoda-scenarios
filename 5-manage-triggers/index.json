@@ -1,6 +1,7 @@
 {
-  "title": "Manage Triggers to Pull It All Together",
-  "description": "Use Tekton triggers to complete the workflow automation",
+  "noindex": true,
+  "title": "--> Set this value in profile-pathway.json <--",
+  "description": "--> Set this value in profile-pathway.json <--",
   "difficulty": "Beginner",
   "time": "30",
   "details": {

@@ -1,6 +1,7 @@
 {
-  "title": "Getting Started with Tekton",
-  "description": "Use Tekton to build a container image",
+  "noindex": true,
+  "title": "--> Set this value in profile-pathway.json <--",
+  "description": "--> Set this value in profile-pathway.json <--",
   "difficulty": "Beginner",
   "time": "30 minutes",
   "details": {

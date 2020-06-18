@@ -1,6 +1,7 @@
 {
-  "title": "Improve Image Lifecycle with Buildpacks",
-  "description": "Use Cloud Native Buildpacks to increase consistency, security, and governance of container images",
+  "noindex": true,
+  "title": "--> Set this value in profile-pathway.json <--",
+  "description": "--> Set this value in profile-pathway.json <--",
   "difficulty": "Beginner",
   "time": "30",
   "details": {

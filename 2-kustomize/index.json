@@ -1,6 +1,7 @@
 {
-  "title": "Getting Started with Kustomize",
-  "description": "Use Kustomize to wrangle your YAML",
+  "noindex": true,
+  "title": "--> Set this value in profile-pathway.json <--",
+  "description": "--> Set this value in profile-pathway.json <--",
   "difficulty": "Beginner",
   "time": "30",
   "details": {
