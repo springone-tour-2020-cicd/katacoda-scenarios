@@ -1,6 +1,6 @@
 {
-  "title": "Scenario Template",
-  "description": "Template for creating new scenarios",
+  "title": "Improve Image Lifecycle with Buildpacks",
+  "description": "Use Cloud Native Buildpacks to increase consistency, security, and governance of container images",
   "difficulty": "Beginner",
   "time": "30",
   "details": {
