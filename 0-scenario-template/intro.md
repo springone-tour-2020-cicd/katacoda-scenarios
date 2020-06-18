@@ -2,8 +2,8 @@
 This template is intended to help in creating new scenarios for this course.
 
 Files to update:
-- rename _hidden-index.json_ to _index.json_
-- add title, description and id (directory name) to _profile-pathway.json_
+- add title _index.json_ (used on intro page, each step page, and browser tab title)
+- add title, description and id (directory name) to _profile-pathway.json_ (used in scenario tiles on profile home page, also determines tile order)
 - if necessary, update environment and backend sections in _index.json_
 - add environment configuration to _assets/init-background_ as needed (note the "NO CHANGES ABOVE/BELOW" guidelines)
 - add user session configuration to _assets/init-foreground_ as needed
