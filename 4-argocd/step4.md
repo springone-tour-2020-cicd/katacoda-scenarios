@@ -22,7 +22,7 @@ SYNC POLICY: Automatic
 SOURCE
 Repository URL: https://github.com/<GITHUB_NS>/go-sample-app.git
 Revision: HEAD
-Path: overlays/dev
+Path: ops/overlays/dev
 
 DESTINATION
 Cluster: https://kubernetes.default.svc
@@ -50,7 +50,7 @@ Wait till you see the new app appear. If you don't see it within a few moments, 
 Wait for the deployment to finish:
 
 ```
-kubectl rollout status deployment/go-sample-app -n prod
+kubectl rollout status deployment/go-sample-app -n dev
 ```{{execute}}
 
 Set up port-forwarding again and test the app:
@@ -64,12 +64,6 @@ Send a request. Validate that the app responds with "Hello, sunshine!"
 
 ```
 curl localhost:8080
-```{{execute}}
-
-The container should now have printed the environment variable for development.
-
-```
-kubectl logs $(kubectl get pods -n dev -o jsonpath="{.items[0].metadata.name}") -n dev
 ```{{execute}}
 
 ## Cleanup
