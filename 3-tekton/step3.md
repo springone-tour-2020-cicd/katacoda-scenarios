@@ -1,20 +1,16 @@
 # Install prerequisites for the tasks
 
-We will now install some supporting Kubernetes resources in order to run a Task that will build a container containing the Go sample applications and push it to Docker Hub.
+We will now install some supporting Kubernetes resources in order to run a Task that will build a container containing the Go sample application and push it to Docker Hub.
 
 Tekton has a [catalog of pre-built tasks](https://github.com/tektoncd/catalog) that cover common cases in a CI system.
 
 From that catalog, we will use the `git`, `golang` and `kaniko` tasks as the means to build the app, create the image and push it to Docker Hub.
 
-To use these tasks there are a few things we need to setup in the Kubernetes cluster.
+To use these tasks there are a few things we need to set up in the Kubernetes cluster.
 
 1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the build cache will be available when new Pods are created to execute the build.
 1. Create a secret that contains your Docker Hub credentials.
 1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
-
-## Install prerequisites
-
-Please wait until `Environment ready!` appears in the terminal window.
 
 ### Clone repo
 
