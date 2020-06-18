@@ -1,0 +1,30 @@
+#!/bin/bash
+
+mkdir -p /root/init-env
+cd /root/init-env
+
+# Redirect output to log file
+exec &>> /root/init-env/init-env.log
+
+printf "" > /root/init-env/init-env.status
+echo "$(date)"
+########## NO CHANGES ABOVE THIS LINE ##########
+
+echo "### Creating workspace directory (cd into it in init-foreground, not here)"
+mkdir /workspace
+echo "### Finished creating workspace directory"
+
+echo "### Configuring git global settings"
+git config --global hub.protocol https
+git config --global credential.helper cache
+git config --global user.email "guest@example.com"
+git config --global user.name "Guest User"
+echo "### Finished configuring git global settings"
+
+echo "### Installing some required tool"
+# ... install/configure the necessary tool
+echo "### Finished installing some required tool"
+
+########## NO CHANGES BELOW THIS LINE ##########
+# The following must be the last line
+echo "done" >> /root/init-env/init-env.status
