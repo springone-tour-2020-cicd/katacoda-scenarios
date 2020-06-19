@@ -47,20 +47,22 @@ The first step modifies the development overlay with the new tag.
 
 ```
 cat <<EOF >>bump-dev-task.yaml
+  inputs:
+    params:
+      - name: tag
+        value: \$(params.tag)
   steps:
   - name: update-image-tag
     image: mikefarah/yq
     workingDir: \$(workspaces.source.path)
     script: |
-        #!/usr/bin/env sh
-
-        echo "[INFO] Updating tags..."
         cd go-sample-app/ops/overlays/dev
-        yq m -i -x kustomization.yaml - <<EOF
+        yq m -i -x kustomization.yaml - <<EOD
         images:
           - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
-            newTag: \$(params.tag)
-        EOF
+            newTag: \$(inputs.params.tag)
+        EOD
+EOF
 ```{{execute}}
 
 And the second step commits the changes.
@@ -83,6 +85,7 @@ cat <<EOF >>bump-dev-task.yaml
           secretKeyRef:
             name: \$(params.GITHUB_TOKEN_SECRET)
             key: \$(params.GITHUB_TOKEN_SECRET_KEY)
+EOF
 ```{{execute}}
 
 Take a look at the entire `Task`, and apply it to the cluster.
