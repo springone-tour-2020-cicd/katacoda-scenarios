@@ -5,14 +5,14 @@ In order for us to instantiate the pipeline, we need to create a `PipelineRun` r
 Let's start with the following resource, linking up to the `Pipeline` resource, as well as the `PersistentVolumeClaim` we created in step 3.
 
 ```
-cat <<EOF >pipeline-run.yaml
+cat <<EOF >build-pipeline-run.yaml
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: tekton-go-pipeline-run
+  name: build-pipeline-run
 spec:
   pipelineRef:
-    name: tekton-go-pipeline
+    name: build-pipeline
   workspaces:
   - name: shared-workspace
     persistentvolumeclaim:
@@ -35,7 +35,7 @@ For the version we can use the current date and time as a quick solution.
 
 ```
 BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
-yq m -i pipeline-run.yaml - <<EOF
+yq m -i build-pipeline-run.yaml - <<EOF
 spec:
   params:
   - name: image
@@ -46,7 +46,7 @@ EOF
 In order to push to Docker Hub, we need to share our build-bot `ServiceAccount` with the `Pipeline`.
 
 ```
-yq m -i pipeline-run.yaml - <<EOF
+yq m -i build-pipeline-run.yaml - <<EOF
 spec:
   serviceAccountName: build-bot
 EOF
@@ -56,7 +56,7 @@ For the `git-clone` Task, we need to know your git repository containing the Go 
 Let's add the repository URL to the list of parameters.
 
 ```
-yq m -i -a pipeline-run.yaml - <<EOF
+yq m -i -a build-pipeline-run.yaml - <<EOF
 spec:
   params:
   - name: repo-url
@@ -68,7 +68,7 @@ Finally, we'll need to tell the `git-clone` Task which branch to clone.
 Let's take `master` for now.
 
 ```
-yq m -i -a pipeline-run.yaml - <<EOF
+yq m -i -a build-pipeline-run.yaml - <<EOF
 spec:
   params:
   - name: branch-name
@@ -79,13 +79,13 @@ EOF
 Let's take a look at our entire `PipelineRun` resource.
 
 ```
-more pipeline-run.yaml
+more build-pipeline-run.yaml
 ```{{execute}}
 
 If you're ready to execute the pipeline, issue the following command.
 
 ```
-kubectl apply -f pipeline-run.yaml
+kubectl apply -f build-pipeline-run.yaml
 ```{{execute}}
 
 The new pipelinerun should now be executing.
@@ -98,7 +98,7 @@ tkn pipelineruns list
 More details are available by describing the Pipelinerun.
 
 ```
-tkn pipelineruns describe tekton-go-pipeline-run
+tkn pipelineruns describe build-pipeline-run
 ```{{execute}}
 
 Once all the steps have successfully finished, you can navigate to your account on [Docker Hub](https://hub.docker.com/), and see your published image with the new tag.

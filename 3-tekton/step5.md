@@ -16,7 +16,7 @@ cat <<EOF >pipeline.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: tekton-go-pipeline
+  name: build-pipeline
 spec:
   params:
   workspaces:

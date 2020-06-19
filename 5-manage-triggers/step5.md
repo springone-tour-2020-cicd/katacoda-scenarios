@@ -11,66 +11,133 @@ In this step, you will:
 ## Introduce the new Trigger
 
 Whenever a new image gets pushed to Docker Hub, our pipeline needs to run.
-Create a new
+Create a new `TriggerTemplate` using the `Pipeline` you just created.
 
 ```
-cat <<EOF >>bump-dev-pipeline.yaml
-apiVersion: tekton.dev/v1beta1
-kind: Pipeline
+cat <<EOF >>bump-dev-trigger-template.yaml
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
 metadata:
-  name: tekton-go-pipeline
+  name: bump-dev-trigger-template
 spec:
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: bump-dev-pipeline-run
+    spec:
+      pipelineRef:
+        name: bump-dev-pipeline
+      workspaces:
+      - name: shared-workspace
+        persistentvolumeclaim:
+          claimName: tekton-tasks-pvc
+      params:
+      - name: tag
+        value: \$(params.TAG)
+      - name: repo-url
+        value: https://github.com/${GITHUB_NS}/go-sample-app.git
+      - name: branch-name
+        value: master
+      - name: github-token-secret
+        value: github-token
+      - name: github-token-secret-key
+        value: GITHUB_TOKEN
+      serviceAccountName: build-bot
   params:
-    - name: repo-url
-      type: string
-      description: The git repository URL to clone from.
-    - name: branch-name
-      type: string
-      description: The git branch to clone.
-    - name: tag
-      description: The new image tag.
-    - name: github-token-secret
-      type: string
-      description: Name of the secret holding the github-token.
-    - name: github-token-secret-key
-      description: Name of the secret key holding the github-token.
-  workspaces:
-    - name: shared-workspace
-      description: This workspace will receive the cloned git repo and be passed to the next Task.
-  tasks:
-    - name: fetch-repository
-      taskRef:
-        name: git-clone
-      workspaces:
-        - name: output
-          workspace: shared-workspace
-      params:
-        - name: url
-          value: $(params.repo-url)
-        - name: revision
-          value: $(params.branch-name)
-    - name: bump-dev
-      taskRef:
-        name: bump-dev
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: GITHUB_TOKEN_SECRET
-          value: $(params.github-token-secret)
-        - name: GITHUB_TOKEN_SECRET_KEY
-          value: $(params.github-token-secret-key)
-        - name: TAG
-          value: $(params.tag)
+  - name: TAG
+    description: Tag of the new Docker image.
 EOF
 ```
 
-Take a look at the entire `Pipeline`, and apply it to the cluster.
+Take a look at the entire `TriggerTemplate`, and apply it to the cluster.
 
 ```
-yq r -C bump-dev-pipeline.yaml
-tkn pipeline create -f bump-dev-pipeline.yaml
+yq r -C bump-dev-trigger-template.yaml
+kubectl apply -f bump-dev-trigger-template.yaml
+```{{execute}}
+
+## Add a TriggerBinding
+
+
+```
+BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
+cat <<EOF >bump-dev-trigger-binding.yaml
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: bump-dev-trigger-binding
+spec:
+  params:
+  - name: TAG
+    value: \$(body.push_data.tag)
+EOF
+```{{execute}}
+
+
+## Link it up with an EventListener
+
+Let's pair the `TriggerTemplate` with the `TriggerBindings` using a new `EventListener`.
+
+```
+cat <<EOF >bump-dev-event-listener.yaml
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: bump-dev-event-listener
+spec:
+  serviceAccountName: build-bot
+  triggers:
+  - name: bump-dev-trigger
+    template:
+      name: bump-dev-trigger-template
+    bindings:
+    - name: bump-dev-trigger-binding
+EOF
+```{{execute}}
+
+## Apply the trigger
+
+```
+kubectl apply -f bump-dev-trigger-template.yaml -f bump-dev-trigger-binding.yaml -f bump-dev-event-listener.yaml
+```{{execute}}
+
+## Test it out
+
+Wait for the deployment to finish.
+
+```
+kubectl rollout status deployment/el-build-event-listener
+```{{execute}}
+
+Let's port-forward our service.
+
+```
+kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
+```{{execute}}
+
+Now we can trigger a pull request event, which should create a new `PipelineRun`.
+
+```
+curl \
+    -H 'Content-Type: application/json' \
+    -d '{
+          "push_data": {
+            "tag": "1.0.0"
+          }
+        }' \
+localhost:8080
+```{{execute}}
+
+Next, verify the `PipelineRun` executes without any errors.
+
+```
+tkn pipelinerun list
+tkn pipelinerun logs -f
+```{{execute}}
+
+Stop the port-forwarding process:
+```
+pkill kubectl && wait $!
 ```{{execute}}
 

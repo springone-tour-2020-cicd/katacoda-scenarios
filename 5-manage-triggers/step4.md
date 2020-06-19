@@ -17,7 +17,7 @@ cat <<EOF >>bump-dev-pipeline.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: tekton-go-pipeline
+  name: bump-dev-pipeline
 spec:
   params:
     - name: repo-url
