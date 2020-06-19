@@ -45,9 +45,9 @@ spec:
           workspace: shared-workspace
       params:
         - name: url
-          value: $(params.repo-url)
+          value: \$(params.repo-url)
         - name: revision
-          value: $(params.branch-name)
+          value: \$(params.branch-name)
     - name: bump-dev
       taskRef:
         name: bump-dev
@@ -58,13 +58,13 @@ spec:
           workspace: shared-workspace
       params:
         - name: GITHUB_TOKEN_SECRET
-          value: $(params.github-token-secret)
+          value: \$(params.github-token-secret)
         - name: GITHUB_TOKEN_SECRET_KEY
-          value: $(params.github-token-secret-key)
+          value: \$(params.github-token-secret-key)
         - name: TAG
-          value: $(params.tag)
+          value: \$(params.tag)
 EOF
-```
+```{{execute}}
 
 Take a look at the entire `Pipeline`, and apply it to the cluster.
 
