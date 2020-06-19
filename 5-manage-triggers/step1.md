@@ -43,6 +43,33 @@ Next, clone your fork of the sample app repo:
 git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
 ```{{execute}}
 
+### Log into Docker Hub
+
+Copy and paste the following command into the terminal window, then append your Docker Hub username or org:
+
+```
+# Fill this in with your Docker Hub username or org
+IMG_NS=
+```{{copy}}
+
+Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
+
+```
+docker login -u ${IMG_NS}
+```{{execute}}
+
+This creates a `config.json` file that caches your Docker Hub credentials.
+
+```
+more /root/.docker/config.json
+```{{execute}}
+
+You can [create a secret from existing credentials](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) with the following command.
+
+```
+kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+```{{execute}}
+
 ## Trigger workflow
 Tekton Triggers adds mainly three new resource types to Kubernetes: the `EventListener`, the `TriggerBinding` and the `TriggerTemplate`.
 
@@ -117,13 +144,6 @@ Looking at the [GitHub pull request event documentation](https://developer.githu
 Go ahead and create the new `TriggerBinding` resource.
 
 For the version we can use the current date and time as a quick solution.
-We'll need your Docker Hub username or org for the `IMAGE` parameter.
-Copy and paste the following command into the terminal window, then append your Docker Hub username or org:
-
-```
-# Fill this in with your Docker Hub username or org
-IMG_NS=
-```{{copy}}
 
 ```
 BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
@@ -183,10 +203,6 @@ kubectl port-forward --address 0.0.0.0 svc/el-tekton-go-event-listener 8080:8080
 curl localhost:8080
 ```{{execute}}
 
-Stop the port-forwarding process:
-```
-pkill kubectl && wait $!
-```{{execute}}
 
 
 ```
@@ -211,4 +227,10 @@ Next, verify the PipelineRun executes without any errors.
 ```
 tkn pipelinerun list
 tkn pipelinerun logs --last -f
+```{{execute}}
+
+
+Stop the port-forwarding process:
+```
+pkill kubectl && wait $!
 ```{{execute}}
