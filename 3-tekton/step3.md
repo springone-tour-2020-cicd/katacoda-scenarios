@@ -12,7 +12,7 @@ To use these tasks there are a few things we need to set up in the Kubernetes cl
 1. Create a secret that contains your Docker Hub credentials.
 1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
 
-### Clone repo
+## Clone repo
 
 Start by cloning the GitHub repo you created in the [previous](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.  For convenience, set the following environment variable to your GitHub namespace (your user or org name). You can copy and paste the following command into the terminal window, then append your GitHub username or org:
 
@@ -26,7 +26,7 @@ Next, clone your fork of the sample app repo:
 git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
 ```{{execute}}
 
-### Create a Persistent Volume
+## Create a Persistent Volume
 
 First we need to create a Persistent Volume.
 
@@ -76,7 +76,7 @@ kubectl apply -f .
 kubectl get pvc
 ```{{execute}}
 
-### Create a ServiceAccount
+## Create a ServiceAccount
 
 Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
 
