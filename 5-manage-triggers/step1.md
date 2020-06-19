@@ -197,39 +197,37 @@ kubectl apply -f trigger-template.yaml -f trigger-binding.yaml -f event-listener
 
 ## Test it out
 
+Wait for the deployment to finish.
+
+```
+kubectl rollout status deployment/el-tekton-go-event-listener
+```{{execute}}
+
 Let's port-forward our service.
 
 ```
 kubectl port-forward --address 0.0.0.0 svc/el-tekton-go-event-listener 8080:8080 2>&1 > /dev/null &
-curl localhost:8080
 ```{{execute}}
 
+Now we can trigger a pull request event, which should create a new `PipelineRun`.
 
-
-```
-URL="https://github.com/${IMG_NS}/go-sample-app"
-```{{execute}}
-```
-ROUTE_HOST=$(kubectl svc go-sample-app --template='http://{{.spec.host}}')
-```{{execute}}
 ```
 curl \
     -H 'X-GitHub-Event: pull_request' \
     -H 'Content-Type: application/json' \
     -d '{
-      "repository": {"clone_url": "'"${URL}"'"},
+      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
       "pull_request": {"head": {"sha": "master"}}
     }' \
 localhost:8080
 ```{{execute}}
 
-Next, verify the PipelineRun executes without any errors.
+Next, verify the `PipelineRun` executes without any errors.
 
 ```
 tkn pipelinerun list
 tkn pipelinerun logs -f
 ```{{execute}}
-
 
 Stop the port-forwarding process:
 ```
