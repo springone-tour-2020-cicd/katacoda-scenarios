@@ -2,8 +2,8 @@
 
 We can now install the required tasks that will be part of our pipeline.
 
-The [git task](https://github.com/tektoncd/catalog/blob/v1beta1/git/git-clone.yaml) can be leveraged to provide Tekton the source code.  
-The [golang tasks](https://github.com/tektoncd/catalog/blob/v1beta1/golang/README.md) provide an easy and quick way to lint, build and test Go apps.  
+The [git task](https://github.com/tektoncd/catalog/blob/v1beta1/git/git-clone.yaml) can be leveraged to provide Tekton the source code.
+The [golang tasks](https://github.com/tektoncd/catalog/blob/v1beta1/golang/README.md) provide an easy and quick way to lint, build and test Go apps.
 The [kaniko task](https://github.com/tektoncd/catalog/blob/v1beta1/kaniko/README.md) builds source into a container image using Google's [kaniko](https://github.com/GoogleCloudPlatform/kaniko) tool.
 
 ## Install tasks
@@ -13,13 +13,12 @@ Go ahead and install the predefined `git`, `golang` and `kaniko` tasks.
 ```
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
 ```{{execute}}
 
 
-Now if you list the tasks installed in the cluster you will see five new tasks along with the `echo-hello-world` task from the previous step.
+Now if you list the tasks installed in the cluster you will see four new tasks along with the `echo-hello-world` task from the previous step.
 
 ```
 tkn task list
@@ -30,7 +29,6 @@ $ tkn task list
 NAME               AGE
 echo-hello-world   10 minutes ago
 git-clone          6 seconds ago
-golang-build       6 seconds ago
 golang-test        6 seconds ago
 golangci-lint      6 seconds ago
 kaniko             6 seconds ago
