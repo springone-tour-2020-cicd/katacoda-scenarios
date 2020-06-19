@@ -136,10 +136,15 @@ kubectl rollout status deployment/prod-go-sample-app -n prod
 kubectl get all -n prod
 ```{{execute}}
 
-Verify if our app still works.
+Go ahead and port-forward the production `Service`.
 
 ```
 kubectl port-forward service/prod-go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
+```{{execute}}
+
+Verify if our app still works.
+
+```
 curl localhost:8080
 ```{{execute}}
 

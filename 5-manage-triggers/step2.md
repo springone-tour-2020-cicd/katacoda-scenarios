@@ -123,7 +123,7 @@ EOF
 
 ```
 kubectl apply -f sa.yaml -f pv.yaml -f pvc.yaml
-tkn pipeline create -f pipeline.yaml
+tkn pipeline create -f build-pipeline.yaml
 kubectl apply -f build-trigger-template.yaml -f build-trigger-binding.yaml -f build-event-listener.yaml
 ```{{execute}}
 

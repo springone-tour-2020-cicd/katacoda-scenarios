@@ -25,9 +25,10 @@ Verify whether all the resources now have the label tuple `env:prod`:
 kustomize build --load_restrictor none . | grep -C 3 env
 ```{{execute}}
 
-We can now apply the changes and verify the resources on the cluster.
+Since label selectors are immutable, we need to recreate the `Service`.
 
 ```
+kustomize build --load_restrictor none . | kubectl delete -f -
 kustomize build --load_restrictor none . | kubectl apply -f -
 
 kubectl get all -n prod --show-labels

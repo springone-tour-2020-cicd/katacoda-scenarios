@@ -48,7 +48,7 @@ Also note that we require a workspace to write our cloned files into.
 Let's add the parameters and the workspace using `yq`.
 
 ```
-yq m -i pipeline.yaml - <<EOF
+yq m -i build-pipeline.yaml - <<EOF
 spec:
   params:
   - name: repo-url
@@ -66,7 +66,7 @@ EOF
 We can now add the `golangci-lint` Task to validate our Go package.
 
 ```
-yq m -i -a pipeline.yaml - <<EOF
+yq m -i -a build-pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: lint
@@ -79,14 +79,14 @@ spec:
           workspace: shared-workspace
       params:
         - name: package
-          value: github.com/tektoncd/pipeline
+          value: go-sample-app
 EOF
 ```{{execute}}
 
 Next up is the `golang-test` Task to run unit-tests on our Go package.
 
 ```
-yq m -i -a pipeline.yaml - <<EOF
+yq m -i -a build-pipeline.yaml - <<EOF
 spec:
   tasks:
     - name: test
@@ -99,35 +99,16 @@ spec:
           workspace: shared-workspace
       params:
         - name: package
-          value: github.com/tektoncd/pipeline
+          value: go-sample-app
 EOF
 ```{{execute}}
 
 Notice we also run this Task after `fetch-repo`, which means it will be done in parallel.
-We can also add the `golang-build` Task in parallel to compile our code while our linter and test is running.
+
+After fetching the repository, running the tests and linters, we can now build the image and push to Docker Hub.
 
 ```
-yq m -i -a pipeline.yaml - <<EOF
-spec:
-  tasks:
-    - name: build
-      taskRef:
-        name: golang-build
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: package
-          value: github.com/tektoncd/pipeline
-EOF
-```{{execute}}
-
-After fetching the repository, running the tests and linters, and building the code, we can now build the image and push to Docker Hub.
-
-```
-yq m -i -a pipeline.yaml - <<EOF
+yq m -i -a build-pipeline.yaml - <<EOF
 spec:
   tasks:
   - name: build-image
@@ -137,7 +118,6 @@ spec:
     - fetch-repository
     - lint
     - test
-    - build
     workspaces:
     - name: source
       workspace: shared-workspace
@@ -151,7 +131,7 @@ This task needs a new parameter called `image`.
 Let's add it as well to the parameter section.
 
 ```
-yq m -i -a pipeline.yaml - <<EOF
+yq m -i -a build-pipeline.yaml - <<EOF
 spec:
   params:
   - name: image
@@ -163,7 +143,7 @@ Finally, we should verify whether our push was successful.
 We can do this by adding a task that verifies the digest.
 
 ```
-yq m -i -a pipeline.yaml - <<EOF
+yq m -i -a build-pipeline.yaml - <<EOF
 spec:
   tasks:
   - name: verify-digest
@@ -192,13 +172,13 @@ EOF
 Let's take a look at our entire pipeline file.
 
 ```
-more pipeline.yaml
+more build-pipeline.yaml
 ```{{execute}}
 
 We can now add this `Pipeline` to our cluster.
 
 ```
-tkn pipeline create -f pipeline.yaml
+tkn pipeline create -f build-pipeline.yaml
 ```{{execute}}
 
 In the next step we'll add the necessary configuration to actually run this pipeline.
