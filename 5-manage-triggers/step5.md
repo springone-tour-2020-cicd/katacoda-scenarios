@@ -107,13 +107,13 @@ kubectl apply -f bump-dev-trigger-template.yaml -f bump-dev-trigger-binding.yaml
 Wait for the deployment to finish.
 
 ```
-kubectl rollout status deployment/el-build-event-listener
+kubectl rollout status deployment/el-bump-dev-event-listener
 ```{{execute}}
 
 Let's port-forward our service.
 
 ```
-kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
+kubectl port-forward --address 0.0.0.0 svc/el-bump-dev-event-listener 8080:8080 2>&1 > /dev/null &
 ```{{execute}}
 
 Now we can trigger a pull request event, which should create a new `PipelineRun`.
