@@ -6,24 +6,34 @@ That image's reference however needs to be manually updated in the Kustomize fil
 Let's make a pipeline for this purpose as well.
 
 In this step, you will:
+- Create another `Task`, responsible for modifying the image tag on the development overlay
 - Create a new `Pipeline` and `PipelineRun` specification inside another `TriggerTemplate`
 - Trigger the new pipeline by reacting to Docker Hub changes
 
 ## Introduce a new Task
 
 ```
-cat <<EOF >deploy-kustomize-task.yaml
+cat <<EOF >bump-dev-task.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: deploy-kustomize-task
+  name: bump-dev-task
 spec:
   resources:
     inputs:
-    - name: git-source
+    - name: git-sources
       type: git
   workspaces:
     - name: source
+  params:
+    - name: GITHUB_TOKEN_SECRET
+      type: string
+      description: Name of the secret holding the github-token.
+      default: github-token
+    - name: GITHUB_TOKEN_SECRET_KEY
+      type: string
+      description: Name of the secret key holding the github-token.
+      default: GITHUB_TOKEN
 EOF
 ```execute
 
@@ -31,7 +41,7 @@ We can now add two steps.
 The first step modifies the development overlay with the new tag.
 
 ```
-cat <<EOF >>deploy-kustomize-task.yaml
+cat <<EOF >>bump-dev-task.yaml
   steps:
   - name: update-image-tag
     image: mikefarah/yq
@@ -50,37 +60,55 @@ cat <<EOF >>deploy-kustomize-task.yaml
 ```execute
 
 And the second step deploys the new resources to the `dev` namespace.
+This step however requires your GitHub username to be able to push.
+
+You can copy and paste the following command into the terminal window, then append your GitHub login:
 
 ```
-cat <<EOF >>deploy-kustomize-task.yaml
-  - name: deploy-to-dev
-    image: nekottyo/kustomize-kubeval
+# Fill this in with your GitHub login
+GITHUB_USER=
+```{{copy}}
+
+Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
+
+```
+GITHUB_USER=$GITHUB_NS
+```{{execute}}
+
+The Task also needs your GitHub access token to authenticate with the Git server.
+You can copy and paste the following command into the terminal window, then append your GitHub login:
+
+```
+# Fill this in with your GitHub access token
+GITHUB_TOKEN=
+```{{copy}}
+
+```
+kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
+```{{execute}}
+
+```
+cat <<EOF >>bump-dev-task.yaml
+  - name: git-commit
+    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1
     workingDir: $(workspaces.source.path)
     script: |
-        #!/usr/bin/env sh
-
-        cd /workspace/go-sample-app/ops/overlays/dev
-
-        # First check if a dryrun is successful
-        echo "[INFO] Starting dry run..."
-        kustomize build --load_restrictor none . | kubectl apply --dry-run=server -f -
-
-        if [ $? != 0 ]; then
-          echo "[ERROR] Dry run of deployment was unsuccessful. Please review errors above for more details. Service will not be deployed."
-          exit 1
-        fi
-        # If it's good then run
-        echo "[INFO] Starting deployment..."
-        kustomize build --load_restrictor none . | kubectl apply -f -
-        kubectl rollout status deploy/go-sample-app -n dev
-        if [ $? != 0 ]; then
-          echo "[ERROR] Deployment was unsuccessful. Please review errors above for more details. Service was not deployed."
-          exit 1
-        fi
-```execute
+      git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app.git
+      git config user.name build-bot
+      git config user.email build-bot@bots.bot
+      git add go-sample-app/ops/overlays/dev/kustomization.yaml
+      git commit -m "Automatically promoting dev version"
+      git push origin master
+    env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: $(params.GITHUB_TOKEN_SECRET)
+            key: $(params.GITHUB_TOKEN_SECRET_KEY)
+```{{execute}}
 
 ```
-yq r -C deploy-kustomize-task.yaml
+yq r -C bump-dev-task.yaml
 ```{{execute}}
 
 ## Introduce the new Pipeline
