@@ -46,7 +46,7 @@ Hence, we should take our existing `PipelineRun` resource, and wrap it in a new 
 Let's start with renaming the file and nesting the `PipelineRun` inside a specification.
 
 ```
-cd go-sample-app/tekton
+cd tekton
 mv pipeline-run.yaml trigger-template.yaml
 yq p -i trigger-template.yaml spec.resourcetemplates[+]
 ```{{execute}}
@@ -84,6 +84,12 @@ Of course we also need to use these parameters inside our `PipelineRun` specific
 yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==repo-url).value" "\$(params.REPO_URL)"
 yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==branch-name).value" "\$(params.BRANCH_NAME)"
 yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==image).value" "\$(params.IMAGE)"
+```{{execute}}
+
+Let's take a look at our eventual `TriggerTemplate`.
+
+```
+yq r -C trigger-template.yaml
 ```{{execute}}
 
 ## Trigger Bindings
