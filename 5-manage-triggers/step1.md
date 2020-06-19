@@ -12,6 +12,13 @@ In this step, you will:
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
 
+### Install Tekton Triggers
+
+```
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+```{{execute}}
+
 ### Clone repo
 
 Start by cloning the GitHub repo you created in the [previous](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
@@ -36,6 +43,8 @@ An `EventListener` creates a Deployment and Service that listen for events.
 When the `EventListener` receives an event, it executes a specified `TriggerBinding` and `TriggerTemplate`.
 A `TriggerBinding` then describes what information you want to extract from an event to pass to your `TriggerTemplate`.
 And finally, a `TriggerTemplate` declares a specification for each Kubernetes resource you want to create when an event is received.
+
+![TriggerFlow](https://github.com/tektoncd/triggers/blob/master/images/TriggerFlow.png?raw=true)
 
 Let's go through each of these resources and apply them to our existing Tekton `PipelineRun`.
 
@@ -111,18 +120,20 @@ IMG_NS=
 
 ```
 BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
+cat <<EOF >trigger-binding.yaml
 apiVersion: triggers.tekton.dev/v1alpha1
-   kind: TriggerBinding
-   metadata:
-     name: tekton-go-trigger-binding
-   spec:
-     params:
-     - name: REPO_URL
-       value: \$(body.repository.clone_url)
-     - name: BRANCH_NAME
-       value: \$(body.pull_request.head.sha)
-     - name: IMAGE
-       value: ${IMG_NS}/go-sample-app:${BUILD_DATE}
+kind: TriggerBinding
+metadata:
+  name: tekton-go-trigger-binding
+spec:
+  params:
+  - name: REPO_URL
+    value: \$(body.repository.clone_url)
+  - name: BRANCH_NAME
+    value: \$(body.pull_request.head.sha)
+  - name: IMAGE
+    value: ${IMG_NS}/go-sample-app:${BUILD_DATE}
+EOF
 ```{{execute}}
 
 
@@ -132,6 +143,7 @@ The `EventListener` defines a list of triggers.
 Trigger will pair the `TriggerTemplate` with the `TriggerBindings`.
 
 ```
+cat <<EOF >event-listener.yaml
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
@@ -144,6 +156,13 @@ spec:
       name: tekton-go-template-trigger
     bindings:
     - name: tekton-go-trigger-binding
+EOF
+```{{execute}}
+
+## Apply the trigger
+
+```
+kubectl apply -f .
 ```{{execute}}
 
 ## Test it out
