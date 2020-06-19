@@ -14,7 +14,7 @@ Whenever a new image gets pushed to Docker Hub, our pipeline needs to run.
 Create a new `TriggerTemplate` using the `Pipeline` you just created.
 
 ```
-cat <<EOF >>bump-dev-trigger-template.yaml
+cat <<EOF >bump-dev-trigger-template.yaml
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
@@ -24,7 +24,7 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: bump-dev-pipeline-run
+      generateName: bump-dev-pipeline-run-
     spec:
       pipelineRef:
         name: bump-dev-pipeline
@@ -47,6 +47,7 @@ spec:
   params:
   - name: TAG
     description: Tag of the new Docker image.
+    default: empty-tag
 EOF
 ```
 

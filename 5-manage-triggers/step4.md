@@ -13,7 +13,7 @@ In this step, you will:
 You're going to use the `git-clone`, as well as the newly created `bump-dev` Tasks.
 
 ```
-cat <<EOF >>bump-dev-pipeline.yaml
+cat <<EOF >bump-dev-pipeline.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -28,6 +28,7 @@ spec:
       description: The git branch to clone.
     - name: tag
       description: The new image tag.
+      default: empty-tag
     - name: github-token-secret
       type: string
       description: Name of the secret holding the github-token.

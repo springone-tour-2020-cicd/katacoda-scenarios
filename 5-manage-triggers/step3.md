@@ -39,6 +39,7 @@ spec:
     - name: TAG
       type: string
       description: Name of the new image tag.
+      default: empty-tag
 EOF
 ```{{execute}}
 
