@@ -58,13 +58,7 @@ Login to your Docker Hub account using the `docker` CLI (your username has to be
 docker login -u ${IMG_NS}
 ```{{execute}}
 
-This creates a `config.json` file that caches your Docker Hub credentials.
-
-```
-more /root/.docker/config.json
-```{{execute}}
-
-You can [create a secret from existing credentials](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) with the following command.
+We can now create the registry `Secret`.
 
 ```
 kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
@@ -127,6 +121,13 @@ Of course we also need to use these parameters inside our `PipelineRun` specific
 yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==repo-url).value" "\$(params.REPO_URL)"
 yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==branch-name).value" "\$(params.BRANCH_NAME)"
 yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==image).value" "\$(params.IMAGE)"
+```{{execute}}
+
+In order to generate new `PipelineRun` resources upon each trigger, we need to make sure the name is unique every time we create a `PipelineRun`.
+
+```
+yq w -i trigger-template.yaml "spec.resourcetemplates[0].metadata.generateName" "tekton-go-pipeline-run-"
+yq d -i trigger-template.yaml "spec.resourcetemplates[0].metadata.name"
 ```{{execute}}
 
 Let's take a look at our eventual `TriggerTemplate`.
@@ -212,7 +213,7 @@ URL="https://github.com/${IMG_NS}/go-sample-app"
 ROUTE_HOST=$(kubectl svc go-sample-app --template='http://{{.spec.host}}')
 ```{{execute}}
 ```
-curl -v \
+curl \
     -H 'X-GitHub-Event: pull_request' \
     -H 'Content-Type: application/json' \
     -d '{
@@ -226,7 +227,7 @@ Next, verify the PipelineRun executes without any errors.
 
 ```
 tkn pipelinerun list
-tkn pipelinerun logs --last -f
+tkn pipelinerun logs -f
 ```{{execute}}
 
 
