@@ -59,9 +59,7 @@ spec:
     description: The git branch to clone.
   workspaces:
   - name: shared-workspace
-    description: |
-      This workspace will receive the cloned git repo and be passed
-      to the next Task for the repo's README.md file to be read.
+    description: This workspace will receive the cloned git repo and be passed to the next Task.
 EOF
 ```{{execute}}
 

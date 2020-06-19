@@ -1,215 +1,167 @@
-# Add a Deployment Pipeline
+# Add a Trigger
 
 Objective:
-Assuming the `PipelineRun` finished successfully, you now have a new image in your Docker Hub account.
-That image's reference however needs to be manually updated in the Kustomize files.
-Let's make a pipeline for this purpose as well.
+Up until this point you’ve probably had this question pop up into your head: I can **manually** run my Tekton Pipeline, but how do I **automatically** run my pipeline?
+Maybe you want to automatically run your pipeline every time you create a pull request, push code to a repo, or merge a pull request into the master branch.
+Thankfully, the Tekton Triggers project solves this problem by automatically connecting events to your Tekton Pipelines.
 
 In this step, you will:
-- Create another `Task`, responsible for modifying the image tag on the development overlay
-- Create a new `Pipeline` and `PipelineRun` specification inside another `TriggerTemplate`
-- Trigger the new pipeline by reacting to Docker Hub changes
+- Set up Tekton Triggers to automatically trigger the pipeline when a GitHub pull request is created
 
-## Introduce a new Task
+## Trigger Templates
+As mentioned before, the `TriggerTemplate` resource defines a specification of a `PipelineRun`.
+Hence, we should take our existing `PipelineRun` resource, and wrap it in a new `TriggerTemplate` so it can be created dynamically.
+
+Let's start with renaming the file and nesting the `PipelineRun` inside a specification.
 
 ```
-cat <<EOF >bump-dev-task.yaml
-apiVersion: tekton.dev/v1beta1
-kind: Task
+cd tekton
+mv pipeline-run.yaml trigger-template.yaml
+yq p -i trigger-template.yaml spec.resourcetemplates[+]
+```{{execute}}
+
+Now we can add anything specific to the `TriggerTemplate` in there.
+
+```
+{ yq m -x - trigger-template.yaml >tmp.yaml && mv tmp.yaml trigger-template.yaml; } <<EOF
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
 metadata:
-  name: bump-dev-task
-spec:
-  resources:
-    inputs:
-    - name: git-sources
-      type: git
-  workspaces:
-    - name: source
-  params:
-    - name: GITHUB_TOKEN_SECRET
-      type: string
-      description: Name of the secret holding the github-token.
-      default: github-token
-    - name: GITHUB_TOKEN_SECRET_KEY
-      type: string
-      description: Name of the secret key holding the github-token.
-      default: GITHUB_TOKEN
+  name: tekton-go-template-trigger
 EOF
-```execute
-
-We can now add two steps.
-The first step modifies the development overlay with the new tag.
-
-```
-cat <<EOF >>bump-dev-task.yaml
-  steps:
-  - name: update-image-tag
-    image: mikefarah/yq
-    workingDir: $(workspaces.source.path)
-    script: |
-        #!/usr/bin/env sh
-
-        echo "[INFO] Updating tags..."
-        BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
-        cd go-sample-app/ops/overlays/dev
-        yq m -i -x kustomization.yaml - <<EOF
-        images:
-          - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
-            newTag: \${BUILD_DATE}
-        EOF
-```execute
-
-And the second step deploys the new resources to the `dev` namespace.
-This step however requires your GitHub username to be able to push.
-
-You can copy and paste the following command into the terminal window, then append your GitHub login:
-
-```
-# Fill this in with your GitHub login
-GITHUB_USER=
-```{{copy}}
-
-Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
-
-```
-GITHUB_USER=$GITHUB_NS
 ```{{execute}}
 
-The Task also needs your GitHub access token to authenticate with the Git server.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
+Each `TriggerTemplate` has parameters that can be substituted anywhere within the `PipelineRun` specification.
+Let's add a couple of our own.
 
 ```
-# Fill this in with your GitHub access token
-GITHUB_TOKEN=
-```{{copy}}
-
-```
-kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
-```{{execute}}
-
-```
-cat <<EOF >>bump-dev-task.yaml
-  - name: git-commit
-    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1
-    workingDir: $(workspaces.source.path)
-    script: |
-      git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app.git
-      git config user.name build-bot
-      git config user.email build-bot@bots.bot
-      git add go-sample-app/ops/overlays/dev/kustomization.yaml
-      git commit -m "Automatically promoting dev version"
-      git push origin master
-    env:
-      - name: GITHUB_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: $(params.GITHUB_TOKEN_SECRET)
-            key: $(params.GITHUB_TOKEN_SECRET_KEY)
-```{{execute}}
-
-```
-yq r -C bump-dev-task.yaml
-```{{execute}}
-
-## Introduce the new Pipeline
-
-```
-apiVersion: tekton.dev/v1beta1
-kind: Pipeline
-metadata:
-  name: tekton-go-pipeline
+yq m -i -x trigger-template.yaml - <<EOF
 spec:
   params:
-    - name: repo-url
-      type: string
-      description: The git repository URL to clone from.
-    - name: branch-name
-      type: string
-      description: The git branch to clone.
-    - name: image
-      description: reference of the image to build
-  workspaces:
-    - name: shared-workspace
-      description: |
-        This workspace will receive the cloned git repo and be passed
-        to the next Task for the repo's README.md file to be read.
-  tasks:
-    - name: fetch-repository
-      taskRef:
-        name: git-clone
-      workspaces:
-        - name: output
-          workspace: shared-workspace
-      params:
-        - name: url
-          value: $(params.repo-url)
-        - name: revision
-          value: $(params.branch-name)
-    - name: lint
-      taskRef:
-        name: golangci-lint
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: package
-          value: github.com/tektoncd/pipeline
-    - name: test
-      taskRef:
-        name: golang-test
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: package
-          value: github.com/tektoncd/pipeline
-    - name: build
-      taskRef:
-        name: golang-build
-      runAfter:
-        - fetch-repository
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: package
-          value: github.com/tektoncd/pipeline
-    - name: kaniko
-      taskRef:
-        name: kaniko
-      runAfter:
-        - fetch-repository
-        - lint
-        - test
-        - build
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-      params:
-        - name: IMAGE
-          value: $(params.image)
-    - name: verify-digest
-      runAfter:
-        - kaniko
-      params:
-        - name: digest
-          value: $(tasks.kaniko.results.IMAGE-DIGEST)
-      taskSpec:
-        inputs:
-          params:
-            - name: digest
-              value: $(params.digest)
-        steps:
-          - name: bash
-            image: ubuntu
-            script: |
-              echo $(inputs.params.digest)
-              case .$(inputs.params.digest) in
-                ".sha"*) exit 0 ;;
-                *)       echo "Digest value is not correct" && exit 1 ;;
-              esac
+  - name: REPO_URL
+    description: The repository url to build and deploy.
+  - name: BRANCH_NAME
+    description: The branch to build and deploy.
+  - name: IMAGE
+    description: Name and tag of the Docker container in the Deployment.
+EOF
+```{{execute}}
+
+Of course we also need to use these parameters inside our `PipelineRun` specification.
+
 ```
+yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==repo-url).value" "\$(params.REPO_URL)"
+yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==branch-name).value" "\$(params.BRANCH_NAME)"
+yq w -i trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==image).value" "\$(params.IMAGE)"
+```{{execute}}
+
+In order to generate new `PipelineRun` resources upon each trigger, we need to make sure the name is unique every time we create a `PipelineRun`.
+
+```
+yq w -i trigger-template.yaml "spec.resourcetemplates[0].metadata.generateName" "tekton-go-pipeline-run-"
+yq d -i trigger-template.yaml "spec.resourcetemplates[0].metadata.name"
+```{{execute}}
+
+Let's take a look at our eventual `TriggerTemplate`.
+
+```
+yq r -C trigger-template.yaml
+```{{execute}}
+
+## Trigger Bindings
+
+The `TriggerBinding` specifies the values to use for your `TriggerTemplate`’s parameters.
+The REPO_URL and REVISION parameters are especially important because they are extracted from the pull request event body.
+Looking at the [GitHub pull request event documentation](https://developer.github.com/v3/activity/events/types/#pullrequestevent), you can find the JSON path for values of the REPO_URL and REVISION in the event body.
+
+Go ahead and create the new `TriggerBinding` resource.
+
+For the version we can use the current date and time as a quick solution.
+
+```
+BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
+cat <<EOF >trigger-binding.yaml
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: tekton-go-trigger-binding
+spec:
+  params:
+  - name: REPO_URL
+    value: \$(body.repository.clone_url)
+  - name: BRANCH_NAME
+    value: \$(body.pull_request.head.sha)
+  - name: IMAGE
+    value: ${IMG_NS}/go-sample-app:${BUILD_DATE}
+EOF
+```{{execute}}
+
+
+## Event Listeners
+
+The `EventListener` defines a list of triggers.
+Trigger will pair the `TriggerTemplate` with the `TriggerBindings`.
+
+```
+cat <<EOF >event-listener.yaml
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: tekton-go-event-listener
+spec:
+  serviceAccountName: build-bot
+  triggers:
+  - name: tekton-go-trigger
+    template:
+      name: tekton-go-template-trigger
+    bindings:
+    - name: tekton-go-trigger-binding
+EOF
+```{{execute}}
+
+## Apply the trigger
+
+```
+kubectl apply -f sa.yaml -f pv.yaml -f pvc.yaml
+tkn pipeline create -f pipeline.yaml
+kubectl apply -f trigger-template.yaml -f trigger-binding.yaml -f event-listener.yaml
+```{{execute}}
+
+## Test it out
+
+Wait for the deployment to finish.
+
+```
+kubectl rollout status deployment/el-tekton-go-event-listener
+```{{execute}}
+
+Let's port-forward our service.
+
+```
+kubectl port-forward --address 0.0.0.0 svc/el-tekton-go-event-listener 8080:8080 2>&1 > /dev/null &
+```{{execute}}
+
+Now we can trigger a pull request event, which should create a new `PipelineRun`.
+
+```
+curl \
+    -H 'X-GitHub-Event: pull_request' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
+      "pull_request": {"head": {"sha": "master"}}
+    }' \
+localhost:8080
+```{{execute}}
+
+Next, verify the `PipelineRun` executes without any errors.
+
+```
+tkn pipelinerun list
+tkn pipelinerun logs -f
+```{{execute}}
+
+Stop the port-forwarding process:
+```
+pkill kubectl && wait $!
+```{{execute}}
