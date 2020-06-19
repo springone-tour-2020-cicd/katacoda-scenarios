@@ -1,4 +1,4 @@
-# Step Title Here
+# Add a Trigger
 
 Objective:
 Up until this point you’ve probably had this question pop up into your head: I can **manually** run my Tekton Pipeline, but how do I **automatically** run my pipeline?
