@@ -130,7 +130,7 @@ After fetching the repository, running the tests and linters, and building the c
 yq m -i -a pipeline.yaml - <<EOF
 spec:
   tasks:
-  - name: kaniko
+  - name: build-image
     taskRef:
       name: kaniko
     runAfter:
@@ -168,10 +168,10 @@ spec:
   tasks:
   - name: verify-digest
     runAfter:
-    - kaniko
+    - build-image
     params:
     - name: digest
-      value: \$(tasks.kaniko.results.IMAGE-DIGEST)
+      value: \$(tasks.build-image.results.IMAGE-DIGEST)
     taskSpec:
       inputs:
         params:
