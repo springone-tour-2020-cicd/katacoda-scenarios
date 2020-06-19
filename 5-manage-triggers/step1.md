@@ -169,10 +169,9 @@ EOF
 ## Apply the trigger
 
 ```
+kubectl apply -f sa.yaml -f pv.yaml -f pvc.yaml
 tkn pipeline create -f pipeline.yaml
-kubectl apply -f trigger-template.yaml
-kubectl apply -f trigger-binding.yaml
-kubectl apply -f event-listener.yaml
+kubectl apply -f trigger-template.yaml -f trigger-binding.yaml -f event-listener.yaml
 ```{{execute}}
 
 ## Test it out
@@ -180,7 +179,7 @@ kubectl apply -f event-listener.yaml
 Let's port-forward our service.
 
 ```
-kubectl port-forward service/el-tekton-go-event-listener 8080:8080 -n prod 2>&1 > /dev/null &
+kubectl port-forward --address 0.0.0.0 svc/el-tekton-go-event-listener 8080:8080 2>&1 > /dev/null &
 curl localhost:8080
 ```{{execute}}
 
