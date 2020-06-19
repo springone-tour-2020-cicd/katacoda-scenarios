@@ -20,10 +20,11 @@ There are various ways to build an image from source code, ranging from Dockerfi
 
 You will build the image and publish it to Docker Hub on one easy step, but first, you must log in to Docker Hub.
 
-Copy the following command to the terminal and replace the placeholder with your Docker Hub namespace:
+Copy and paste the following command into the terminal window, then append your Docker Hub username or org:
 
 ```
-IMG_NS=<YOUR_DH_USERNAME_OR_ORG>
+# Fill this in with your Docker Hub username or org
+IMG_NS=
 ```{{copy}}
 
 Next, log in to Docker Hub and enter your access token at the prompt:
