@@ -12,11 +12,18 @@ In this step, you will:
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
 
-### Install Tekton Triggers
+### Configure Tekton
+
+Install the pipeline and trigger CRDs, and all the tasks we rely on.
 
 ```
 kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
 kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/build.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
 ```{{execute}}
 
 ### Clone repo
@@ -162,10 +169,26 @@ EOF
 ## Apply the trigger
 
 ```
-kubectl apply -f .
+tkn pipeline create -f pipeline.yaml
+kubectl apply -f trigger-template.yaml
+kubectl apply -f trigger-binding.yaml
+kubectl apply -f event-listener.yaml
 ```{{execute}}
 
 ## Test it out
+
+Let's port-forward our service.
+
+```
+kubectl port-forward service/el-tekton-go-event-listener 8080:8080 -n prod 2>&1 > /dev/null &
+curl localhost:8080
+```{{execute}}
+
+Stop the port-forwarding process:
+```
+pkill kubectl && wait $!
+```{{execute}}
+
 
 ```
 URL="https://github.com/${IMG_NS}/go-sample-app"
@@ -181,5 +204,12 @@ curl -v \
       "repository": {"clone_url": "'"${URL}"'"},
       "pull_request": {"head": {"sha": "master"}}
     }' \
-${ROUTE_HOST}
+localhost:8080
+```{{execute}}
+
+Next, verify the PipelineRun executes without any errors.
+
+```
+tkn pipelinerun list
+tkn pipelinerun logs --last -f
 ```{{execute}}
