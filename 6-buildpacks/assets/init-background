@@ -34,7 +34,7 @@ curl -L https://github.com/buildpacks/pack/releases/download/v0.11.2/pack-v0.11.
 echo "### Finished installing pack CLI"
 
 echo "### Installing kpack logs CLI"
-curl -L https://github.com/pivotal/kpack/releases/download/v0.0.6/logs-v0.0.6-linux.tgz | tar zx && \
+curl -L https://github.com/pivotal/kpack/releases/download/v0.0.9/logs-v0.0.9-linux.tgz | tar zx && \
     chmod +x logs && \
     mv logs /usr/local/bin/logs
 echo "### Finished installing kpack logs CLI"

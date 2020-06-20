@@ -53,7 +53,7 @@ EOF
 We're now ready to apply the yaml files to the kubernetes cluster:
 ```
 kubectl apply -f builder.yaml \
-                 image.yaml
+              -f image.yaml
 ```{{execute}}
 
 ## Is it working?
