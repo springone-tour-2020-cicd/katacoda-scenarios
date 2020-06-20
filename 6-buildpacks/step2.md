@@ -65,8 +65,6 @@ EOF
 First we need to create a Persistent Volume.
 
 ```
-mkdir tekton
-cd tekton
 cat <<EOF >buildpacks-cache-pv.yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -121,7 +119,7 @@ spec:
     volumes:
       - name: buildpacks-cache
         persistentVolumeClaim:
-          claimName: workspace-pvc
+          claimName: buildpacks-cache-pvc
 EOF
 ```{{execute}}
 
