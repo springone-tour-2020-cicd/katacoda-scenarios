@@ -49,7 +49,7 @@ spec:
     description: Tag of the new Docker image.
     default: empty-tag
 EOF
-```{{executeg}}
+```{{execute}}
 
 Take a look at the entire `TriggerTemplate`, and apply it to the cluster.
 
