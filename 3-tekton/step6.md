@@ -16,7 +16,7 @@ spec:
   workspaces:
   - name: shared-workspace
     persistentvolumeclaim:
-      claimName: tekton-tasks-pvc
+      claimName: workspace-pvc
 EOF
 ```{{execute}}
 

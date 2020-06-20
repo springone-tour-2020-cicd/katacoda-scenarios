@@ -37,7 +37,7 @@ cat <<EOF >pv.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: tekton-tasks-pv
+  name: workspace-pv
 spec:
   capacity:
     storage: 3Gi
@@ -58,7 +58,7 @@ cat <<EOF >pvc.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: tekton-tasks-pvc
+  name: workspace-pvc
 spec:
   storageClassName: local-storage
   accessModes:

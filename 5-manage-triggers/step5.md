@@ -31,7 +31,7 @@ spec:
       workspaces:
       - name: shared-workspace
         persistentvolumeclaim:
-          claimName: tekton-tasks-pvc
+          claimName: workspace-pvc
       params:
       - name: tag
         value: \$(params.TAG)

@@ -60,6 +60,50 @@ spec:
 EOF
 ```{{execute}}
 
+## Introduce new `PersistentVolume` and `PersistentVolumeClaim`
+
+First we need to create a Persistent Volume.
+
+```
+mkdir tekton
+cd tekton
+cat <<EOF >buildpacks-cache-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: buildpacks-cache-pv
+spec:
+  capacity:
+    storage: 3Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  hostPath:
+    path: "/mnt/data"
+EOF
+```{{execute}}
+
+Create the Persistent Volume Claim:
+
+```
+cat <<EOF >>buildpacks-cache-pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: buildpacks-cache-pvc
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+EOF
+```{{execute}}
+
 ## Update the build pipeline run yaml
 
 The difference in the way the image is configured betwee the kaniko and buildpacks task also requires a change to the pipeline run resource.
@@ -77,7 +121,7 @@ spec:
     volumes:
       - name: buildpacks-cache
         persistentVolumeClaim:
-          claimName: tekton-tasks-pvc
+          claimName: workspace-pvc
 EOF
 ```{{execute}}
 
@@ -151,6 +195,8 @@ kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.dock
 kubectl apply -f sa.yaml \
               -f pv.yaml \
               -f pvc.yaml \
+              -f buildpacks-cache-pv.yaml \
+              -f buildpacks-cache-pvc.yaml \
               -f buildpacks-app-image.yaml
 ```{{execute}}
 
@@ -170,7 +216,7 @@ tkn pipelineruns list
 
 Get more info
 ```
-tkn pipelineruns describe tekton-go-pipeline-run
+tkn pipelineruns describe build-pipeline-run
 ```{{execute}}
 
 ## Test it out
