@@ -65,7 +65,7 @@ kubectl get builds
 
 Edit the name of the build in the following command to see the details:
 ```
-kubectl describe build go-sample-app-1-<uuid>
+kubectl describe build go-sample-app-build-1-<uuid>
 ```{{copy}}
 
 The `Revision` field will contain the corresponding git commit id.
