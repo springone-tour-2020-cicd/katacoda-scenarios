@@ -12,7 +12,7 @@ In this step we will create `Pipeline` resources that consist of `TaskRun` speci
 Let's start with creating a basic `Pipeline` resource, without any parameters, workspaces or tasks.
 
 ```
-cat <<EOF >pipeline.yaml
+cat <<EOF >build-pipeline.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -26,10 +26,10 @@ EOF
 
 As a first task, we need to clone the code.
 Let's add the `git-clone` task to our pipeline.
-We will need two parameters, `repo-url` and `branch-name`.
+It requires two parameters, `repo-url` and `branch-name`, and we will set an optional parameter to delete existing clones before re-cloning.
 
 ```
-cat <<EOF >>pipeline.yaml
+cat <<EOF >>build-pipeline.yaml
   - name: fetch-repository
     taskRef:
       name: git-clone
@@ -41,6 +41,8 @@ cat <<EOF >>pipeline.yaml
       value: \$(params.repo-url)
     - name: revision
       value: \$(params.branch-name)
+    - name: deleteExisting
+      value: "true"
 EOF
 ```{{execute}}
 
