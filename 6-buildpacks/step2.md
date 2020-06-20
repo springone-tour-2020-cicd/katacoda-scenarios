@@ -13,7 +13,9 @@ The build pipeline you configured in previous scenarios uses a Kaniko task to bu
 Use `yq -x` to overwrite the build-image task configuration:
 
 ```
-yq m -i -x build-pipeline.yaml - <<EOF
+cd tekton
+yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
+yq m -i -a build-pipeline.yaml - <<EOF
 spec:
   tasks:
   - name: build-image
@@ -75,7 +77,7 @@ spec:
     volumes:
       - name: buildpacks-cache
         persistentVolumeClaim:
-          claimName: buildpacks-cache-pvc
+          claimName: tekton-tasks-pvc
 EOF
 ```{{execute}}
 
@@ -91,30 +93,13 @@ spec:
   type: image
   params:
     - name: url
-      value: ciberkleid/go-sample-app:1.0.3
-EOF
-```{{execute}}
-
-```
-cat <<EOF >>pvc.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: buildpacks-cache-pvc
-spec:
-  storageClassName: local-storage
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
+      value: ${IMG_NS}/go-sample-app:1.0.3
 EOF
 ```{{execute}}
 
 ## Deploy Tekton resources
 
-Since this is a new scenario, before running the updated pipeline, you need to re-install the Tekton CRDs, as well as the tasks being used in the build pipeline. 
+Since this is a new scenario, before running the updated pipeline, you need to re-install the Tekton CRDs, as well as the tasks being used in the build pipeline.
 
 ```
 # Install Tekton CRDs
@@ -164,12 +149,18 @@ kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.dock
 
 ```
 kubectl apply -f sa.yaml \
-                 pv.yaml \
-                 pvc.yaml \
-                 buildpacks-app-image.yaml \
-                 build-pipeline.yaml \
-                 build-pipeline.yaml
-```{{execute}}  
+              -f pv.yaml \
+              -f pvc.yaml \
+              -f buildpacks-app-image.yaml
+```{{execute}}
+
+```
+tkn pipelines create build-pipeline.yaml
+```{{execute}}
+
+```
+kubectl apply -f build-pipeline-run.yaml
+```{{execute}}
 
 # Check status
 

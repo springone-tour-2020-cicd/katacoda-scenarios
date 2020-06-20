@@ -39,6 +39,11 @@ curl -L https://github.com/pivotal/kpack/releases/download/v0.0.6/logs-v0.0.6-li
     mv logs /usr/local/bin/logs
 echo "### Finished installing kpack logs CLI"
 
+echo "### Installing yq CLI"
+wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
+chmod +x /usr/local/bin/yq
+echo "### Finished installing yq CLI"
+
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
 echo "done" >> /root/init-env/init-env.status
