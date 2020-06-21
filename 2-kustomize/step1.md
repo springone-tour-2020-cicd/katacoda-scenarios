@@ -1,4 +1,4 @@
-# Prepare environment
+# Validate the duplication in ops files
 
 Objective:
 Review the ops files created in the prerequisite scenario and understand the challenge of managing a growing and diverging set of configuration files.

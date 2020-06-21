@@ -6,7 +6,7 @@ Maybe you want to automatically run your pipeline every time you create a pull r
 Thankfully, the Tekton Triggers project solves this problem by automatically connecting events to your Tekton Pipelines.
 
 In this step, you will:
-- Set up all the necessary prerequisites
+- Prepare your local environment
 - Learn about the components of Tekton Triggers and how they work
 
 ## Local environment setup

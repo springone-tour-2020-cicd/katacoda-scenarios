@@ -1,4 +1,11 @@
-# Installing Tekton
+# Install Tekton
+
+Objective:
+Prepare your local environment and install Tekton.
+
+In this step, you will:
+- Prepare your local environment
+- Install Tekton
 
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.

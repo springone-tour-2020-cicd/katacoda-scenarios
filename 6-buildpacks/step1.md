@@ -7,6 +7,7 @@ Note:
 For the rest of the scenario, we will use the terms _CNB_ or _buildpacks_ to refer to Cloud Native Buildpacks.
 
 In this step, you will:
+- Prepare your local environment
 - Review the Dockerfile in the sample app
 - Build our sample app locally using the `pack` CLI and Paketo Buildpacks
 - Explore some of the characteristics and features of buildpacks

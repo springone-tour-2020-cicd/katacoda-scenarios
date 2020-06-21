@@ -1,6 +1,10 @@
-# Tutorial environment
+# Prepare environment
 
-Your tutorial environment comes with some pre-installed tools. Let's review them.
+Objective:
+Prepare your local environment.
+
+In this step, you will:
+- Prepare your local environment
 
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
