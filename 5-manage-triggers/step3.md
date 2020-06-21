@@ -57,7 +57,7 @@ Let's adopt separate GitOps repositories for the development and production envi
 Go ahead and move the ops files to another repository.
 
 ```
-cd ..
+cd ../..
 mkdir go-sample-app-ops
 mv go-sample-app/ops go-sample-app-ops
 ```{{execute}}
