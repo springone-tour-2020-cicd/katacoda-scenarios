@@ -1,42 +1,100 @@
-# Extra credit
+# The entire flow
 
 Objective:
-...
+You now have all the necessary building blocks to put entire build and deploy pipeline together.
 
-In this step, you will:
-- ...
+## Argo CD applications
 
-## Additional digging and debugging
+Apply all the Argo CD configuration to the cluster.
 
-You can also use regular kubectl commands to describe kpack resources or check the kpack-controller log:
-
-Get kpack resources:
 ```
-kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
+kubectl create ns dev
+kubectl create ns prod
+kubectl create ns argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+kubectl apply -f . -n argocd
 ```{{execute}}
 
-Get more detail about the builder, including the run image, the list of frameworks supported (Java, Nodejs, Go, .NET Core) and the buildpacks that contribute to the builds:
+## Deploy Tekton pipelines
+
+Make sure all the pipelines are deployed.
+
 ```
-kubectl describe builder default
+cd ../tekton
+kubectl apply -f .
 ```{{execute}}
 
-Get more detail about the image:
+## Test it out
+
+Wait for the deployment to finish.
+
 ```
-kubectl describe image go-sample-app
+kubectl rollout status deployment/el-build-event-listener
+kubectl rollout status deployment/el-ops-dev-event-listener
 ```{{execute}}
 
-Watch the kpack-controller logs:
+Let's port-forward our service.
+
 ```
-kubectl -n kpack logs -l app=kpack-controller -f
+kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
 ```{{execute}}
 
-`Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
+Now we can trigger a pull request event, which should create a new `PipelineRun`.
 
-Read more about viewing kpack logs in this [blog post](https://starkandwayne.com/blog/kpack-viewing-build-logs).
+```
+curl \
+    -H 'X-GitHub-Event: pull_request' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
+      "pull_request": {"head": {"sha": "master"}}
+    }' \
+localhost:8080
+```{{execute}}
 
-## Enable caching
+Next, verify the `PipelineRun` executes without any errors.
 
-kpack requires the default persistent volume (PV) to be configured in the Kuberrnetes cluster in order to cache layers between builds. Our scenario environment does not have a PV. To see caching and re-use in action in kpack:
+```
+tkn pipelinerun list
+tkn pipelinerun logs -f
+```{{execute}}
 
-1. Try this exercise, including the extra credit above, on a cluster with a default PV
-2. Before creating the image, uncomment the "cacheSize" setting in the image yaml configuration file. This will enable caching between builds
+Stop the port-forwarding process:
+```
+pkill kubectl && wait $!
+```{{execute}}
+
+## Port-forward the Argo CD Server
+
+Wait until Argo CD is fully initialized. This may take a few minutes.
+
+```
+kubectl rollout status deployment/argocd-server -n argocd
+```{{execute}}
+
+In order to expose the Argo CD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwaring:
+
+```
+kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &
+```{{execute}}
+
+## Log in using the argocd CLI
+
+First, we need to obtain login credentials. The default admin username is `admin`.
+In order to get the default admin password, run:
+```
+kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+```{{execute}}
+
+## Log in using the Argo CD UI
+
+Click on the tab titled `Argo CD UI`.
+This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI.
+Click the refresh icon at the top of the tab if it does not load automatically.
+
+Alternatively, you can click on the link below and open in a separate tab in your browser:
+
+https://[[HOST_SUBDOMAIN]]-8080-[[KATACODA_HOST]].environments.katacoda.com
+
+Enter the same credentials you used for the CLI.

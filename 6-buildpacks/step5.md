@@ -181,4 +181,27 @@ For now, you'd have to apply the new `Image` modification to the cluster manuall
 We can however use Argo CD for this as well.
 Argo CD should pick up the changed manifest and apply it to the cluster automatically.
 
-Let's move to step 6 to put the entire flow together.
+Instruct Argo CD to automatically keep our CI/CD pipeline, including the updated `Image` from the previous step, in sync with the cluster.
+
+```
+cd ../cicd
+cat <<EOF >argo-deploy-image.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: go-sample-app-image
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: kpack
+    repoURL: https://github.com/andreasevers/go-sample-app-ops.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated: {}
+EOF
+```{{execute}}
+
+Let's move on to put the entire flow together.

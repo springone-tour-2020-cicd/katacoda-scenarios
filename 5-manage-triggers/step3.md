@@ -70,6 +70,13 @@ mv go-sample-app/cicd go-sample-app-ops/cicd
 tree .
 ```{{execute}}
 
+Change the references from the old repository to the new one in the Argo CD files.
+
+```
+sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo-deploy-dev.yaml
+sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo-deploy-prod.yaml
+```{{execute}}
+
 Let's commit the changes to the source code repository first.
 Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
 
