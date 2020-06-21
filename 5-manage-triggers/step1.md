@@ -12,6 +12,20 @@ In this step, you will:
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
 
+Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your Docker Hub namespace:
+
+```
+# Fill this in with your Docker Hub username or org
+IMG_NS=
+```{{copy}}
+
+Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
+
+```
+# Fill this in with your GitHub username or org
+GITHUB_NS=
+```{{copy}}
+
 ### Configure Tekton
 
 Install the pipeline and trigger CRDs, and all the tasks we rely on.
@@ -29,15 +43,6 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kani
 
 Start by cloning the GitHub repo you created in the [previous](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
 
-For convenience, set the following environment variable to your GitHub namespace (your user or org name).
-You can copy and paste the following command into the terminal window, then append your GitHub username or org:
-
-```
-# Fill this in with your GitHub username or org
-GITHUB_NS=
-```{{copy}}
-
-Next, clone your fork of the sample app repo:
 ```
 git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
 ```{{execute}}
@@ -71,13 +76,6 @@ kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_
 ```{{execute}}
 
 ### Log into Docker Hub
-
-Copy and paste the following command into the terminal window, then append your Docker Hub username or org:
-
-```
-# Fill this in with your Docker Hub username or org
-IMG_NS=
-```{{copy}}
 
 Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
 

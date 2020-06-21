@@ -22,16 +22,7 @@ EOF
 
 We also have to set a value for each parameter that each Task expects.
 
-For starters, we need your Docker Hub namespace (your user or org name).
-You can copy and paste the following command into the terminal window, then append your namespace:
-
-```
-# Fill this in with your DockerHub username or org
-IMG_NS=
-```{{copy}}
-
-Now we can set the correct image name.
-For the version we can use the current date and time as a quick solution.
+Set the image name using your Docker Hub namespace and a tag. For the tag, we can use the current date and time as a quick solution.
 
 ```
 BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`

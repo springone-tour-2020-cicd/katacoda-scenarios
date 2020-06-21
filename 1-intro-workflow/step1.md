@@ -15,6 +15,13 @@ In this step, you will:
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
 
+Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your Docker Hub namespace:
+
+```
+# Fill this in with your Docker Hub username or org
+IMG_NS=
+```{{copy}}
+
 ## Clone app repo
 We will be working with a sample app that is publicly available on GitHub.
 
@@ -62,17 +69,9 @@ docker images | grep go-sample-app
 ## Publish image to a registry
 The scenario environment is pre-configured with access to a Kubernetes cluster. In order to deploy the image to the cluster, you must publish the image to a registry that the cluster can access. For this purpose, we will use Docker Hub.
 
-To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. _docker.io/some_namespace/image_name_). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace to the image name. It is also good practice to tag the image with a version.
+To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. _docker.io/some_namespace/image_name_). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace to the image name, which is already saved in $IMG_NS. It is also good practice to tag the image with a version.
 
-For convenience, start by setting the following environment variable to your Docker Hub namespace (your user or org name).
-You can copy and paste the following command into the terminal window, then append your Docker Hub username or org:
-
-```
-# Fill this in with your Docker Hub username or org
-IMG_NS=
-```{{copy}}
-
-Next, log in to Docker Hub. At the prompt, enter your access token.
+Log in to Docker Hub. At the prompt, enter your access token.
 
 ```
 docker login -u $IMG_NS

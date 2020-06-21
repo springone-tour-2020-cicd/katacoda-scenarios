@@ -14,18 +14,18 @@ In this step, you will:
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
 
-## Set your GitHub and Docker Hub namespaces
-
-Your GitHub and Docker Hub namespaces will be needed in this scenario. For convenience, set the following environment variables to your GitHub and Docker Hub namespaces (your user or org names). You can copy and paste the following command into the terminal window, then append your username or org:
-
-```
-# Fill this in with your GitHub username or org
-GITHUB_NS=
-```{{copy}}
+Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your Docker Hub namespace:
 
 ```
 # Fill this in with your Docker Hub username or org
 IMG_NS=
+```{{copy}}
+
+Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
+
+```
+# Fill this in with your GitHub username or org
+GITHUB_NS=
 ```{{copy}}
 
 ## Clone repo

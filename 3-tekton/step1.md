@@ -3,6 +3,20 @@
 ## Local environment setup
 Please wait until `Environment ready!` appears in the terminal window.
 
+Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your Docker Hub namespace:
+
+```
+# Fill this in with your Docker Hub username or org
+IMG_NS=
+```{{copy}}
+
+Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
+
+```
+# Fill this in with your GitHub username or org
+GITHUB_NS=
+```{{copy}}
+
 ## Install Tekton
 Let's begin by installing Tekton's Custom Resource Definitions (CRDs).
 
