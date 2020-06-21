@@ -96,7 +96,6 @@ spec:
 EOF
 ```{{execute}}
 
-
 ## Event Listeners
 
 The `EventListener` defines a list of triggers.
@@ -115,7 +114,7 @@ spec:
     template:
       name: build-trigger-template
     bindings:
-    - name: build-trigger-binding
+    - ref: build-trigger-binding
 EOF
 ```{{execute}}
 
@@ -131,7 +130,7 @@ kubectl apply \
     -f build-trigger-binding.yaml \
     -f build-event-listener.yaml
 ```{{execute}}
-s
+
 ## Test it out
 
 Wait for the deployment to finish.
