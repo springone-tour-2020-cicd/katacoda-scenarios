@@ -93,7 +93,7 @@ spec:
     template:
       name: bump-dev-trigger-template
     bindings:
-    - name: bump-dev-trigger-binding
+    - ref: bump-dev-trigger-binding
 EOF
 ```{{execute}}
 
