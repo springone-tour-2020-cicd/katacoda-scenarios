@@ -26,9 +26,9 @@ spec:
     - name: branch-name
       type: string
       description: The git branch to clone.
-    - name: pipeline-tag
+    - name: tag
+      type: string
       description: The new image tag.
-      default: empty-tag
     - name: github-token-secret
       type: string
       description: Name of the secret holding the github-token.
@@ -62,8 +62,8 @@ spec:
           value: \$(params.github-token-secret)
         - name: GITHUB_TOKEN_SECRET_KEY
           value: \$(params.github-token-secret-key)
-        - name: task-tag
-          value: \$(params.pipeline-tag)
+        - name: TAG
+          value: \$(params.tag)
 EOF
 ```{{execute}}
 
