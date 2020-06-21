@@ -1,57 +1,67 @@
-# Driving change through GitOps
+# Pruning
 
-Any change to the ops repo on GitHub will cause Argo CD to update the deployment.
+Objective:
+Understand use cases where resources need to be deleted from the cluster
 
-As an example, let's try changing the image tag to simulate an application upgrade deployment. We have made the new app image available on Docker Hub already, so you just need to change the tag value in the Kustomization file. Let's switch back to `Hello World!`, which was part of the 1.0.0 release.
+In this step, you will:
+* Make an ops change that results in extraneous resources
+* Observe the deployment through the UI
+* Use a manual sync to remove the extraneous resources
 
-Run the following command:
+## Make an ops change
+
+Add a prefix for resource names in the dev overlay configuration:
 
 ```
-cd go-sample-app/ops/overlays/dev
-yq m -i -x kustomization.yaml - <<EOF
-images:
-  - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
-    newTag: 1.0.0
-EOF
+#echo "namePrefix: dev-" >> ops/overlays/dev/kustomization.yaml
+yq w -i ops/overlays/dev/kustomization.yaml namePrefix dev-
 ```{{execute}}
 
-Push the change to GitHub so Argo CD can detect it:
+Check the change into GitHub.
 
 ```
-git commit -am "Switched back to 1.0.0"
-git push
+git commit -am 'Add prefix dev-'
+git push origin master
 ```{{execute}}
 
-If you have two-factor authentication set up on your GitHub account, you can [create an access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to use as a password. If it's easier, you can also make the change to the `newTag` value manually through the GitHub UI.
+Go back to the UI, and wait (or refresh) until you Argo CD reports that the app is out of sync.
+You should see that the deployed application is still healthy (green hearts), but that the declared desired state is different from the actual runtime state (yellow circles).
+Do **not** click Sync again - we will trigger Argo to sync in a few steps.
 
-Now sit back and watch Argo CD update the deployment of go-sample-app-dev.
+You can explore the UI further to get a sense for the additional information and insight that Argo CD can provide.
 
-You can verify the new deployment in the UI by clicking into the application `go-sample-app-dev` and clicking on `History and Rollback`. You should see two entries.
-
-## Test the app
-
-Wait for the deployment to finish:
-
+You can also use the `argocd` CLI to explore the apps and their status:
 ```
-kubectl rollout status deployment/go-sample-app -n dev
+argocd app list
 ```{{execute}}
 
-Set up port-forwarding again and test the app:
+and
 
 ```
-kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
-APP_PID=$!
+argocd app get go-sample-app-dev
 ```{{execute}}
 
-Send a request. Validate that the app responds with "Hello, world!" again.
+You should see that argocd reports on 4 resources: the service and deployment with the original names, and the service and deployment with the `dev-` prefix.
+All are healthy, but two are out of sync.
+Since the particular configuration change altered the name of the resources, in effect it created new resources, rather than updating the existing ones.
+Notice the message for the ones that are out of sync says that pruning is required.
 
 ```
-curl localhost:8080
-```{{execute}}
-
-## Cleanup
-Stop the port-forwarding process for our application.
-
+> GROUP  KIND        NAMESPACE  NAME               STATUS     HEALTH   HOOK  MESSAGE
+> apps   Deployment  dev        go-sample-app      OutOfSync  Healthy        ignored (requires pruning)
+>        Service     dev        go-sample-app      OutOfSync  Healthy        ignored (requires pruning)
+>        Service     dev        dev-go-sample-app  Synced     Healthy        service/dev-go-sample-app created
+> apps   Deployment  dev        dev-go-sample-app  Synced     Healthy        deployment.apps/dev-go-sample-app created
 ```
-kill ${APP_PID} && wait $!
+
+Enabling pruning tells Argo CD to delete resources that are not reflected in the declared state (ops files).
+By default, and as a safety mechanism, automatic pruning is disabled.
+You can enable it for all syncs, or you can manually apply it for a single sync.
+Go back to the UI and click on 'SYNC'.
+In the pop-up, check the option to prune, then hit Synchronize.
+You should see the two older resources disappear.
+
+Once again, check the app status using the CLI:
+```
+argocd app get go-sample-app-dev
 ```{{execute}}

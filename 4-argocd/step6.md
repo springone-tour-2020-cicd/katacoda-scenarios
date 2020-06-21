@@ -1,27 +1,70 @@
-# Reconciliation Loop
+# Deploy to production environment
 
-Having declarative resources available in a Git repository gives us the ability to automatically sync an application when the desired manifests in Git are updated.
-We have demonstrated this with the Automatic Sync feature turned on.
-Changes made in Git were automatically deployed to the cluster.
+Objective:
+Use a declarative approach to deploy the sample application to the prod environment.
 
-However, the deployment in the cluster may diverge from the desired state declared in the Git manifests. One case may be an emergency change that must be applied to the live cluster. Such exceptions are not ideal, but they may be necessary and justifiable in some situations. In these cases, Argo CD will also detect a divergence in state, but by default it will not automatically re-apply the declarative manifests to the cluster.
+In this step, you will:
+* Generate yaml files to represent the dev and prod Argo CD Application resources
+* Use the prod resource to configure Argo CD
+* Observe the deployment of the app to the prod environment
+* Test the deployed application
 
-This functionality can be enabled, but, just as with automatic pruning, it is disabled by default, as a safety mechanism.
+## Configure the application in Argo CD for deployment to prod
 
-To enable automatic sync when the live cluster's state deviates from the state defined in Git, run the following command:
+For prod, we will use a declarative approach to create the application.
+
+First, use the `argocd` CLI to extract the dev app spec programmatically and save it to a file:
 
 ```
-argocd app set go-sample-app-prod --self-heal
+mkdir -p /workspace/go-sample-app/cicd
+cd  /workspace/go-sample-app/cicd
+
+cat <<EOF >argo-deploy-dev.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: go-sample-app-dev
+EOF
+
+echo "$(argocd app get go-sample-app-dev -o yaml | yq r - spec | yq p - spec)" >> argo-deploy-dev.yaml
 ```{{execute}}
 
-Now go ahead and delete the deployment from production. By deleting the deployment, we are ensuring Kubernetes will not recreate it (as opposed to simply deleting a pod, for example, which Kubernetes woult recover).
+Make a copy of the file for prod, and update replace 'dev' with 'prod' inside the file. Review the file.
+```
+sed 's/dev/prod/g' argo-deploy-dev.yaml > argo-deploy-prod.yaml
+cat argo-deploy-prod.yaml
+```{{execute}}
+
+Apply the change.
+```
+kubectl apply -f argo-deploy-prod.yaml -n argocd
+```{{execute}}
+
+Go back to the UI and click on Applications in the breadcrum on the upper left. You should see a second tile, representing the prod deployment in the prod namespace.
+
+## Try it out
 
 ```
-kubectl delete deploy prod-go-sample-app -n prod
+kubectl rollout status deployment/prod-go-sample-app -n prod
+kubectl port-forward service/prod-go-sample-app 8081:8080 -n prod 2>&1 > /dev/null &
+APP_PID=$!
 ```{{execute}}
 
-Argo CD will now detect the divergence, and try to reconcile the state of Git with the cluster.
+Send a request. Validate that the app responds with "Hello, sunshine!"
 
-You can verify the new deployment in the UI by clicking into the application `go-sample-app-prod` and clicking on `History and Rollback`. You should see two entries.
+```
+curl localhost:8081
+```{{execute}}
 
-Having the self-healing capabilities allows us to recover from changes to the cluster that cannot be recovered by Kubernetes' own reconciliation.
+The container should now have printed the environment variable for production.
+
+```
+kubectl logs $(kubectl get pods -n prod -o jsonpath="{.items[0].metadata.name}") -n prod
+```{{execute}}
+
+## Cleanup
+Stop the port-forwarding process for our application.
+
+```
+kill ${APP_PID} && wait $!
+```{{execute}}

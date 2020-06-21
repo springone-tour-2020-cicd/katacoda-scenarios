@@ -5,15 +5,16 @@ Deploy the sample application to the dev environment.
 
 In this step, you will:
 * Configure the application in Argo CD
-* Observe the deployment through the UI
-* Observe the deployment through the `argocd` and `kubectl` CLIs
+* Manually sync the ops files with the cluster
+* Observe the deployment
 * Test the deployed application
+* Enable automatic sync
 
 ## Configure the application in Argo CD for deployment to dev
 
 There are several ways to configure an application in Argo CD.
 You can use the UI, the CLI, or you can use `kubectl` to apply a YAML configuration of the Argo Application CRD.
-We will review all three.
+We will review the UI and CLI approaches in this step, and the declarative approach in an upcoming step.
 
 In the UI, click on `+ NEW APP`. Configure the app as shown below.
 Leave any fields not mentioned below at their default value.
@@ -97,81 +98,10 @@ Stop the port-forwarding process for our application.
 kill ${APP_PID} && wait $!
 ```{{execute}}
 
-## Make an ops change
-
-Make a change to the dev overlay configuration:
-```
-cd ops/overlays/dev
-echo "namePrefix: dev-" >> kustomization.yaml
-```{{execute}}
-
-Check the change into GitHub.
-You will need to authenticate using your [Personal Access Token](https://github.com/settings/tokens):
-
-```
-git add -A
-git commit -m 'add prefix dev-'
-git push origin master
-```{{execute}}
-
-Go back to the UI, and wait (or refresh) until you Argo CD reports that the app is out of sync.
-You should see that the deployed application is still healthy (green hearts), but that the declared desired state is different from the actual runtime state (yellow circles).
-Do **not** click Sync again - we will trigger Argo to sync in a few steps.
-
-You can explore the UI further to get a sense for the additional information and insight that Argo CD can provide.
-
-You can also use the `argocd` CLI to explore the apps and their status:
-```
-argocd app list
-```{{execute}}
-and
-```
-argocd app get go-sample-app-dev
-```{{execute}}
-
-You should see that argocd reports on 4 resources: the service and deployment with the original names, and the service and deployment with the `dev-` prefix.
-It reports that two healthy and two two are missing, and that all are out of sync:
-
-```
-> GROUP  KIND        NAMESPACE  NAME               STATUS     HEALTH   HOOK  MESSAGE
->        Service     dev        go-sample-app      OutOfSync  Healthy        service/go-sample-app created
-> apps   Deployment  dev        go-sample-app      OutOfSync  Healthy        deployment.apps/go-sample-app created
->        Service     dev        dev-go-sample-app  OutOfSync  Missing
-> apps   Deployment  dev        dev-go-sample-app  OutOfSync  Missing
-
-```
-
 ## Enable automatic sync
 
-Rather than sync the app manually again, you can set the sync policy to 'Automatic'.
-Let's do this using the CLI:
+To avoid having to sync manually in the future, set the sync policy to 'Automatic'. You can do this through the UI or the CLI.
 
 ```
 argocd app set go-sample-app-dev --sync-policy automated
 ```{{execute}}
-
-Check the app status again:
-
-```
-argocd app get go-sample-app-dev
-```{{execute}}
-
-Argo now reports that 4 resources are deployed, the old and the new.
-All are healthy, but two are still out of sync.
-Since the particular configuration change altered the name of the resources, in effect it created new resources, rather than updating the existing ones.
-Notice the message for the ones that are out of sync says that pruning is required.
-
-```
-> GROUP  KIND        NAMESPACE  NAME               STATUS     HEALTH   HOOK  MESSAGE
-> apps   Deployment  dev        go-sample-app      OutOfSync  Healthy        ignored (requires pruning)
->        Service     dev        go-sample-app      OutOfSync  Healthy        ignored (requires pruning)
->        Service     dev        dev-go-sample-app  Synced     Healthy        service/dev-go-sample-app created
-> apps   Deployment  dev        dev-go-sample-app  Synced     Healthy        deployment.apps/dev-go-sample-app created
-```
-
-Enabling pruning tells Argo CD to delete resources that are not reflected in the declared state (ops files).
-By default, and as a safety mechanism, automatic pruning is disabled.
-You can enable it for all syncs, or you can manually apply it for a single sync.
-Go back to the UI and click on 'SYNC'.
-In the pop-up, check the option to prune, then hit Synchronize.
-You should see the two older resources disappear.
