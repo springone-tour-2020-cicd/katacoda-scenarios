@@ -155,16 +155,14 @@ spec:
     - name: digest
       value: \$(tasks.build-image.results.IMAGE-DIGEST)
     taskSpec:
-      inputs:
-        params:
-        - name: digest
-          value: \$(params.digest)
+      params:
+      - name: digest
       steps:
       - name: bash
         image: ubuntu
         script: |
-          echo \$(inputs.params.digest)
-          case .\$(inputs.params.digest) in
+          echo \$(params.digest)
+          case .\$(params.digest) in
             ".sha"*) exit 0 ;;
             *)       echo "Digest value is not correct" && exit 1 ;;
           esac
@@ -180,7 +178,7 @@ more build-pipeline.yaml
 We can now add this `Pipeline` to our cluster.
 
 ```
-tkn pipeline create -f build-pipeline.yaml
+kubectl apply -f build-pipeline.yaml
 ```{{execute}}
 
 In the next step we'll add the necessary configuration to actually run this pipeline.

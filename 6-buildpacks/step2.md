@@ -186,11 +186,7 @@ kubectl apply -f sa.yaml \
 ```{{execute}}
 
 ```
-tkn pipelines create -f build-pipeline.yaml
-```{{execute}}
-
-```
-kubectl apply -f build-pipeline-run.yaml
+kubectl apply -f build-pipeline.yaml -f build-pipeline-run.yaml
 ```{{execute}}
 
 # Check status

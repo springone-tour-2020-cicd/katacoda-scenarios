@@ -33,8 +33,8 @@ spec:
         persistentvolumeclaim:
           claimName: workspace-pvc
       params:
-      - name: pipeline-tag
-        value: \$(params.trigger-tag)
+      - name: tag
+        value: \$(params.tag)
       - name: repo-url
         value: https://github.com/${GITHUB_NS}/go-sample-app.git
       - name: branch-name
@@ -45,9 +45,9 @@ spec:
         value: GITHUB_TOKEN
       serviceAccountName: build-bot
   params:
-  - name: trigger-tag
+  - name: tag
+    type: string
     description: Tag of the new Docker image.
-    default: empty-tag
 EOF
 ```{{execute}}
 
@@ -70,7 +70,7 @@ metadata:
   name: bump-dev-trigger-binding
 spec:
   params:
-  - name: TAG
+  - name: tag
     value: \$(body.push_data.tag)
 EOF
 ```{{execute}}

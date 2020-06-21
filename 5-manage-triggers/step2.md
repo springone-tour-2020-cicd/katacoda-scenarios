@@ -122,11 +122,16 @@ EOF
 ## Apply the trigger
 
 ```
-kubectl apply -f sa.yaml -f pv.yaml -f pvc.yaml
-tkn pipeline create -f build-pipeline.yaml
-kubectl apply -f build-trigger-template.yaml -f build-trigger-binding.yaml -f build-event-listener.yaml
+kubectl apply \
+    -f sa.yaml \
+    -f pv.yaml \
+    -f pvc.yaml \
+    -f build-pipeline.yaml \
+    -f build-trigger-template.yaml \
+    -f build-trigger-binding.yaml \
+    -f build-event-listener.yaml
 ```{{execute}}
-
+s
 ## Test it out
 
 Wait for the deployment to finish.

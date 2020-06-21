@@ -26,9 +26,9 @@ spec:
     - name: branch-name
       type: string
       description: The git branch to clone.
-    - name: pipeline-tag
+    - name: tag
+      type: string
       description: The new image tag.
-      default: empty-tag
     - name: github-token-secret
       type: string
       description: Name of the secret holding the github-token.
@@ -62,8 +62,8 @@ spec:
           value: \$(params.github-token-secret)
         - name: GITHUB_TOKEN_SECRET_KEY
           value: \$(params.github-token-secret-key)
-        - name: task-tag
-          value: \$(params.pipeline-tag)
+        - name: TAG
+          value: \$(params.tag)
 EOF
 ```{{execute}}
 
@@ -71,6 +71,6 @@ Take a look at the entire `Pipeline`, and apply it to the cluster.
 
 ```
 yq r -C bump-dev-pipeline.yaml
-tkn pipeline create -f bump-dev-pipeline.yaml
+kubectl apply -f bump-dev-pipeline.yaml
 ```{{execute}}
 
