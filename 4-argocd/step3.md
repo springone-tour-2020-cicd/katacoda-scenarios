@@ -1,8 +1,14 @@
-# Logging in...
+# Log in to ArgoCD
 
-There are two ways to interact with Argo CD: the CLI and the UI. Lets' begin by logging into each of them.
+Objective:
+Log in to ArgoCD using both the `argocd` CLI as well as the UI.
 
-## The CLI
+In the step, you will:
+* Obtain the default password for the admin user
+* Log in using the `argocd` CLI
+* Log in using the ArgoCD UI
+
+## argocd CLI
 
 First, we need to obtain login credentials. The default admin username is `admin`. In order to get the default admin password, run:
 ```
@@ -22,18 +28,12 @@ When prompted, copy and paste the password from the previous command.
 OPTIONAL:
 You can use ```argocd account update-password```{{execute}} to update the password to something that's easier to remember.
 
-## The UI
+## ArgoCD UI
 
-Next, let's log into UI.
+Click on the tab titled `ArgoCD UI`. This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI. Click the refresh icon at the top of the tab if it does not load automatically.
 
-Click on the tab titled `ArgoCD UI`. This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI.
-
-You can also use the following link to open the Argo CD UI in a new tab if you prefer:
+Alternatively, you can click on the link below and open in a separate tab in your browser:
 
 https://[[HOST_SUBDOMAIN]]-8080-[[KATACODA_HOST]].environments.katacoda.com
 
 Enter the same credentials you used for the CLI.
-
-
-
-Next, let's deploy an application!
