@@ -75,13 +75,13 @@ kubectl get pvc
 Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
 
 ```
-docker login
+docker login -u $IMG_NS
 ```{{execute}}
 
 This creates a `config.json` file that caches your Docker Hub credentials.
 
 ```
-more /root/.docker/config.json
+cat /root/.docker/config.json
 ```{{execute}}
 
 You can [create a secret from existing credentials](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) with the following command.
