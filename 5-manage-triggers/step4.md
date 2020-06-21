@@ -49,6 +49,8 @@ spec:
           value: \$(params.repo-url)
         - name: revision
           value: \$(params.branch-name)
+        - name: deleteExisting
+          value: "true"
     - name: bump-dev
       taskRef:
         name: bump-dev

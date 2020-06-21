@@ -21,10 +21,6 @@ kind: Task
 metadata:
   name: bump-dev
 spec:
-  resources:
-    inputs:
-    - name: git-sources
-      type: git
   workspaces:
     - name: source
   params:
@@ -52,7 +48,7 @@ cat <<EOF >>bump-dev-task.yaml
     image: mikefarah/yq
     workingDir: \$(workspaces.source.path)
     script: |
-        cd go-sample-app/ops/overlays/dev
+        cd ops/overlays/dev
         yq m -i -x kustomization.yaml - <<EOD
         images:
           - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
@@ -72,8 +68,11 @@ cat <<EOF >>bump-dev-task.yaml
       git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app.git
       git config user.name build-bot
       git config user.email build-bot@bots.bot
-      git add go-sample-app/ops/overlays/dev/kustomization.yaml
+      git checkout -b temp-branch
+      git add ops/overlays/dev/kustomization.yaml
       git commit -m "Automatically promoting dev version"
+      git checkout master
+      git merge temp-branch
       git push origin master
     env:
       - name: GITHUB_TOKEN

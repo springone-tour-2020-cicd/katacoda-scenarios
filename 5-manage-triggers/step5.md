@@ -46,7 +46,6 @@ spec:
       serviceAccountName: build-bot
   params:
   - name: tag
-    type: string
     description: Tag of the new Docker image.
 EOF
 ```{{execute}}
