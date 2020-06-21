@@ -10,10 +10,3 @@ git push origin master
 ```{{execute}}
 
 You are now ready to proceed with the other scenarios in this course.
-
-
-
-Finally, as we mentioned earlier, you can query for Argo CD Applications and ApplicationProjects:
-```
-kubectl get applications,appprojects -n argocd
-```{{execute}}

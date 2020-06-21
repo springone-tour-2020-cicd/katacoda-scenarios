@@ -31,7 +31,7 @@ Application Name: go-sample-app-dev
 Project: default
 
 SOURCE
-Repository URL:  
+Repository URL: https://github.com/<GITHUB_NS>/go-sample-app.git  
 Revision: HEAD
 Path: ops/overlays/dev
 
@@ -43,11 +43,11 @@ Note on `Cluster` field configuration: we are deploying the sample app into the 
 
 As a point of information, the CLI command to create the same application would be:
 ```
-> argocd app create go-sample-app-dev \
->        --repo https://github.com/${GITHUB_NS}/go-sample-app.git \
->        --path ops/overlays/dev \
->        --dest-namespace dev \
->        --dest-server https://kubernetes.default.svc
+argocd app create go-sample-app-dev \
+       --repo https://github.com/${GITHUB_NS}/go-sample-app.git \
+       --path ops/overlays/dev \
+       --dest-namespace dev \
+       --dest-server https://kubernetes.default.svc
 ```
 
 ## Sync and review the application

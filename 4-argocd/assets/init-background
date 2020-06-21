@@ -22,9 +22,9 @@ git config --global user.name "Guest User"
 echo "### Finished configuring git global settings"
 
 echo "### Installing argocd CLI"
-wget https://github.com/argoproj/argo-cd/releases/download/v1.4.2/argocd-linux-amd64
-chmod +x argocd-linux-amd64
-mv argocd-linux-amd64 /usr/local/bin/argocd
+VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+chmod +x /usr/local/bin/argocd
 echo "### Finished installing argocd CLI"
 
 echo "### Installing yq"
