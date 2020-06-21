@@ -1,91 +1,89 @@
-# Automating promotion
+# Add the promotion pipeline
 
-Assuming the `PipelineRun` finished successfully, you now have a new image in your Docker Hub account.
+Objective:
+Now that you've sorted out the ops repository, you can start creating the promotion pipeline.
 
-In order for you to deploy this image to the dev environment, you need to manually update the Kustomization file with the new image's tag.
-As seen in the [previous scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/4-argocd), ArgoCD will then go on to automatically deploy the resources.
+In this step, you will:
+- Start off with creating your own `Task`, responsible for modifying the image tag on the development overlay
 
-Instead of doing this manually, it'd be better to have another pipeline update the Kustomization file automatically, based on a trigger listening to Docker Hub webook events.
+## Introduce a new Task
 
-## Endless commit loop
-
-Let's say you'd implement the promotion pipeline with the Docker Hub trigger.
-The flow would be as follows:
-
-1. A developer makes a change to the Go source code and pushes it to Git
-1. The Git change to the repo triggers our build pipeline
-1. The build pipeline pushes a new image to Docker Hub
-1. The new image in Docker Hub triggers the promotion pipeline
-1. The promotion pipeline changes the Kustomization file which ArgoCD will deploy
-1. The promotion pipeline pushes the code change to Git
-1. The Git change to the repo triggers our build pipeline
-1. And on and on we go...
-
-This flow would trigger an endless loop, creating Docker images and Git commits until storage runs out.
-
-You could alter the trigger to look for changes based on regular expressions or file paths, but there might be a better and cleaner alternative.
-
-## GitOps repositories
-
-Until now, we've put our Kubernetes and Kustomize resource files inside the `ops` directory of our application source code repository.
-
-However, keeping the config separate from your application source code inside a separate Git repository is highly recommended for the following reasons:
-
-- It provides a clean separation of application code vs. application config.
-There will be times when you wish to modify just the manifests without triggering an entire CI build.
-For example, you likely do not want to trigger a build if you simply wish to bump the number of replicas in a Deployment spec.
-
-- Cleaner audit log. For auditing purposes, a repo which only holds configuration will have a much cleaner Git history of what changes were made, without the noise coming from check-ins due to normal development activity.
-
-- Your application may be comprised of services built from multiple Git repositories, but is deployed as a single unit.
-It may not make sense to store the manifests in one of the source code repositories of a single component.
-
-- Separation of access.
-The developers who are developing the application, may not necessarily be the same people who can/should push to production environments, either intentionally or unintentionally.
-By having separate repos, commit access can be given to the source code repo, and not the application config repo.
-
-If you are automating your CI pipeline, pushing manifest changes to the same Git repository can trigger an infinite loop of build jobs and Git commit triggers. Having a separate repo to push config changes to, prevents this from happening.
-
-Most of these concerns can still be solved by configuring conditional triggers, using specific Git commit messages, or build conditions based on files changed.
-Nevertheless, using Git as the elbow joints of different pipeline parts makes a remarkably good fit.
-It allows pipelines to be modular and can easily be expanded and retracted when required.
-
-Let's adopt separate GitOps repositories for the development and production environment.
-
-## Moving the ops files
-
-Go ahead and move the ops files to another repository.
+The `Task` you're going to build now, will be started right after the `git-clone` `Task` has run.
+This means we can use the cloned Git sources as input to our Task.
+We also need a couple of parameters to fulfil our task, such as the new image tag, and the GitHub access token `Secret`.
 
 ```
-cd ..
-mkdir go-sample-app-ops
-mv go-sample-app/ops go-sample-app-ops
+cat <<EOF >bump-dev-task.yaml
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: bump-dev
+spec:
+  workspaces:
+    - name: source
+  params:
+    - name: GITHUB_TOKEN_SECRET
+      type: string
+      description: Name of the secret holding the github-token.
+      default: github-token
+    - name: GITHUB_TOKEN_SECRET_KEY
+      type: string
+      description: Name of the secret key holding the github-token.
+      default: GITHUB_TOKEN
+    - name: TAG
+      type: string
+      description: Name of the new image tag.
+EOF
 ```{{execute}}
 
-You can also move the Tekton files, so that ArgoCD will also automatically deploy them to Kubernetes.
+You can now add two steps.
+The first step modifies the development overlay with the new tag.
 
 ```
-mv go-sample-app/tekton go-sample-app-ops/tekton
+cat <<EOF >>bump-dev-task.yaml
+  steps:
+  - name: update-image-tag
+    image: mikefarah/yq
+    workingDir: \$(workspaces.source.path)
+    script: |
+        cd ops/overlays/dev
+        yq m -i -x kustomization.yaml - <<EOD
+        images:
+          - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
+            newTag: \$(params.TAG)
+        EOD
+EOF
 ```{{execute}}
 
-Let's commit the changes to the source code repository first.
+And the second step commits the changes.
 
 ```
-cd go-sample-app
-git add -A
-git commit -m "Moved ops and tekton directories to their own repo"
-git push origin master
+cat <<EOF >>bump-dev-task.yaml
+  - name: git-commit
+    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1
+    workingDir: \$(workspaces.source.path)
+    script: |
+      git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app.git
+      git config user.name build-bot
+      git config user.email build-bot@bots.bot
+      git checkout -b temp-branch
+      git add ops/overlays/dev/kustomization.yaml
+      git commit -m "Automatically promoting dev version"
+      git checkout master
+      git merge temp-branch
+      git push origin master
+    env:
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: \$(params.GITHUB_TOKEN_SECRET)
+            key: \$(params.GITHUB_TOKEN_SECRET_KEY)
+EOF
 ```{{execute}}
 
-You can create the new repository on GitHub using `hub`, and commit all the moved files into it.
+Take a look at the entire `Task`, and apply it to the cluster.
 
 ```
-cd ../go-sample-app-ops
-git init
-hub create
-git add -A
-git commit -m "Files moved from go-sample-app repo"
-git push
+yq r -C bump-dev-task.yaml
+kubectl apply -f bump-dev-task.yaml
 ```{{execute}}
-
-Now that you've avoided infinite loops by adopting a specialized ops repo, you can now safely add the promotion pipeline.

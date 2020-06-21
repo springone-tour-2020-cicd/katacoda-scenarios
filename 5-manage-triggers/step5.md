@@ -1,4 +1,4 @@
-# Add the promotion Pipeline
+# Add the promotion pipeline
 
 Objective:
 Now that you've sorted out the ops repository, you can start creating the promotion pipeline.
