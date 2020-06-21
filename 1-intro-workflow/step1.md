@@ -92,7 +92,7 @@ You are now ready to deploy the image to Kubernetes.
 Begin by creating a new namespace called `dev`:
 
 ```
-kubectl create namespace dev
+kubectl create ns dev
 ```{{execute}}
 
 A deployment can be done _imperatively_ using a CLI and command-line options operating on running resources, or _declaratively_ using a config file that describes the desired deployment. The latter is aligned with an "infrastructure as code" methodology, wherein the config files serve as a blueprint and "source of truth" for deployments, and they enable configuration of any aspect of the resource (as opposed to being limited to those exposed through the CLI).

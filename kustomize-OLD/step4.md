@@ -103,7 +103,7 @@ profile='dev'
 Now let's create a new namespace `production`
 
 ```
-kubectl create namespace production
+kubectl create ns production
 ```{{execute}}
 
 Verify it has been created

@@ -4,7 +4,7 @@ Objective:
 Review the ops files created in the prerequisite scenario and understand the challenge of managing a growing and diverging set of configuration files.
 
 In this step, you will:
-- Clone your app repo
+- Prepare your local environment
 - Validate the duplication in the ops files
 
 ## Local environment setup
@@ -24,6 +24,25 @@ Start by cloning the GitHub repo you created in the [previous](https://www.katac
 ```
 git clone https://github.com/$GITHUB_NS/go-sample-app.git
 ```{{execute}}
+
+## Clone repo
+
+Start by cloning the GitHub repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
+
+```
+git clone https://github.com/$GITHUB_NS/go-sample-app.git
+```{{execute}}
+
+## Create namespaces
+
+To simulate the dev an prod environments into which we will be deploying the app, create dev and prod namepsaces.
+
+```
+kubectl create ns dev
+kubectl create ns prod
+```{{execute}}
+
+## Validate duplication of ops configuration
 
 In the prerequisite scenario, you created two sets of ops files corresponding to two deployment environments, dev and prod, and you used `yq` to change the value of the metadata.namespace node for prod.
 

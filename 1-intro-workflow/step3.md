@@ -14,7 +14,7 @@ In this step, you will:
 Begin by creating a new namespace called `prod` that will serve as our production environment:
 
 ```
-kubectl create namespace prod
+kubectl create ns prod
 ```{{execute}}
 
 ## Duplicate the yamls

@@ -4,7 +4,7 @@ Let's begin by installing Argo CD to our Kubernetes cluster.
 
 Create a namespace for our Argo CD installation:
 ```
-kubectl create namespace argocd
+kubectl create ns argocd
 ```{{execute}}
 
 Install Argo CD:

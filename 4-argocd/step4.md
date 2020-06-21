@@ -4,12 +4,6 @@ Let's deploy our sample application.
 
 We only have one Kubernetes cluster, so we will be deploying our app to the same cluster in which we installed Argo CD. You can also easily attach other clusters to Argo CD and use it to deploy apps to to those.
 
-Create a namespace called `dev` to simulate a development environment for deployment:
-
-```
-kubectl create namespace dev
-```{{execute}}
-
 In the UI, click on `+ NEW APP`.
 
 Fill in the form as follows, using details pertaining to your fork of the sample app. Make sure to replace the placeholder `GITHUB_NS` with the proper value. Leave any fields not mentioned below at their default value.

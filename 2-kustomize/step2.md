@@ -73,10 +73,9 @@ To see the yaml generated for the dev environment, run:
 kustomize build --load_restrictor none .
 ```{{execute}}
 
-To apply this generated yaml to your cluster, create the dev namespace and pipe the output of the kustomize command to `kubectl apply`:
+To apply this generated yaml to your cluster, pipe the output of the kustomize command to `kubectl apply`:
 
 ```
-kubectl create ns dev
 kustomize build --load_restrictor none . | kubectl apply -f -
 ```{{execute}}
 
@@ -96,7 +95,6 @@ touch kustomization.yaml
 kustomize edit add base ../../base/deployment.yaml
 kustomize edit add base ../../base/service.yaml
 kustomize edit set namespace prod
-kubectl create ns prod
 kustomize build --load_restrictor none . | kubectl apply -f -
 ```{{execute}}
 

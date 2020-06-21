@@ -1,11 +1,5 @@
 # Deploy to production environment
 
-Create a namespace called `prod` to simulate a production environment for deployment:
-
-```
-kubectl create namespace prod
-```{{execute}}
-
 Create another Argo CD 'Application', this time using the `argocd` CLI:
 ```
 argocd app create go-sample-app-prod --repo https://github.com/${GITHUB_NS}/go-sample-app.git --path ops/overlays/prod --dest-namespace prod --dest-server https://kubernetes.default.svc --sync-policy automated
