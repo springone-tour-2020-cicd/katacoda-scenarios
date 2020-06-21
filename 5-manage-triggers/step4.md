@@ -13,11 +13,12 @@ This means we can use the cloned Git sources as input to our Task.
 We also need a couple of parameters to fulfil our task, such as the new image tag, and the GitHub access token `Secret`.
 
 ```
-cat <<EOF >bump-dev-task.yaml
+cd tekton
+cat <<EOF >ops-dev-task.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: bump-dev
+  name: ops-dev
 spec:
   workspaces:
     - name: source
@@ -40,7 +41,7 @@ You can now add two steps.
 The first step modifies the development overlay with the new tag.
 
 ```
-cat <<EOF >>bump-dev-task.yaml
+cat <<EOF >>ops-dev-task.yaml
   steps:
   - name: update-image-tag
     image: mikefarah/yq
@@ -58,12 +59,12 @@ EOF
 And the second step commits the changes.
 
 ```
-cat <<EOF >>bump-dev-task.yaml
+cat <<EOF >>ops-dev-task.yaml
   - name: git-commit
     image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1
     workingDir: \$(workspaces.source.path)
     script: |
-      git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app.git
+      git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
       git config user.name build-bot
       git config user.email build-bot@bots.bot
       git checkout -b temp-branch
@@ -84,6 +85,6 @@ EOF
 Take a look at the entire `Task`, and apply it to the cluster.
 
 ```
-yq r -C bump-dev-task.yaml
-kubectl apply -f bump-dev-task.yaml
+yq r -C ops-dev-task.yaml
+kubectl apply -f ops-dev-task.yaml
 ```{{execute}}

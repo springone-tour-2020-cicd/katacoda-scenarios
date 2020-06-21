@@ -66,9 +66,11 @@ You can also move the Tekton files, so that ArgoCD will also automatically deplo
 
 ```
 mv go-sample-app/tekton go-sample-app-ops/tekton
+tree .
 ```{{execute}}
 
 Let's commit the changes to the source code repository first.
+Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
 
 ```
 cd go-sample-app
@@ -77,15 +79,21 @@ git commit -m "Moved ops and tekton directories to their own repo"
 git push origin master
 ```{{execute}}
 
-You can create the new repository on GitHub using `hub`, and commit all the moved files into it.
+You can create the new ops repository on GitHub using `hub`.
+Enter your GitHub username and access token at the prompt to authenticate against GitHub.
 
 ```
 cd ../go-sample-app-ops
 git init
-hub create -o
+hub create
+```{{execute}}
+
+And finally commit all the moved files into it.
+
+```
 git add -A
 git commit -m "Files moved from go-sample-app repo"
-git push
+git push origin master
 ```{{execute}}
 
 Now that you've avoided infinite loops by adopting a specialized ops repo, you can now safely add the promotion pipeline.

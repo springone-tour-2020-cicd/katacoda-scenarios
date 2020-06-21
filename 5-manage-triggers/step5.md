@@ -8,14 +8,14 @@ In this step, you will:
 
 ## Introduce the new Pipeline
 
-You're going to use the `git-clone`, as well as the newly created `bump-dev` Tasks.
+You're going to use the `git-clone`, as well as the newly created `ops-dev` Tasks.
 
 ```
-cat <<EOF >bump-dev-pipeline.yaml
+cat <<EOF >ops-dev-pipeline.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: bump-dev-pipeline
+  name: ops-dev-pipeline
 spec:
   params:
     - name: repo-url
@@ -49,9 +49,9 @@ spec:
           value: \$(params.branch-name)
         - name: deleteExisting
           value: "true"
-    - name: bump-dev
+    - name: ops-dev
       taskRef:
-        name: bump-dev
+        name: ops-dev
       runAfter:
         - fetch-repository
       workspaces:
@@ -70,7 +70,7 @@ EOF
 Take a look at the entire `Pipeline`, and apply it to the cluster.
 
 ```
-yq r -C bump-dev-pipeline.yaml
-kubectl apply -f bump-dev-pipeline.yaml
+yq r -C ops-dev-pipeline.yaml
+kubectl apply -f ops-dev-pipeline.yaml
 ```{{execute}}
 

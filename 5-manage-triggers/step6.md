@@ -14,20 +14,20 @@ Whenever a new image gets pushed to Docker Hub, our pipeline needs to run.
 Create a new `TriggerTemplate` using the `Pipeline` you just created.
 
 ```
-cat <<EOF >bump-dev-trigger-template.yaml
+cat <<EOF >ops-dev-trigger-template.yaml
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: bump-dev-trigger-template
+  name: ops-dev-trigger-template
 spec:
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: bump-dev-pipeline-run-
+      generateName: ops-dev-pipeline-run-
     spec:
       pipelineRef:
-        name: bump-dev-pipeline
+        name: ops-dev-pipeline
       workspaces:
       - name: shared-workspace
         persistentvolumeclaim:
@@ -53,8 +53,8 @@ EOF
 Take a look at the entire `TriggerTemplate`, and apply it to the cluster.
 
 ```
-yq r -C bump-dev-trigger-template.yaml
-kubectl apply -f bump-dev-trigger-template.yaml
+yq r -C ops-dev-trigger-template.yaml
+kubectl apply -f ops-dev-trigger-template.yaml
 ```{{execute}}
 
 ## Add a TriggerBinding
@@ -62,11 +62,11 @@ kubectl apply -f bump-dev-trigger-template.yaml
 
 ```
 BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
-cat <<EOF >bump-dev-trigger-binding.yaml
+cat <<EOF >ops-dev-trigger-binding.yaml
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: bump-dev-trigger-binding
+  name: ops-dev-trigger-binding
 spec:
   params:
   - name: tag
@@ -80,26 +80,26 @@ EOF
 Let's pair the `TriggerTemplate` with the `TriggerBindings` using a new `EventListener`.
 
 ```
-cat <<EOF >bump-dev-event-listener.yaml
+cat <<EOF >ops-dev-event-listener.yaml
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: bump-dev-event-listener
+  name: ops-dev-event-listener
 spec:
   serviceAccountName: build-bot
   triggers:
-  - name: bump-dev-trigger
+  - name: ops-dev-trigger
     template:
-      name: bump-dev-trigger-template
+      name: ops-dev-trigger-template
     bindings:
-    - ref: bump-dev-trigger-binding
+    - ref: ops-dev-trigger-binding
 EOF
 ```{{execute}}
 
 ## Apply the trigger
 
 ```
-kubectl apply -f bump-dev-trigger-template.yaml -f bump-dev-trigger-binding.yaml -f bump-dev-event-listener.yaml
+kubectl apply -f ops-dev-trigger-template.yaml -f ops-dev-trigger-binding.yaml -f ops-dev-event-listener.yaml
 ```{{execute}}
 
 ## Test it out
@@ -107,13 +107,13 @@ kubectl apply -f bump-dev-trigger-template.yaml -f bump-dev-trigger-binding.yaml
 Wait for the deployment to finish.
 
 ```
-kubectl rollout status deployment/el-bump-dev-event-listener
+kubectl rollout status deployment/el-ops-dev-event-listener
 ```{{execute}}
 
 Let's port-forward our service.
 
 ```
-kubectl port-forward --address 0.0.0.0 svc/el-bump-dev-event-listener 8080:8080 2>&1 > /dev/null &
+kubectl port-forward --address 0.0.0.0 svc/el-ops-dev-event-listener 8080:8080 2>&1 > /dev/null &
 ```{{execute}}
 
 Now we can trigger a pull request event, which should create a new `PipelineRun`.
