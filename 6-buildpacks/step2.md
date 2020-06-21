@@ -167,20 +167,7 @@ tkn pipeline list
 
 ## Configure authentication for Docker Hub
 
-Copy and paste the following command into the terminal window, then append your Docker Hub username or org:
-
-```
-## Fill this in with your Docker Hub username or org
-IMG_NS=
-```{{copy}}
-
-Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
-
-```
-docker login -u ${IMG_NS}
-```{{execute}}
-
-Create the registry `Secret`.
+You have already logged in to docker, so you are ready to create the registry `Secret`.
 
 ```
 kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson

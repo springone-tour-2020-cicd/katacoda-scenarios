@@ -8,7 +8,7 @@ For the rest of the scenario, we will use the terms _CNB_ or _buildpacks_ to ref
 
 In this step, you will:
 - Review the Dockerfile in the sample app
-- Build the app locally using buildpacks (specifically, pack CLI and Paketo Buildpacks)
+- Build our sample app locally using the `pack` CLI and Paketo Buildpacks
 - Explore some of the characteristics and features of buildpacks
 
 ## Local environment setup
@@ -38,17 +38,17 @@ git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
 
 ## Examine the Dockerfile
 
-Take a look at the Dockerfile included with the repo
+Take a look at the Dockerfile included in the repo
 
 ```
 cat Dockerfile
 ```{{execute}}
 
-This is a relatively simple Dockerfile, but every line represents a decision - good or bad - made by the Dockerfile author (use a multi-stage approach, use golang and scratch bases, handle modules and source separately, build the app as a statically-linked binary, tightly couple COPY/RUN/ENTRYPOINT to app-specific filenames, etc). Ommissions also represent Dockerfile author decisions (e.g. no .dockerfile, no LABELs, no golang base image version, etc). 
+This is a relatively simple Dockerfile, but every line represents a decision - good or bad - made by the Dockerfile author (use a multi-stage approach, use golang and scratch base images, handle modules and source separately, build the app as a statically-linked binary, tightly couple COPY/RUN/ENTRYPOINT to app-specific filenames, etc). Ommissions also represent Dockerfile author decisions (e.g. no .dockerfile, no LABELs, no base image version, etc). 
 
-Some of these decisions are specific to Golang. If the author wanted to build a Java app, for example, they would need to make and support a new set of decisions.
+Some of these decisions are specific to Golang. If the author wanted to build a Java app, for example, they would need to make and support a new set of decisions. Moreover, the full burden of responsibility for ensuring this Dockerfile implements best practices for efficiency, security, etc, falls on the Dockerfile author.
 
-In addition, Dockerfiles are simply scripts. Short of copying and pasting Dockerfiles into other app repos, there is no formalized mechanism for re-using or sharing Dockerfiles. There is also no formalized mechanism for managing Dockerfiles at enterprise-scale, where challenges of support, security, governance and transparency become critically important.
+In addition, short of copying and pasting Dockerfiles into other app repos, there is no formalized mechanism for re-using or sharing Dockerfiles. There is also no formalized mechanism for managing Dockerfiles at enterprise-scale, where challenges of support, security, governance and transparency become critically important.
 
 ## Build with pack and Paketo
 
@@ -58,13 +58,14 @@ Recall the command to build and publish the app with Dockerfile:
 > docker build . -t go-sample-app
 > ```
 
-In this case, we could say that the docker CLI is the tool we interact with in order to use Dockerfiles to create and publish images. The Docker daemon is also involved in the process, as the build is actually carried out by/on the daemon, rather than by the CLI itself.
+In this case, we could say that the docker CLI is the tool we interact with in order to use Dockerfiles to create and publish images. The Docker daemon is also involved in the process, as the build is actually carried out by - and on - the daemon, rather than by the CLI itself.
 
-With Cloud Native Buildpacks, we have a choice of tools, or "platforms" to interact with (any tool that implements the Platform API provided by the CNB project). The project itself provides a reference implementation in the form of a CLI called `pack`. Other platforms examples are the Spring Boot 2.3.0+ Maven and Gradle plugins, Tekton, and a Kubernetes-native hostable service called kpack.
+With Cloud Native Buildpacks, we have a choice of tools, or "platforms" to interact with (any tool that implements the CNB Platform API is a _platform_). The project itself provides a reference implementation in the form of a CLI called `pack`. Other examples include the Spring Boot 2.3.0+ Maven and Gradle plugins, Tekton, and a Kubernetes-native hostable service called kpack. In this scenario we will explore pack, Tekton, and kpack.
 
-In this scenario we will use pack to explore pack, Tekton, and kpack.
+To replace the role that Dockerfile plays, we need an implementation of the CNB Buildpack API, such as Paketo Buildpacks (the CNB variant of Cloud Foundry Buildpacks) or Heroku Buildpacks. These Buildpacks include the base images used for build and runtime (akin to the golang and scratch images in our sample Dockerfile), as well as the language-specific logic (aka, all of the logic you would otherwise script in your Dockerfiles). 
 
-To replace the role that Dockerfile plays, we need an implementation of the Buildpack API, such as Paketo Buildpacks (the CNB variant of Cloud Foundry Buildpacks) or Heroku Builpacks. A Buildpack API implementation generally includes the base images used for build and runtime (akin to the golang and scratch images in our sample Dockerfile), as well as the language-specific logic (aka, all of the logic you would otherwise script in your Dockerfiles). 
+
+## Build with `pack` and Paketo
 
 Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks:
 
@@ -84,9 +85,29 @@ You can see the resulting image on the Docker daemon:
 docker images | grep go-sample-app
 ```{{execute}}
 
-The `pack` CLI provides additional commands you can explore. There are many resources online, including the project homepage, [buildpacks.io](buildpacks.io), and the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks).
+## Re-build the app, and publish to Docker Hub
 
-For the purposes of this scenario, it is sufficient to know that:
+`pack` can also publish the image to a registry.  In order to build and publish the image, you must first authenticate against Docker Hub. Enter your access token at the prompt:
+
+```
+docker login -u ${IMG_NS}
+```{{execute}}
+
+To simplify the `pack` command, you can also set the builder as a default:
+
+```
+pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
+```{{execute}}
+
+Now, you can rebuild the app and publish to Docker Hub with the following command. You should notice the build is faster this time, partially because the base images are now accessible locally, and partially because of efficient caching and image-layer re-use:
+
+```
+pack build $IMG_NS/go-sample-app --publish
+```{{execute}}
+
+## Additional features
+
+The `pack` CLI provides additional commands you can explore that expose the capabilities of Cloud native Buildpacks. You can leanr more through the project homepage, [buildpacks.io](buildpacks.io), or through the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks), or other online resources. For the purposes of this scenario, however, it is sufficient to know that:
 - The simple `pack build` command above would work for applications written in a variety of languages (e.g. Go, Java, Node.js, .NET Core, etc), and they implement best practices particular to each language
 - Builders make it trivial to manage and share buildpacks and base images
 - Any platform (pack, Tekton, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image
