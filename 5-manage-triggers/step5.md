@@ -1,143 +1,77 @@
 # Add a Deployment Pipeline
 
 Objective:
-Assuming the `PipelineRun` finished successfully, you now have a new image in your Docker Hub account.
-That image's reference however needs to be manually updated in the Kustomize files.
+Now that you've sorted out the ops repository, you can start creating the promotion pipeline.
 Let's make a pipeline for this purpose as well.
 
 In this step, you will:
-- Trigger the new pipeline by reacting to Docker Hub changes
+- Create a new `Pipeline` and `PipelineRun` specification inside another `TriggerTemplate`
 
-## Introduce the new Trigger
+## Introduce the new Pipeline
 
-Whenever a new image gets pushed to Docker Hub, our pipeline needs to run.
-Create a new `TriggerTemplate` using the `Pipeline` you just created.
+You're going to use the `git-clone`, as well as the newly created `bump-dev` Tasks.
 
 ```
-cat <<EOF >bump-dev-trigger-template.yaml
-apiVersion: triggers.tekton.dev/v1alpha1
-kind: TriggerTemplate
+cat <<EOF >bump-dev-pipeline.yaml
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
 metadata:
-  name: bump-dev-trigger-template
+  name: bump-dev-pipeline
 spec:
-  resourcetemplates:
-  - apiVersion: tekton.dev/v1beta1
-    kind: PipelineRun
-    metadata:
-      generateName: bump-dev-pipeline-run-
-    spec:
-      pipelineRef:
-        name: bump-dev-pipeline
+  params:
+    - name: repo-url
+      type: string
+      description: The git repository URL to clone from.
+    - name: branch-name
+      type: string
+      description: The git branch to clone.
+    - name: tag
+      type: string
+      description: The new image tag.
+    - name: github-token-secret
+      type: string
+      description: Name of the secret holding the github-token.
+    - name: github-token-secret-key
+      description: Name of the secret key holding the github-token.
+  workspaces:
+    - name: shared-workspace
+      description: This workspace will receive the cloned git repo and be passed to the next Task.
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
       workspaces:
-      - name: shared-workspace
-        persistentvolumeclaim:
-          claimName: workspace-pvc
+        - name: output
+          workspace: shared-workspace
       params:
-      - name: tag
-        value: \$(params.tag)
-      - name: repo-url
-        value: https://github.com/${GITHUB_NS}/go-sample-app.git
-      - name: branch-name
-        value: master
-      - name: github-token-secret
-        value: github-token
-      - name: github-token-secret-key
-        value: GITHUB_TOKEN
-      serviceAccountName: build-bot
-  params:
-  - name: tag
-    description: Tag of the new Docker image.
+        - name: url
+          value: \$(params.repo-url)
+        - name: revision
+          value: \$(params.branch-name)
+        - name: deleteExisting
+          value: "true"
+    - name: bump-dev
+      taskRef:
+        name: bump-dev
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: GITHUB_TOKEN_SECRET
+          value: \$(params.github-token-secret)
+        - name: GITHUB_TOKEN_SECRET_KEY
+          value: \$(params.github-token-secret-key)
+        - name: TAG
+          value: \$(params.tag)
 EOF
 ```{{execute}}
 
-Take a look at the entire `TriggerTemplate`, and apply it to the cluster.
+Take a look at the entire `Pipeline`, and apply it to the cluster.
 
 ```
-yq r -C bump-dev-trigger-template.yaml
-kubectl apply -f bump-dev-trigger-template.yaml
-```{{execute}}
-
-## Add a TriggerBinding
-
-
-```
-BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
-cat <<EOF >bump-dev-trigger-binding.yaml
-apiVersion: triggers.tekton.dev/v1alpha1
-kind: TriggerBinding
-metadata:
-  name: bump-dev-trigger-binding
-spec:
-  params:
-  - name: tag
-    value: \$(body.push_data.tag)
-EOF
-```{{execute}}
-
-
-## Link it up with an EventListener
-
-Let's pair the `TriggerTemplate` with the `TriggerBindings` using a new `EventListener`.
-
-```
-cat <<EOF >bump-dev-event-listener.yaml
-apiVersion: triggers.tekton.dev/v1alpha1
-kind: EventListener
-metadata:
-  name: bump-dev-event-listener
-spec:
-  serviceAccountName: build-bot
-  triggers:
-  - name: bump-dev-trigger
-    template:
-      name: bump-dev-trigger-template
-    bindings:
-    - ref: bump-dev-trigger-binding
-EOF
-```{{execute}}
-
-## Apply the trigger
-
-```
-kubectl apply -f bump-dev-trigger-template.yaml -f bump-dev-trigger-binding.yaml -f bump-dev-event-listener.yaml
-```{{execute}}
-
-## Test it out
-
-Wait for the deployment to finish.
-
-```
-kubectl rollout status deployment/el-bump-dev-event-listener
-```{{execute}}
-
-Let's port-forward our service.
-
-```
-kubectl port-forward --address 0.0.0.0 svc/el-bump-dev-event-listener 8080:8080 2>&1 > /dev/null &
-```{{execute}}
-
-Now we can trigger a pull request event, which should create a new `PipelineRun`.
-
-```
-curl \
-    -H 'Content-Type: application/json' \
-    -d '{
-          "push_data": {
-            "tag": "1.0.0"
-          }
-        }' \
-localhost:8080
-```{{execute}}
-
-Next, verify the `PipelineRun` executes without any errors.
-
-```
-tkn pipelinerun list
-tkn pipelinerun logs -f
-```{{execute}}
-
-Stop the port-forwarding process:
-```
-pkill kubectl && wait $!
+yq r -C bump-dev-pipeline.yaml
+kubectl apply -f bump-dev-pipeline.yaml
 ```{{execute}}
 
