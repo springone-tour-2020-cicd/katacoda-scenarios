@@ -52,6 +52,40 @@ It allows pipelines to be modular and can easily be expanded and retracted when 
 
 Let's adopt separate GitOps repositories for the development and production environment.
 
+## Moving the ops files
+
+Go ahead and move the ops files to another repository.
+
 ```
-Magic!
+cd ..
+mkdir go-sample-app-ops
+mv go-sample-app/ops go-sample-app-ops
 ```{{execute}}
+
+You can also move the Tekton files, so that ArgoCD will also automatically deploy them to Kubernetes.
+
+```
+mv go-sample-app/tekton go-sample-app-ops/tekton
+```{{execute}}
+
+Let's commit the changes to the source code repository first.
+
+```
+cd go-sample-app
+git add -A
+git commit -m "Moved ops and tekton directories to their own repo"
+git push origin master
+```{{execute}}
+
+You can create the new repository on GitHub using `hub`, and commit all the moved files into it.
+
+```
+cd ../go-sample-app-ops
+git init
+hub create
+git add -A
+git commit -m "Files moved from go-sample-app repo"
+git push
+```{{execute}}
+
+Now that you've avoided infinite loops by adopting a specialized ops repo, you can now safely add the promotion pipeline.

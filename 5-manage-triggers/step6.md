@@ -36,7 +36,7 @@ spec:
       - name: tag
         value: \$(params.tag)
       - name: repo-url
-        value: https://github.com/${GITHUB_NS}/go-sample-app.git
+        value: https://github.com/${GITHUB_NS}/go-sample-app-ops.git
       - name: branch-name
         value: master
       - name: github-token-secret
