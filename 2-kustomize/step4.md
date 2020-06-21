@@ -14,7 +14,6 @@ We can now use an overlay to add an environment variable specifically in prod.
 For this we need to create a Kustomize patch.
 
 ```
-cd overlays/prod
 cat <<EOF >patch.yaml
 apiVersion: apps/v1
 kind: Deployment

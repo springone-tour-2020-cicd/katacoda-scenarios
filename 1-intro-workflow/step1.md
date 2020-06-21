@@ -84,9 +84,7 @@ docker tag go-sample-app $IMG_NS/go-sample-app:1.0.0
 docker push $IMG_NS/go-sample-app:1.0.0
 ```{{execute}}
 
-You can see the new repository created in the registry:
-
-https://hub.docker.com/repository/docker/$IMG_NS/go-sample-app/tags
+Navigate to your account on [Docker Hub](https://hub.docker.com) to see the published image.
 
 ## Deploy image to Kubernetes
 You are now ready to deploy the image to Kubernetes.

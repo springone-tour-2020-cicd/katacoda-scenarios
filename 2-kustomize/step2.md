@@ -106,12 +106,10 @@ Check the deployment in Kubernetes:
 kubectl get all -n prod
 ```{{execute}}
 
-Go back to the ops directory and view the entire ops directory structure:
+Review the ops directory structure. To recap, we have eliminated duplication by consolidating common configuration in the base directory, and using `kustomization.yaml` files for environment-specific settings. 
 
 ```
-cd ../..
-tree
-cd -
+tree /workspace/go-sample-app/ops
 ```{{execute}}
 
 The directory structure should look like this:
@@ -128,4 +126,4 @@ The directory structure should look like this:
 >         └── kustomization.yaml
 > ```
 
-In the next step, you will further customize your production configuration.
+In the next steps, you will further customize your production configuration.
