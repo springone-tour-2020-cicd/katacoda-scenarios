@@ -62,11 +62,19 @@ mkdir go-sample-app-ops
 mv go-sample-app/ops go-sample-app-ops
 ```{{execute}}
 
-You can also move the Tekton files, so that Argo CD will also automatically deploy them to Kubernetes.
+You can also move the Tekton and Argo CD files, so that Argo CD will also automatically deploy them to Kubernetes.
 
 ```
 mv go-sample-app/tekton go-sample-app-ops/tekton
+mv go-sample-app/cicd go-sample-app-ops/cicd
 tree .
+```{{execute}}
+
+Change the references from the old repository to the new one in the Argo CD files.
+
+```
+sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo-deploy-dev.yaml
+sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo-deploy-prod.yaml
 ```{{execute}}
 
 Let's commit the changes to the source code repository first.
