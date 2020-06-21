@@ -21,7 +21,7 @@ GITHUB_NS=
 Start by cloning the GitHub repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
 
 ```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git
+git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
 ```{{execute}}
 
 ## Create namespaces

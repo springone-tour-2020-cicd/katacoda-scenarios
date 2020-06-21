@@ -1,38 +1,23 @@
-# Deploy to production environment
+# Reconciliation Loop
 
-Create another Argo CD 'Application', this time using the `argocd` CLI:
-```
-argocd app create go-sample-app-prod --repo https://github.com/${GITHUB_NS}/go-sample-app.git --path ops/overlays/prod --dest-namespace prod --dest-server https://kubernetes.default.svc --sync-policy automated
-```{{execute}}
-
-Go back to the UI and click on `Applications`. You should see the new application there.
-
-## Try it out
+Having declarative resources available in a Git repository gives us the ability to automatically sync an application when it detects differences between the desired manifests in Git, and the live state in the cluster.
+We have demonstrated this with the Automatic Sync feature turned on.
+Changes made in Git were automatically deployed to the cluster.
+However, changes that are made to the live cluster will not trigger automated sync by default.
+To enable automatic sync when the live cluster's state deviates from the state defined in Git, run the following command:
 
 ```
-kubectl rollout status deployment/prod-go-sample-app -n prod
-kubectl port-forward service/prod-go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
-APP_PID=$!
+argocd app set go-sample-app-prod --self-heal
 ```{{execute}}
 
-Send a request. Validate that the app responds with "Hello, sunshine!"
+Now go ahead and delete the deployment from production.
 
 ```
-curl localhost:8080
+kubectl delete deploy prod-go-sample-app -n prod
 ```{{execute}}
 
-The container should now have printed the environment variable for production.
+Argo CD will now detect the divergence, and try to reconcile the state of Git with the cluster.
 
-```
-kubectl logs $(kubectl get pods -n prod -o jsonpath="{.items[0].metadata.name}") -n prod
-```{{execute}}
+You can verify the new deployment in the UI by clicking into the application `go-sample-app-prod` and clicking on `History and Rollback`. You should see two entries.
 
-## Cleanup
-Stop the port-forwarding process for our application.
-
-```
-kill -9 ${APP_PID} && wait $!
-```{{execute}}
-
-
-
+Having the self-healing capabilities allows us to recover from changes to the cluster that cannot be recovered by Kubernetes' own reconciliation.
