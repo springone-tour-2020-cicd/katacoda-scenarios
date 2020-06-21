@@ -10,8 +10,8 @@ In this step, you will:
 
 Make a new directory for the kpack configuration
 ```
-mkdir -p /workspace/go-sample-app/kpack
-cd /workspace/go-sample-app/kpack
+mkdir -p /workspace/go-sample-app-ops/kpack
+cd /workspace/go-sample-app-ops/kpack
 ```{{execute}}
 
 Configure a resource for the builder. This resource can be shared by many images:
@@ -80,7 +80,7 @@ Each phase of the buildpack lifecycle is executed in a separate _init container_
 logs -image go-sample-app -build 1
 ```{{execute}}
 
-The logs should look very similar to those we saw in the previous scenario scenarios on pack and Spring Boot. 
+The logs should look very similar to those we saw in the previous scenario scenarios on pack and Spring Boot.
 
 When the log shows that the build is done, check your Docker Hub organization to make sure a new image has been published.
 

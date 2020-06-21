@@ -37,7 +37,7 @@ kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespa
 
 ## Configure kpack
 
-To build an image for our sample app, we need to configure a 'kpack` Image resource with:
+To build an image for our sample app, we need to configure a `kpack` Image resource with:
 - the builder to use
 - the source code on GitHub
 - the repository on Docker Hub, with proper write access
@@ -45,4 +45,5 @@ To build an image for our sample app, we need to configure a 'kpack` Image resou
 
 ## Miscellaneous
 
-kpack provides a CLI tool called `logs` specifically for accessing logs produced during image builds. `logs` is pre-installed in this environment - you can validate that by running `logs --help`{{execute}}.
+kpack provides a CLI tool called `logs` specifically for accessing logs produced during image builds.
+`logs` is pre-installed in this environment - you can validate that by running `logs --help`{{execute}}.

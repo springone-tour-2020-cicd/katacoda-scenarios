@@ -8,7 +8,15 @@ In this step, you will:
 
 ## Update the build pipeline yaml
 
-The build pipeline you configured in previous scenarios uses a Kaniko task to build an image using the Dockerfile in the app repo, and push the image to Docker Hub. Instead, we will use a The [Buildpacks task](https://github.com/tektoncd/catalog/blob/v1beta1/buildpacks/README.md).
+The build pipeline you configured in previous scenarios uses a Kaniko task to build an image using the Dockerfile in the app repo, and push the image to Docker Hub.
+Instead, we will use a The [Buildpacks task](https://github.com/tektoncd/catalog/blob/v1beta1/buildpacks/README.md).
+
+Clone the GitHub ops repo you created in the [triggers](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/5-manage-triggers) scenario.
+
+```
+cd ..
+git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git && cd go-sample-app-ops
+```{{execute}}
 
 Use `yq -x` to overwrite the build-image task configuration:
 
@@ -104,22 +112,24 @@ EOF
 
 ## Update the build pipeline run yaml
 
-The difference in the way the image is configured betwee the kaniko and buildpacks task also requires a change to the pipeline run resource.
+The difference in the way the image is configured betwee the kaniko and buildpacks task also requires a change to the `TriggerTemplate` resource.
 
 ```
-yq d -i build-pipeline-run.yaml 'spec.params.(name==image)'
+yq d -i build-trigger-template.yaml 'spec.resourcetemplates[0].spec.params.(name==image)'
 
-yq m -i build-pipeline-run.yaml - <<EOF
+yq m -i build-trigger-template.yaml - <<EOF
 spec:
-  resources:
-    - name: build-image
-      resourceRef:
-        name: buildpacks-app-image
-  podTemplate:
-    volumes:
-      - name: buildpacks-cache
-        persistentVolumeClaim:
-          claimName: buildpacks-cache-pvc
+  resourcetemplates:
+    - spec:
+        resources:
+          - name: build-image
+            resourceRef:
+              name: buildpacks-app-image
+        podTemplate:
+          volumes:
+            - name: buildpacks-cache
+              persistentVolumeClaim:
+                claimName: buildpacks-cache-pvc
 EOF
 ```{{execute}}
 
@@ -186,18 +196,10 @@ kubectl apply -f sa.yaml \
 ```{{execute}}
 
 ```
-kubectl apply -f build-pipeline.yaml -f build-pipeline-run.yaml
-```{{execute}}
-
-# Check status
-
-```
-tkn pipelineruns list
-```{{execute}}
-
-Get more info
-```
-tkn pipelineruns describe build-pipeline-run
+kubectl apply -f build-pipeline.yaml \
+              -f build-trigger-template.yaml \
+              -f build-trigger-binding.yaml \
+              -f build-event-listener.yaml
 ```{{execute}}
 
 ## Test it out
@@ -205,13 +207,13 @@ tkn pipelineruns describe build-pipeline-run
 Wait for the deployment to finish.
 
 ```
-kubectl rollout status deployment/el-tekton-go-event-listener
+kubectl rollout status deployment/el-build-event-listener
 ```{{execute}}
 
 Let's port-forward our service.
 
 ```
-kubectl port-forward --address 0.0.0.0 svc/el-tekton-go-event-listener 8080:8080 2>&1 > /dev/null &
+kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
 ```{{execute}}
 
 Now we can trigger a pull request event, which should create a new `PipelineRun`.
