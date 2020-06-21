@@ -26,6 +26,7 @@ spec:
     targetRevision: HEAD
   syncPolicy:
     automated: {}
+EOF
 ```{{execute}}
 
 Now apply all the Argo CD configuration to the cluster.
@@ -87,3 +88,37 @@ Stop the port-forwarding process:
 ```
 pkill kubectl && wait $!
 ```{{execute}}
+
+## Port-forward the Argo CD Server
+
+Wait until Argo CD is fully initialized. This may take a few minutes.
+
+```
+kubectl rollout status deployment/argocd-server -n argocd
+```{{execute}}
+
+In order to expose the Argo CD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwaring:
+
+```
+kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &
+```{{execute}}
+
+## Log in using the argocd CLI
+
+First, we need to obtain login credentials. The default admin username is `admin`.
+In order to get the default admin password, run:
+```
+kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+```{{execute}}
+
+## Log in using the Argo CD UI
+
+Click on the tab titled `Argo CD UI`.
+This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI.
+Click the refresh icon at the top of the tab if it does not load automatically.
+
+Alternatively, you can click on the link below and open in a separate tab in your browser:
+
+https://[[HOST_SUBDOMAIN]]-8080-[[KATACODA_HOST]].environments.katacoda.com
+
+Enter the same credentials you used for the CLI.
