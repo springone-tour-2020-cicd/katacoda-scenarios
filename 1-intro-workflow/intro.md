@@ -1,14 +1,18 @@
 **Course Overview**
 
-This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
+This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd). 
+In this course, we explore some options for Kubernetes-centric tooling for Continuous Integration (CI) and Continuous Delivery (CD), including Kustomize, Tekton, Argo CD, Cloud Native Buildpacks, and kpack. 
+Through these excercises, we will also see how GitOps can be leveraged for CI/CD.
 
-With Kubernetes, everything from deployment to monitoring to scaling is more standardized and inherently easier to automate. This presents the possibility to achieve a more effective and comprehensive Continuous Integration (CI) and Continuous Delivery (CD) experience. We can incorporate the practice of infrastructure-as-code and take advantage of a flourishing ecosystem of tools to improve and fully automate our application deployment strategies.
-
-Throughout these scenarios, we'll explore some options for Kubernetes-centric tooling, including Kustomize, Tekton, and Argo CD, and see how GitOps can be leveraged for CI/CD.
+**Introduction**
+With Kubernetes, everything from deployment to monitoring to scaling is more standardized and inherently easier to automate. 
+This presents the possibility to achieve a more effective and comprehensive CI/CD experience. 
+We can incorporate the practice of infrastructure-as-code and take advantage of a flourishing ecosystem of tools to improve and fully automate our application deployment strategies.
 
 **Scenario Overview: Intro Workflow and Prerequisites Setup**
 
-By the end of this scenario, you will have a new GitHub repo with sample app source code and "ops" deployment files. You will also understand the basic flow that needs to be automated: _**change code --> build image --> update ops files --> deploy to dev --> promote to prod**_.
+By the end of this scenario, you will have a new GitHub repo with sample app source code and "ops" deployment files. 
+You will also understand the basic flow that needs to be automated: _**change code --> build image --> update ops files --> deploy to dev --> promote to prod**_.
 
 **Prerequisites**
 
