@@ -36,7 +36,7 @@ spec:
       type: string
       description: Name of the secret key holding the github-token.
       default: GITHUB_TOKEN
-    - name: TAG
+    - name: task-tag
       type: string
       description: Name of the new image tag.
       default: empty-tag
@@ -50,8 +50,8 @@ The first step modifies the development overlay with the new tag.
 cat <<EOF >>bump-dev-task.yaml
   inputs:
     params:
-      - name: tag
-        value: \$(params.tag)
+      - name: step-tag
+        value: \$(params.task-tag)
   steps:
   - name: update-image-tag
     image: mikefarah/yq
@@ -61,7 +61,7 @@ cat <<EOF >>bump-dev-task.yaml
         yq m -i -x kustomization.yaml - <<EOD
         images:
           - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
-            newTag: \$(inputs.params.tag)
+            newTag: \$(inputs.params.step-tag)
         EOD
 EOF
 ```{{execute}}
