@@ -1,16 +1,16 @@
-# Install and configure ArgoCD
+# Install and configure Argo CD
 
 Objective:
-Install and configure ArgoCD.
+Install and configure Argo CD.
 
 In this step, you will:
-* Install ArgoCD and review the installation
+* Install Argo CD and review the installation
 * Configure options for handling of `kustomize`-based ops files
-* Expose ArgoCD API outside of the Kubernetes cluster
+* Expose Argo CD API outside of the Kubernetes cluster
 
-## Install ArgoCD
+## Install Argo CD
 
-Create a namespace for the ArgoCD installation, and install:
+Create a namespace for the Argo CD installation, and install:
 
 ```
 kubectl create ns argocd
@@ -50,12 +50,12 @@ EOF
 
 ## Port-forward the Argo CD Server
 
-Wait until ArgoCD is fully initialized:
+Wait until Argo CD is fully initialized:
 ```
 kubectl rollout status deployment/argocd-server -n argocd
 ```{{execute}}
 
-In order to expose the ArgoCD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwaring:
+In order to expose the Argo CD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwaring:
 
 ```
 kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &

@@ -1,12 +1,12 @@
-# Log in to ArgoCD
+# Log in to Argo CD
 
 Objective:
-Log in to ArgoCD using both the `argocd` CLI as well as the UI.
+Log in to Argo CD using both the `argocd` CLI as well as the UI.
 
 In the step, you will:
 * Obtain the default password for the admin user
 * Log in using the `argocd` CLI
-* Log in using the ArgoCD UI
+* Log in using the Argo CD UI
 
 ## argocd CLI
 
@@ -21,16 +21,16 @@ argocd login localhost:8080 --insecure --username admin
 ```{{execute}}
 
 Copy the password displayed on the screen, and use it to log into the CLI.
-Log into ArgoCD.
+Log into Argo CD.
 
 When prompted, copy and paste the password from the previous command.
 
 OPTIONAL:
 You can use ```argocd account update-password```{{execute}} to update the password to something that's easier to remember.
 
-## ArgoCD UI
+## Argo CD UI
 
-Click on the tab titled `ArgoCD UI`. This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI. Click the refresh icon at the top of the tab if it does not load automatically.
+Click on the tab titled `Argo CD UI`. This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI. Click the refresh icon at the top of the tab if it does not load automatically.
 
 Alternatively, you can click on the link below and open in a separate tab in your browser:
 
