@@ -3,7 +3,7 @@
 Assuming the `PipelineRun` finished successfully, you now have a new image in your Docker Hub account.
 
 In order for you to deploy this image to the dev environment, you need to manually update the Kustomization file with the new image's tag.
-As seen in the [previous scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/4-argocd), ArgoCD will then go on to automatically deploy the resources.
+As seen in the [previous scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/4-argocd), Argo CD will then go on to automatically deploy the resources.
 
 Instead of doing this manually, it'd be better to have another pipeline update the Kustomization file automatically, based on a trigger listening to Docker Hub webook events.
 
@@ -16,7 +16,7 @@ The flow would be as follows:
 1. The Git change to the repo triggers our build pipeline
 1. The build pipeline pushes a new image to Docker Hub
 1. The new image in Docker Hub triggers the promotion pipeline
-1. The promotion pipeline changes the Kustomization file which ArgoCD will deploy
+1. The promotion pipeline changes the Kustomization file which Argo CD will deploy
 1. The promotion pipeline pushes the code change to Git
 1. The Git change to the repo triggers our build pipeline
 1. And on and on we go...
@@ -62,7 +62,7 @@ mkdir go-sample-app-ops
 mv go-sample-app/ops go-sample-app-ops
 ```{{execute}}
 
-You can also move the Tekton files, so that ArgoCD will also automatically deploy them to Kubernetes.
+You can also move the Tekton files, so that Argo CD will also automatically deploy them to Kubernetes.
 
 ```
 mv go-sample-app/tekton go-sample-app-ops/tekton

@@ -5,7 +5,7 @@ Note that `git push` will need a [Personal Access Token](https://github.com/sett
 
 ```
 git add -A
-git commit -m 'Changes from the ArgoCD scenario'
+git commit -m 'Changes from the Argo CD scenario'
 git push origin master
 ```{{execute}}
 

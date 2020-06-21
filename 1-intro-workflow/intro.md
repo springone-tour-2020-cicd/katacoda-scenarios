@@ -1,8 +1,8 @@
 **Course Overview**
 
-With Kubernetes, everything from deployment to monitoring to scaling is more standardized and inherently easier to automate. This presents the possibility to achieve a more effective and comprehensive Continuous Integration (CI) and Continuous Delivery (CD) experience. We can incorporate the practice of infrastructure-as-code and take advantage of a flourishing ecosystem of tools to improve and fully automate our application deployment strategies. 
+With Kubernetes, everything from deployment to monitoring to scaling is more standardized and inherently easier to automate. This presents the possibility to achieve a more effective and comprehensive Continuous Integration (CI) and Continuous Delivery (CD) experience. We can incorporate the practice of infrastructure-as-code and take advantage of a flourishing ecosystem of tools to improve and fully automate our application deployment strategies.
 
-Throughout these scenarios, we'll explore some options for Kubernetes-centric tooling, including Kustomize, Tekton, and ArgoCD, and see how GitOps can be leveraged for CI/CD.
+Throughout these scenarios, we'll explore some options for Kubernetes-centric tooling, including Kustomize, Tekton, and Argo CD, and see how GitOps can be leveraged for CI/CD.
 
 **Scenario Overview: Intro Workflow and Prerequisites Setup**
 

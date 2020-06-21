@@ -9,21 +9,13 @@ This is fine, as long as you always wish to build an image regardless of linting
 In this step, you will:
 - Make kpack builds conditional on linting and testing feedback, using a push instead of a poll model
 
-## Update the build pipeline to trigger kpack
-
 We can trigger kpack at the end of the build pipeline by updating the `Image` resource.
 The kpack controller tracks all `Image` resources in the cluster.
 If the Git revision of an `Image` were to change, the controller will automatically kick off a build and push.
 
-First of all we need to get remove the two existing image related tasks from the build pipeline.
+## Change the Git revision in a new Task
 
-```
-cd ../tekton
-yq d build-pipeline.yaml "spec.tasks.(name==verify-digest)"
-yq d build-pipeline.yaml "spec.tasks.(name==build-image)"
-```{{execute}}
-
-You can now create a `Task` responsible for updating the `Image` file with the new revision.
+Create the `Task` responsible for updating the `Image` file with the new revision.
 This `Task` is very similar to the one we created for promoting newly pushed images to the dev environment in the triggers [triggers](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/5-manage-triggers) scenarios.
 
 ```
@@ -98,13 +90,87 @@ yq r -C update-image-revision-task.yaml
 kubectl apply -f update-image-revision-task.yaml
 ```{{execute}}
 
+## Update the build pipeline
+
+We can now use this newly created `Task` to trigger kpack.
+
+First of all we need to remove the two existing image related tasks from the build pipeline.
+
+```
+cd ../tekton
+yq d build-pipeline.yaml "spec.tasks.(name==verify-digest)"
+yq d build-pipeline.yaml "spec.tasks.(name==build-image)"
+```{{execute}}
+
+Next, you'll need to reference the new `Task`.
+
+```
+yq m -i -a build-pipeline.yaml - <<EOF
+spec:
+  tasks:
+    - name: update-image-revision
+      taskRef:
+        name: update-image-revision
+      runAfter:
+        - fetch-repository
+        - lint
+        - test
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: GITHUB_TOKEN_SECRET
+          value: \$(params.github-token-secret)
+        - name: GITHUB_TOKEN_SECRET_KEY
+          value: \$(params.github-token-secret-key)
+        - name: REVISION
+          value: \$(params.revision)
+```{{execute}}
+
+And don't forget to add the new parameters to the pipeline.
+
+```
+yq m -i -a build-pipeline.yaml - <<EOF
+spec:
+  params:
+    - name: github-token-secret
+      type: string
+      description: Name of the secret holding the github-token.
+    - name: github-token-secret-key
+      description: Name of the secret key holding the github-token.
+```{{execute}}
+
+Take a look at the entire `Pipeline`, and apply it to the cluster.
+
+```
+yq r -C build-pipeline.yaml
+kubectl apply -f build-pipeline.yaml
+```{{execute}}
+
 ## Turn off polling
 
 You can now turn off the automatic polling, by changing the `updatePolicy` to `external`.
 
 ```
+cd ../kpack
 yq m -i builder.yaml - <<EOF
 spec:
   updatePolicy: external
 EOF
 ```{{execute}}
+
+Go ahead and apply the `Builder` to the cluster as well.
+
+```
+kubectl apply -f builder.yaml
+```{{execute}}
+
+## Using Argo CD to trigger kpack
+
+If you would now trigger the build pipeline, the `Image` file will be modified with a new revision in Git.
+For now, you'd have to apply the new `Image` modification to the cluster manually, or have another `Task` in the pipeline that does this.
+
+We can however use Argo CD for this as well.
+Argo CD should pick up the changed manifest and apply it to the cluster automatically.
+
+Let's move to step 6 to put the entire flow together.
