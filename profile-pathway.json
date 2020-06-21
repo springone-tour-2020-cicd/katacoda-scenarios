@@ -27,7 +27,7 @@
       "id": "5-manage-triggers"
     },
     {
-      "title": "Improve Image Lifecycle with Buildpacks",
+      "title": "Improve Image Lifecycle with Buildpacks and kpack",
       "description": "Use Cloud Native Buildpacks to increase consistency, security, and governance of container images",
       "id": "6-buildpacks"
     }

@@ -1,6 +1,6 @@
 {
   "noindex": true,
-  "title": "Improve Image Lifecycle with Buildpacks",
+  "title": "Improve Image Lifecycle with Buildpacks and kpack",
   "description": "--> Set this value in profile-pathway.json <--",
   "difficulty": "Beginner",
   "time": "30",
