@@ -37,7 +37,7 @@ cat argo-deploy-prod.yaml
 
 Apply the change.
 ```
-kubectl apply -f argo-deploy-dev.yaml -n argocd
+kubectl apply -f argo-deploy-prod.yaml -n argocd
 ```{{execute}}
 
 Go back to the UI and click on Applications in the breadcrum on the upper left. You should see a second tile, representing the prod deployment in the prod namespace.
