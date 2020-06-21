@@ -14,7 +14,7 @@ To use these tasks there are a few things we need to set up in the Kubernetes cl
 
 ## Clone repo
 
-Start by cloning the GitHub repo you created in the [previous](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
+Start by cloning the GitHub repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
 
 ```
 git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
