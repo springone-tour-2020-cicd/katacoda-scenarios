@@ -155,6 +155,8 @@ yq r -C build-pipeline.yaml
 kubectl apply -f build-pipeline.yaml
 ```{{execute}}
 
+## ADD PARAMS TO TRIGGER TEMPLATE
+
 ## Turn off polling
 
 You can now turn off the automatic polling, by changing the `updatePolicy` to `external`.

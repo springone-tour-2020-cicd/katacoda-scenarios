@@ -65,6 +65,20 @@ Stop the port-forwarding process:
 pkill kubectl && wait $!
 ```{{execute}}
 
+## Disable the Kustomize load restrictor
+
+Kustomize v3 allows us to disable the [security check introduced in Kustomize v2](https://kubernetes-sigs.github.io/kustomize/faq/#security-file-foo-is-not-in-or-below-bar) that prevents kustomizations from reading files outside their own directory root.
+This was meant to help protect the person inclined to download kustomization directories from the web and use them without inspection to control their production cluster.
+In our case we can safely disable this feature and preserve our folder structure.
+
+```
+yq m <(kubectl get cm argocd-cm -o yaml -n argocd) <(cat << EOF
+data:
+  kustomize.buildOptions: --load_restrictor none
+EOF
+) | kubectl apply -f -
+```{{execute}}
+
 ## Port-forward the Argo CD Server
 
 Wait until Argo CD is fully initialized. This may take a few minutes.
