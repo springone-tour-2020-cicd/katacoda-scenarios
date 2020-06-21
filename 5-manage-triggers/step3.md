@@ -62,10 +62,11 @@ mkdir go-sample-app-ops
 mv go-sample-app/ops go-sample-app-ops
 ```{{execute}}
 
-You can also move the Tekton files, so that Argo CD will also automatically deploy them to Kubernetes.
+You can also move the Tekton and Argo CD files, so that Argo CD will also automatically deploy them to Kubernetes.
 
 ```
 mv go-sample-app/tekton go-sample-app-ops/tekton
+mv go-sample-app/cicd go-sample-app-ops/cicd
 tree .
 ```{{execute}}
 
