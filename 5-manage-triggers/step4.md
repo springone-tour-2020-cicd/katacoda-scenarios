@@ -71,6 +71,6 @@ Take a look at the entire `Pipeline`, and apply it to the cluster.
 
 ```
 yq r -C bump-dev-pipeline.yaml
-tkn pipeline create -f bump-dev-pipeline.yaml
+kubectl apply -f bump-dev-pipeline.yaml
 ```{{execute}}
 

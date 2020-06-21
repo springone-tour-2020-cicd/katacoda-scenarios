@@ -180,7 +180,7 @@ more build-pipeline.yaml
 We can now add this `Pipeline` to our cluster.
 
 ```
-tkn pipeline create -f build-pipeline.yaml
+kubectl apply -f build-pipeline.yaml
 ```{{execute}}
 
 In the next step we'll add the necessary configuration to actually run this pipeline.

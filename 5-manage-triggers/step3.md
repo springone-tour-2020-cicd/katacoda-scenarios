@@ -88,5 +88,5 @@ Take a look at the entire `Task`, and apply it to the cluster.
 
 ```
 yq r -C bump-dev-task.yaml
-tkn task create -f bump-dev-task.yaml
+kubectl apply -f bump-dev-task.yaml
 ```{{execute}}
