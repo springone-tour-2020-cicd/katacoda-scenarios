@@ -10,8 +10,8 @@ In this step, you will:
 
 Make a new directory for the kpack configuration
 ```
-mkdir -p /workspace/go-sample-app-ops/kpack
-cd /workspace/go-sample-app-ops/kpack
+mkdir -p /workspace/go-sample-app-ops/cicd/kpack
+cd /workspace/go-sample-app-ops/cicd/kpack
 ```{{execute}}
 
 Configure a resource for the builder. This resource can be shared by many images:

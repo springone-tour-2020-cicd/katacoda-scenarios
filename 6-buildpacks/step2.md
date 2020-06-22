@@ -21,7 +21,7 @@ git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git && cd go-sample-ap
 Use `yq -x` to overwrite the build-image task configuration:
 
 ```
-cd tekton
+cd cicd/tekton
 yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
 yq m -i -a build-pipeline.yaml - <<EOF
 spec:
