@@ -29,7 +29,8 @@ EOF
 echo "$(argocd app get go-sample-app-dev -o yaml | yq r - spec | yq p - spec)" >> argo-deploy-dev.yaml
 ```{{execute}}
 
-Make a copy of the file for prod, and update replace 'dev' with 'prod' inside the file. Review the file.
+Make a copy of the file for prod, and replace 'dev' with 'prod' inside the file.
+Review the file.
 ```
 sed 's/dev/prod/g' argo-deploy-dev.yaml > argo-deploy-prod.yaml
 cat argo-deploy-prod.yaml
@@ -40,7 +41,8 @@ Apply the change.
 kubectl apply -f argo-deploy-prod.yaml -n argocd
 ```{{execute}}
 
-Go back to the UI and click on Applications in the breadcrum on the upper left. You should see a second tile, representing the prod deployment in the prod namespace.
+Go back to the UI and click on Applications in the breadcrumb on the upper left.
+You should see a second tile, representing the prod deployment in the prod namespace.
 
 ## Try it out
 
