@@ -29,6 +29,20 @@ Your GitHub namespace (user or org name) will be needed in this scenario. For co
 GITHUB_NS=
 ```{{copy}}
 
+You will also need your GitHub access token to authenticate with the Git server.
+You can copy and paste the following command into the terminal window, then append your GitHub login:
+
+```
+# Fill this in with your GitHub access token
+GITHUB_TOKEN=
+```{{copy}}
+
+Use this token to create a new `Secret`.
+
+```
+kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
+```{{execute}}
+
 ## Clone repo
 
 Start by cloning the GitHub source code repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.

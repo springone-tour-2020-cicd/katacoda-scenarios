@@ -53,7 +53,9 @@ cat <<EOF >>update-image-revision-task.yaml
     image: mikefarah/yq
     workingDir: \$(workspaces.source.path)
     script: |
-        cd kpack
+        apk add tree
+        tree
+        cd cicd/kpack
         yq w -i image.yaml "spec.source.git.revision" "\$(GIT_COMMIT)"
 EOF
 ```{{execute}}
@@ -66,11 +68,13 @@ cat <<EOF >>update-image-revision-task.yaml
     image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1
     workingDir: \$(workspaces.source.path)
     script: |
+      apk add tree
+      tree
       git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
       git config user.name build-bot
       git config user.email build-bot@bots.bot
       git checkout -b temp-branch
-      git add kpack/image.yaml
+      git add cicd/kpack/image.yaml
       git commit -m "Setting revision to current source code repo commit to trigger kpack"
       git checkout master
       git merge temp-branch
