@@ -13,4 +13,4 @@ cd /workspace
 export JAVA_HOME=/usr/lib/jvm/default-java/jre
 
 # export ENV_STATUS to display in intro-foreground.sh
-export $ENV_STATUS="Environment ready!"
+export ENV_STATUS="Environment ready!"
