@@ -15,7 +15,7 @@ Hence, we should take our existing `PipelineRun` resource, and wrap it in a new 
 Let's start with renaming the file and nesting the `PipelineRun` inside a specification.
 
 ```
-cd tekton
+cd cicd/tekton
 mv build-pipeline-run.yaml build-trigger-template.yaml
 yq p -i build-trigger-template.yaml spec.resourcetemplates[+]
 ```{{execute}}
@@ -23,7 +23,7 @@ yq p -i build-trigger-template.yaml spec.resourcetemplates[+]
 Now we can add anything specific to the `TriggerTemplate` in there.
 
 ```
-{ yq m -i -x - build-trigger-template.yaml; } <<EOF >build-trigger-template.yaml
+{ yq m -x - build-trigger-template.yaml >tmp.yaml && mv tmp.yaml build-trigger-template.yaml; } <<EOF
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:

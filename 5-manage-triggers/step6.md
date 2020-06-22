@@ -123,7 +123,7 @@ curl \
     -H 'Content-Type: application/json' \
     -d '{
           "push_data": {
-            "tag": "1.0.0"
+            "tag": "1.0.1"
           }
         }' \
 localhost:8080

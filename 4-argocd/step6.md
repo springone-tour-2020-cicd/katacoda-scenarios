@@ -16,8 +16,8 @@ For prod, we will use a declarative approach to create the application.
 First, use the `argocd` CLI to extract the dev app spec programmatically and save it to a file:
 
 ```
-mkdir -p /workspace/go-sample-app/cicd
-cd  /workspace/go-sample-app/cicd
+mkdir /workspace/go-sample-app/cicd/argo
+cd  /workspace/go-sample-app/cicd/argo
 
 cat <<EOF >argo-deploy-dev.yaml
 apiVersion: argoproj.io/v1alpha1

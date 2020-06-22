@@ -13,7 +13,7 @@ This means we can use the cloned Git sources as input to our Task.
 We also need a couple of parameters to fulfil our task, such as the new image tag, and the GitHub access token `Secret`.
 
 ```
-cd tekton
+cd cicd/tekton
 cat <<EOF >ops-dev-task.yaml
 apiVersion: tekton.dev/v1beta1
 kind: Task
