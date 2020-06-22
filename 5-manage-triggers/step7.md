@@ -6,6 +6,7 @@ Note that `git push` will need a [Personal Access Token](https://github.com/sett
 ```
 git add -A
 git commit -m 'Changes from the Triggers scenario'
+git pull origin master --rebase
 git push origin master
 ```{{execute}}
 
