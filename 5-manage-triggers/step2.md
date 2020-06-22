@@ -23,7 +23,7 @@ yq p -i build-trigger-template.yaml spec.resourcetemplates[+]
 Now we can add anything specific to the `TriggerTemplate` in there.
 
 ```
-{ yq m -i -x - build-trigger-template.yaml; } <<EOF >build-trigger-template.yaml
+{ yq m -x - build-trigger-template.yaml >tmp.yaml && mv tmp.yaml build-trigger-template.yaml; } <<EOF
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
