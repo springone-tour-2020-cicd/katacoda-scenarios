@@ -33,10 +33,6 @@ wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/
 chmod +x /usr/local/bin/yq
 echo "### Finished installing yq CLI"
 
-kubectl cluster-info
-Kubernetes master is running at https://172.17.0.14:6443
-KubeDNS is running at https://172.17.0.14:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-
 # Leave this as the last task in this script
 echo "### Waiting for Kubernetes nodes 'ready' status"
 until `which kubectl`; do sleep 1; done;
