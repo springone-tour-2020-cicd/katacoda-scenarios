@@ -26,7 +26,7 @@ EOF
 
 As a first task, we need to clone the code.
 Let's add the `git-clone` task to our pipeline.
-It requires two parameters, `repo-url` and `branch-name`, and we will set an optional parameter to delete existing clones before re-cloning.
+It requires two parameters, `repo-url` and `revision`, and we will set an optional parameter to delete existing clones before re-cloning.
 
 ```
 cat <<EOF >>build-pipeline.yaml
@@ -40,7 +40,7 @@ cat <<EOF >>build-pipeline.yaml
     - name: url
       value: \$(params.repo-url)
     - name: revision
-      value: \$(params.branch-name)
+      value: \$(params.revision)
     - name: deleteExisting
       value: "true"
 EOF
@@ -55,10 +55,10 @@ spec:
   params:
   - name: repo-url
     type: string
-    description: The git repository URL to clone from.
-  - name: branch-name
+    description: The Git repository URL to clone from.
+  - name: revision
     type: string
-    description: The git branch to clone.
+    description: The Git revision to clone.
   workspaces:
   - name: shared-workspace
     description: This workspace will receive the cloned git repo and be passed to the next Task.

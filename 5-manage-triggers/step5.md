@@ -20,10 +20,10 @@ spec:
   params:
     - name: repo-url
       type: string
-      description: The git repository URL to clone from.
-    - name: branch-name
+      description: The Git repository URL to clone from.
+    - name: revision
       type: string
-      description: The git branch to clone.
+      description: The Git revision to clone.
     - name: tag
       type: string
       description: The new image tag.
@@ -46,7 +46,7 @@ spec:
         - name: url
           value: \$(params.repo-url)
         - name: revision
-          value: \$(params.branch-name)
+          value: \$(params.revision)
         - name: deleteExisting
           value: "true"
     - name: ops-dev

@@ -39,9 +39,9 @@ yq m -i -x build-trigger-template.yaml - <<EOF
 spec:
   params:
   - name: REPO_URL
-    description: The repository url to build and deploy.
-  - name: BRANCH_NAME
-    description: The branch to build and deploy.
+    description: The Git repository url to build and deploy.
+  - name: REVISION
+    description: The Git revision to build and deploy.
   - name: IMAGE
     description: Name and tag of the Docker container in the Deployment.
 EOF
@@ -51,7 +51,7 @@ Of course we also need to use these parameters inside our `PipelineRun` specific
 
 ```
 yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==repo-url).value" "\$(params.REPO_URL)"
-yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==branch-name).value" "\$(params.BRANCH_NAME)"
+yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==revision).value" "\$(params.REVISION)"
 yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==image).value" "\$(params.IMAGE)"
 ```{{execute}}
 

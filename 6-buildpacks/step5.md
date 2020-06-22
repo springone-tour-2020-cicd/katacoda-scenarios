@@ -124,7 +124,7 @@ spec:
         - name: GITHUB_TOKEN_SECRET_KEY
           value: \$(params.github-token-secret-key)
         - name: REVISION
-          value: \$(params.branch-name)
+          value: \$(params.revision)
 EOF
 ```{{execute}}
 

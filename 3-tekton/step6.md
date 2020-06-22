@@ -55,14 +55,14 @@ spec:
 EOF
 ```{{execute}}
 
-Finally, we'll need to tell the `git-clone` Task which branch to clone.
+Finally, we'll need to tell the `git-clone` Task which Git revision to clone.
 Let's take `master` for now.
 
 ```
 yq m -i -a build-pipeline-run.yaml - <<EOF
 spec:
   params:
-  - name: branch-name
+  - name: revision
     value: master
 EOF
 ```{{execute}}
