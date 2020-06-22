@@ -4,14 +4,14 @@ Objective:
 Prepare your local environment.
 
 In this step, you will:
-- Wait until the environment is initialized
+- Validate that the environment is initialized
 - Set env vars with your GitHub and Docker Hub namespaces
 
-## Environment initialization
+## Validate environment initialization
 
 Please wait until `Environment ready!` appears in the terminal window.
 
-## Environment variables
+## Set environment variables
 
 Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
 

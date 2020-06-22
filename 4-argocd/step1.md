@@ -4,16 +4,16 @@ Objective:
 Prepare your local environment.
 
 In this step, you will:
-- Wait until the environment is initialized
+- Validate that the environment is initialized
 - Set env vars with your GitHub and Docker Hub namespaces
 - Create `dev` and `prod` namespaces in the Kubernetes cluster to represent deployment environments
 - Clone your GitHub repo (or the reference sample repo if you skipped the previous scenario)
 
-## Environment initialization
+## Validate environment initialization
 
 Please wait until `Environment ready!` appears in the terminal window.
 
-## Environment variables
+## Set environment variables
 
 Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
 
