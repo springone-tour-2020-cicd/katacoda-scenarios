@@ -25,8 +25,8 @@ git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
 First we need to create a Persistent Volume.
 
 ```
-mkdir tekton
-cd tekton
+mkdir -p cicd/tekton
+cd cicd/tekton
 cat <<EOF >pv.yaml
 apiVersion: v1
 kind: PersistentVolume

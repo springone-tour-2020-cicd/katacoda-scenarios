@@ -116,7 +116,7 @@ Let's port-forward our service.
 kubectl port-forward --address 0.0.0.0 svc/el-ops-dev-event-listener 8080:8080 2>&1 > /dev/null &
 ```{{execute}}
 
-Now we can trigger a pull request event, which should create a new `PipelineRun`.
+Now we can simulate an image pushed event, which should create a new `PipelineRun`.
 
 ```
 curl \

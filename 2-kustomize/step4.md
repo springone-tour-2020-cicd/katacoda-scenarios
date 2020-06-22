@@ -10,7 +10,7 @@ In this step, you will:
 
 ## Add environment variable
 
-We can now use an overlay to add an environment variable specifically in prod.
+You can now use an overlay to add an environment variable specifically in prod.
 For this we need to create a Kustomize patch.
 
 ```
@@ -38,7 +38,7 @@ kustomize edit add patch patch.yaml
 cat kustomization.yaml
 ```{{execute}}
 
-We can now apply and test our new environment variable.
+You can now apply and test our new environment variable.
 
 ```
 kustomize build --load_restrictor none . | kubectl apply -f -
@@ -77,8 +77,8 @@ EOF
 
 ## Patch for health check
 
-We also want to add liveness check and readiness check in the production environment.
-We can customize the Kubernetes deployment resource to talk to our endpoint.
+You'd also want to add liveness check and readiness check in the production environment.
+You can customize the Kubernetes deployment resource to talk to our endpoint.
 
 Create a new patch containing the liveness probes and readiness probes.
 
@@ -126,12 +126,17 @@ kustomize edit add patch healthcheck_patch.yaml
 > - healthcheck_patch.yaml
 > ```
 
-We can now apply all of these patches on our production environment.
+You can now apply all of these patches on our production environment.
 
 ```
 kustomize build --load_restrictor none . | kubectl apply -f -
 
 kubectl rollout status deployment/prod-go-sample-app -n prod
+```{{execute}}
+
+Take a look at the pods.
+
+```
 kubectl get all -n prod
 ```{{execute}}
 

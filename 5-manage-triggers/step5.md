@@ -4,7 +4,7 @@ Objective:
 Now that you've sorted out the ops repository, you can start creating the promotion pipeline.
 
 In this step, you will:
-- Create a new `Pipeline` and `PipelineRun` specification inside another `TriggerTemplate`
+- Create a new `Pipeline` specification
 
 ## Introduce the new Pipeline
 
