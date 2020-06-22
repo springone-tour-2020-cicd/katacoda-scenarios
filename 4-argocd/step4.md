@@ -21,7 +21,7 @@ Change the tag value in the dev overlay configuration:
 ```
 yq m -i -x ops/overlays/dev/kustomization.yaml - <<EOF
 images:
-  - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
+  - name: ${IMG_NS}/go-sample-app  # used for Kustomize matching
     newTag: 1.0.0
 EOF
 ```{{execute}}
