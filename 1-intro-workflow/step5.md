@@ -1,16 +1,23 @@
 # Save your changes
 
-You will need your repo and the new files you've created for the labs ahead. In this step you will fork the sample repo into your own GitHub account and save your changes.
+Objective:
+Save the sample repo, including the new ops directory with the deployment manifests, to your GitHub account. You will need the repo to build on this flow throughout the remaining scenarios.
 
-## Fork the GitHub repo and push your changes
+In this step, you will:
+1. Fork the sample repo to your GitHub account
+2. Push your changes to GitHub
 
-Use the `hub` CLI to fork the sample repo and push your changes to GitHub. Enter your GitHub username and access token at the prompt to authenticate against GitHub.
+## Fork the sample repo
+
+Use the `hub` CLI to fork the sample repo to your GitHub account. You will need to provide your GitHub username and access token at the prompt to authenticate `hub` against GitHub.
 
 ```
 hub fork --remote-name origin
 ```{{execute}}
 
-`hub` automatically updates your `origin` remote to point to your fork of the repo, so you can simply commit and push the changes you made throughout this scenario. Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
+## Push your changes to GitHub
+
+Commit and push the changes you made throughout this scenario to your new fork. You will need to provide your GitHub username and access token at the prompt to authenticate `git` against GitHub.
 
 ```
 git add -A

@@ -13,7 +13,7 @@ In this step, you will:
 - Deploy to Kubernetes
 - Test the deployed application
 
-## Clone app repo
+## Clone the sample app repo
 You will be working with a sample app that is publicly available on GitHub.
 
 Start by cloning the app repo and listing the contents. 
@@ -24,7 +24,7 @@ git clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go
 ls
 ```{{execute}}
 
-## Test app
+## Test the app locally
 
 Test it locally to see how it behaves. First, start the 'hello-server' process in the background:
 
@@ -44,7 +44,7 @@ Stop the app:
 pkill hello-server && wait $!
 ```{{execute}}
 
-## Build app image
+## Build the app image
 
 In order to deploy the app to Kubernetes, it needs to be packaged as a container image.
 
@@ -64,7 +64,7 @@ docker images | grep go-sample-app
 ```{{execute}}
 
 
-## Publish image registry
+## Publish the image to a registry
 
 The scenario environment is pre-configured with access to a Kubernetes cluster. 
 In order to deploy the image to the cluster, you must publish the image to a registry that the cluster can access. 
@@ -90,7 +90,7 @@ docker push $IMG_NS/go-sample-app:1.0.0
 
 Navigate to your account on [Docker Hub](https://hub.docker.com) to see the published image.
 
-## Create Kubernetes manifests
+## Create the Kubernetes manifests
 
 A deployment can be done _imperatively_ using a CLI and command-line options operating on running resources, or _declaratively_ using a config file that describes the desired deployment. 
 Imperative commands describe how to arrive at a desired state, and the command options are limited to those exposed through the CLI, whereas the declarative approach consists of configuration manifests that express - or declare, as it were - the desired state itself, serving as a blueprint and "source of truth" for a running system. 
@@ -121,11 +121,11 @@ cat ops/deployment.yaml
 cat ops/service.yaml
 ```{{execute}}
 
-## Deploy app to Kubernetes
+## Deploy the app to Kubernetes
 
 You are now ready to deploy the application to Kubernetes.
 
-Creating a namespace called `dev`, matching the namespace that was included in the dry-run commands above:
+Create a namespace called `dev`, matching the namespace that was included in the dry-run commands above:
 
 ```
 kubectl create ns dev
@@ -149,7 +149,7 @@ You can list the deployed resources using. At this point the deployment and pod 
 kubectl get all -n dev
 ```{{execute}}
 
-## Test deployed app
+## Test the deployed application
 
 To test the app, you can use port-forwarding to forward traffic from a local endpoint (e.g. localhost:8080) to the service you just created. 
 Run the following command to start a port-forwarding process in the background:
