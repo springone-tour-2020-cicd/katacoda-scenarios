@@ -89,7 +89,7 @@ spec:
   params:
   - name: REPO_URL
     value: \$(body.repository.clone_url)
-  - name: BRANCH_NAME
+  - name: REVISION
     value: \$(body.pull_request.head.sha)
   - name: IMAGE
     value: ${IMG_NS}/go-sample-app:${BUILD_DATE}

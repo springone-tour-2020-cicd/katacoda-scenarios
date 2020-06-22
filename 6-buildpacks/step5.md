@@ -53,10 +53,8 @@ cat <<EOF >>update-image-revision-task.yaml
     image: mikefarah/yq
     workingDir: \$(workspaces.source.path)
     script: |
-        apk add tree
-        tree
         cd cicd/kpack
-        yq w -i image.yaml "spec.source.git.revision" "\$(GIT_COMMIT)"
+        yq w -i image.yaml "spec.source.git.revision" "\$(params.REVISION)"
 EOF
 ```{{execute}}
 
@@ -199,6 +197,8 @@ Take a look at the entire `Pipeline`.
 yq r -C build-pipeline.yaml
 ```{{execute}}
 
+## Update the trigger
+
 Changing the pipeline of course also means you have to update the `TriggerTemplate`.
 
 Start by adding the missing parameters.
@@ -238,16 +238,28 @@ spec:
 EOF
 ```{{execute}}
 
+And also remove the unused `IMAGE` parameter from the `TriggerTemplate`.
+
+```
+yq d -i build-trigger-template.yaml "spec.params.(name==IMAGE)"
+```{{execute}}
+
 Take a look at the entire `TriggerTemplate`.
 
 ```
 yq r -C build-trigger-template.yaml
 ```{{execute}}
 
-Go ahead and apply both the `Pipeline` and `TriggerTemplate` to the cluster.
+Finally also get rid of the `IMAGE` parameter from the `TriggerBinding` as well.
 
 ```
-kubectl apply -f build-pipeline.yaml -f build-trigger-template.yaml
+yq d -i build-trigger-template.yaml "spec.params.(name==IMAGE)"
+```{{execute}}
+
+Go ahead and apply the resources to the cluster.
+
+```
+kubectl apply -f .
 ```{{execute}}
 
 ## Turn off polling
