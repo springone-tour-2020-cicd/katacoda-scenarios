@@ -95,11 +95,12 @@ kubectl apply -f update-image-revision-task.yaml
 
 We can now use this newly created `Task` to trigger kpack.
 
-First of all we need to remove the two existing image related tasks from the build pipeline.
+First of all we need to remove the two existing image related tasks from the build pipeline, as well as the image resource.
 
 ```
 yq d -i build-pipeline.yaml "spec.tasks.(name==verify-digest)"
 yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
+yq d -i build-pipeline.yaml "spec.resources"
 ```{{execute}}
 
 The `Image` manifest is now part of the ops repository, instead of the source code repository.
@@ -199,15 +200,16 @@ Changing the pipeline of course also means you have to update the `TriggerTempla
 Start by adding the missing parameters.
 
 ```
+yq d -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params"
 yq m -i build-trigger-template.yaml - <<EOF
 spec:
   resourcetemplates:
     - spec:
         params:
           - name: repo-url
-            value: $(params.REPO_URL)
+            value: \$(params.REPO_URL)
           - name: revision
-            value: $(params.REVISION)
+            value: \$(params.REVISION)
           - name: github-token-secret
             value: github-token
           - name: github-token-secret-key
@@ -218,7 +220,7 @@ EOF
 The new workspace also needs to be assigned a `PersistentVolumeClaim` in the `TriggerTemplate`.
 
 ```
-yq m -i -a build-trigger-template.yaml - <<EOF
+yq m -i build-trigger-template.yaml - <<EOF
 spec:
   resourcetemplates:
     - spec:
@@ -277,7 +279,7 @@ The first one will track changes in kpack manifests, including the `Image` resou
 
 ```
 cd ../argo
-cat <<EOF >argo-deploy-tekton.yaml
+cat <<EOF >argo-deploy-image.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
