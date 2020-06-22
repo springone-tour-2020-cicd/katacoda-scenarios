@@ -2,10 +2,6 @@
 
 This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
 
-**Prerequisites** 
-
-Please complete the [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario first.
-
 **Scenario Overview: Improve Image Lifecycle with Buildpacks**
 
 As compared to Dockerfile, Cloud Native Buildpacks provide a higher level of abstraction and make it significantly easier for developers and operators to build images and manage them at scale.
@@ -22,4 +18,11 @@ In this scenario, you will:
 * Learn about Cloud Native Buildpacks through some introductory examples
 * Explore two ways to use buildpacks in our CI/CD workflow
 
-Let's begin!
+**Prerequisites** 
+
+Please complete the [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario first.
+
+You will need your [GitHub access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) (with "repo" access rights) and your [Docker Hub access token](https://docs.docker.com/docker-hub/access-tokens) throughout this course.
+
+The scenarios are intended to be completed sequentially, as each scenario builds on the repo(s) you created in earlier scenarios. However, a sample repo representing the starting state of each scenario is also provided in case you want to skip ahead. Please see step 1 for instructions.
+
