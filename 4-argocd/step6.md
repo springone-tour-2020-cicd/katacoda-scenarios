@@ -33,7 +33,7 @@ Make a copy of the file for prod, and replace 'dev' with 'prod' inside the file.
 Review the file.
 ```
 sed 's/dev/prod/g' argo-deploy-dev.yaml > argo-deploy-prod.yaml
-cat argo-deploy-prod.yaml
+yq r -C argo-deploy-prod.yaml
 ```{{execute}}
 
 Apply the change.
