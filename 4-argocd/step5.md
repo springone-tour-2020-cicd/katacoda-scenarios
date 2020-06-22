@@ -24,7 +24,7 @@ git commit -am 'Add prefix dev-'
 git push origin master
 ```{{execute}}
 
-Go back to the UI, and wait (or refresh) until you Argo CD reports that the app is out of sync.
+Go back to the UI, and wait (or refresh) until Argo CD reports that the app is out of sync.
 You should see that the deployed application is still healthy (green hearts), but that the declared desired state is different from the actual runtime state (yellow circles).
 Do **not** click Sync again - we will trigger Argo to sync in a few steps.
 
