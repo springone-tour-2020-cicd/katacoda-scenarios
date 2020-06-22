@@ -15,17 +15,16 @@ Please wait until `Environment ready!` appears in the terminal window.
 
 ## Set environment variables
 
-Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
+Your GitHub and Docker Hub namespaces (user or org names) will be needed in this scenario.
+Copy and paste the following environment variables to the terminal window, then append the appropriate namespace:
 
 ```
-# Fill this in with your GitHub username or org
+# Provide your GitHub user or org name
 GITHUB_NS=
 ```{{copy}}
 
-Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
-
 ```
-# Fill this in with your GitHub username or org
+# Provide your Docker Hub user or org name
 IMG_NS=
 ```{{copy}}
 

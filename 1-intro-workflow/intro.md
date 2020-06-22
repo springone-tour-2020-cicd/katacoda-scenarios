@@ -5,6 +5,7 @@ In this course, we explore some options for Kubernetes-centric tooling for Conti
 Through these excercises, we will also see how GitOps can be leveraged for CI/CD.
 
 **Introduction**
+
 With Kubernetes, everything from deployment to monitoring to scaling is more standardized and inherently easier to automate. 
 This presents the possibility to achieve a more effective and comprehensive CI/CD experience. 
 We can incorporate the practice of infrastructure-as-code and take advantage of a flourishing ecosystem of tools to improve and fully automate our application deployment strategies.
