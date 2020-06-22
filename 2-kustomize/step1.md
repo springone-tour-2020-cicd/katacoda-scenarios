@@ -25,14 +25,6 @@ Start by cloning the GitHub repo you created in the [intro](https://www.katacoda
 git clone https://github.com/$GITHUB_NS/go-sample-app.git
 ```{{execute}}
 
-## Clone repo
-
-Start by cloning the GitHub repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
-
-```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git
-```{{execute}}
-
 ## Create namespaces
 
 To simulate the dev an prod environments into which we will be deploying the app, create dev and prod namepsaces.
