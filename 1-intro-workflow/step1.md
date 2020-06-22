@@ -12,16 +12,6 @@ In this step, you will:
 - Deploy to Kubernetes
 - Test the deployed application
 
-## Local environment setup
-Please wait until `Environment ready!` appears in the terminal window.
-
-Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your Docker Hub namespace:
-
-```
-# Fill this in with your Docker Hub username or org
-IMG_NS=
-```{{copy}}
-
 ## Clone app repo
 We will be working with a sample app that is publicly available on GitHub.
 

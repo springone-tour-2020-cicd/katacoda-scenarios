@@ -7,27 +7,11 @@ Note:
 For the rest of the scenario, we will use the terms _CNB_ or _buildpacks_ to refer to Cloud Native Buildpacks.
 
 In this step, you will:
-- Prepare your local environment
 - Review the Dockerfile in the sample app
 - Build our sample app locally using the `pack` CLI and Paketo Buildpacks
 - Explore some of the characteristics and features of buildpacks
 
-## Local environment setup
-Please wait until `Environment ready!` appears in the terminal window.
-
-Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your Docker Hub namespace:
-
-```
-# Fill this in with your Docker Hub username or org
-IMG_NS=
-```{{copy}}
-
-Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
-
-```
-# Fill this in with your GitHub username or org
-GITHUB_NS=
-```{{copy}}
+## Github setup
 
 You will also need your GitHub access token to authenticate with the Git server.
 You can copy and paste the following command into the terminal window, then append your GitHub login:
@@ -43,19 +27,12 @@ Use this token to create a new `Secret`.
 kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
 ```{{execute}}
 
-## Clone repo
-
-Start by cloning the GitHub source code repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
-
-```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
-```{{execute}}
-
 ## Examine the Dockerfile
 
 Take a look at the Dockerfile included in the repo
 
 ```
+cd go-sample-app
 cat Dockerfile
 ```{{execute}}
 

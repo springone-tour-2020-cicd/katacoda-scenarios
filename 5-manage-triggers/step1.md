@@ -6,25 +6,7 @@ Maybe you want to automatically run your pipeline every time you create a pull r
 Thankfully, the Tekton Triggers project solves this problem by automatically connecting events to your Tekton Pipelines.
 
 In this step, you will:
-- Prepare your local environment
 - Learn about the components of Tekton Triggers and how they work
-
-## Local environment setup
-Please wait until `Environment ready!` appears in the terminal window.
-
-Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your Docker Hub namespace:
-
-```
-# Fill this in with your Docker Hub username or org
-IMG_NS=
-```{{copy}}
-
-Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
-
-```
-# Fill this in with your GitHub username or org
-GITHUB_NS=
-```{{copy}}
 
 ### Configure Tekton
 
@@ -41,13 +23,7 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kani
 
 ### Set up Git
 
-Start by cloning the GitHub repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
-
-```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
-```{{execute}}
-
-Later on you'll need your GitHub username to be able to push to this repo.
+You'll need your GitHub username to be able to push to this repo.
 You can copy and paste the following command into the terminal window, then append your GitHub login:
 
 ```

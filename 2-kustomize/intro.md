@@ -15,8 +15,8 @@ By the end of this scenario, you will have:
 
 **Prerequisites** 
 
-Please complete the [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario first.
+Throughout this course, you will need a [GitHub account](https://github.com) and [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) (with "repo" access rights), as well as a [Docker Hub account](https://hub.docker.com) and [access token](https://docs.docker.com/docker-hub/access-tokens).
 
-You will need your [GitHub access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) (with "repo" access rights) and your [Docker Hub access token](https://docs.docker.com/docker-hub/access-tokens) throughout this course.
+The scenarios are intended to be completed sequentially, starting with [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow).
 
-The scenarios are intended to be completed sequentially, as each scenario builds on the repo(s) you created in earlier scenarios. However, a sample repo representing the starting state of each scenario is also provided in case you want to skip ahead. Please see step 1 for instructions.
+Each scenario builds on the repo(s) you create in earlier scenarios. However, a sample repo representing the starting state of each scenario is also provided, in case you want to skip ahead. Please see step 1 of this scenario for instructions on using the reference starting repo.
