@@ -172,7 +172,7 @@ EOF
 Let's take a look at our entire pipeline file.
 
 ```
-cat build-pipeline.yaml
+yq r -C build-pipeline.yaml
 ```{{execute}}
 
 We can now add this `Pipeline` to our cluster.
