@@ -30,6 +30,13 @@ curl -LO https://github.com/kubernetes-sigs/kustomize/releases/download/kustomiz
 tar xvzf kustomize_v3.5.4_linux_amd64.tar.gz -C /usr/local/bin/ kustomize
 echo "### Finished installing Kustomize CLI"
 
+# Leave this as the last task in this script
+echo "### Waiting for Kubernetes nodes 'ready' status"
+until `which kubectl`; do sleep 1; done;
+JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
+until kubectl get nodes -o jsonpath="$JSONPATH" | grep "Ready=True"; do sleep 1; done
+echo "### Finished waiting for Kubernetes nodes 'ready' status"
+
 ########## NO CHANGES BELOW THIS LINE ##########
 # The following must be the last line
 echo "done" >> /root/init-env/init-env.status
