@@ -1,125 +1,93 @@
-# Dockerfile vs Buildpacks
+# Prepare environment
 
 Objective:
-Understand some of the challenges in using Dockerfiles and how a higher-level abstraction, such as Cloud Native Buildpacks, can help.
-
-Note:
-For the rest of the scenario, we will use the terms _CNB_ or _buildpacks_ to refer to Cloud Native Buildpacks.
+Prepare your local environment.
 
 In this step, you will:
-- Review the Dockerfile in the sample app
-- Build our sample app locally using the `pack` CLI and Paketo Buildpacks
-- Explore some of the characteristics and features of buildpacks
+- Wait until the environment is initialized
+- Set env vars with your GitHub and Docker Hub namespaces
+- Create `dev` and `prod` namespaces in the Kubernetes cluster to represent deployment environments
+- Clone your GitHub repo (or the reference sample repo if you skipped the previous scenario)
 
-## Github setup
+## Environment initialization
 
-Later on you'll need your GitHub username to be able to push to this repo.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
+Please wait until `Environment ready!` appears in the terminal window.
+
+## Environment variables
+
+Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
 
 ```
-# Fill this in with your GitHub login
-GITHUB_USER=
+# Fill this in with your GitHub username or org
+GITHUB_NS=
 ```{{copy}}
 
-Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
+Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
 
 ```
-GITHUB_USER=$GITHUB_NS
-```{{execute}}
-
-You will also need your GitHub access token to authenticate with the Git server.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
-
-```
-# Fill this in with your GitHub access token
-GITHUB_TOKEN=
+# Fill this in with your GitHub username or org
+IMG_NS=
 ```{{copy}}
 
-Use this token to create a new `Secret`.
+## Create namespaces
+
+To simulate the dev an prod environments into which we will be deploying the sample app, create dev and prod namepsaces.
 
 ```
-kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
+kubectl create ns dev
+kubectl create ns prod
 ```{{execute}}
 
-## Examine the Dockerfile
+## Clone repos
 
-Take a look at the Dockerfile included in the repo
+If you completed the previous scenario, clone your sample repo:
 
 ```
-cd go-sample-app
-cat Dockerfile
+git clone https://github.com/$GITHUB_NS/go-sample-app.git
 ```{{execute}}
 
-This is a relatively simple Dockerfile, but every line represents a decision - good or bad - made by the Dockerfile author (use a multi-stage approach, use golang and scratch base images, handle modules and source separately, build the app as a statically-linked binary, tightly couple COPY/RUN/ENTRYPOINT to app-specific filenames, etc). Ommissions also represent Dockerfile author decisions (e.g. no .dockerfile, no LABELs, no base image version, etc).
+## ALTERNATIVE: Clone the "short-cut" reference sample repo
 
-Some of these decisions are specific to Golang. If the author wanted to build a Java app, for example, they would need to make and support a new set of decisions. Moreover, the full burden of responsibility for ensuring this Dockerfile implements best practices for efficiency, security, etc, falls on the Dockerfile author.
+If you have not completed the previous scenario and want to skip ahead to this one, you can create a fork from the reference sample corresponding to this scenario.
 
-In addition, short of copying and pasting Dockerfiles into other app repos, there is no formalized mechanism for re-using or sharing Dockerfiles. There is also no formalized mechanism for managing Dockerfiles at enterprise-scale, where challenges of support, security, governance and transparency become critically important.
-
-## Build with pack and Paketo
-
-Recall the command to build and publish the app with Dockerfile:
-
-> ```
-> docker build . -t go-sample-app
-> ```
-
-In this case, we could say that the docker CLI is the tool we interact with in order to use Dockerfiles to create and publish images.
-The Docker daemon is also involved in the process, as the build is actually carried out by - and on - the daemon, rather than by the CLI itself.
-
-With Cloud Native Buildpacks, we have a choice of tools, or "platforms" to interact with (any tool that implements the CNB Platform API is a _platform_).
-The project itself provides a reference implementation in the form of a CLI called `pack`. Other examples include the Spring Boot 2.3.0+ Maven and Gradle plugins, Tekton, and a Kubernetes-native hostable service called kpack.
-In this scenario we will explore pack, Tekton, and kpack.
-
-To replace the role that Dockerfile plays, we need an implementation of the CNB Buildpack API, such as Paketo Buildpacks (the CNB variant of Cloud Foundry Buildpacks) or Heroku Buildpacks.
-These Buildpacks include the base images used for build and runtime (akin to the golang and scratch images in our sample Dockerfile), as well as the language-specific logic (aka, all of the logic you would otherwise script in your Dockerfiles).
-
-
-## Build with `pack` and Paketo
-
-Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks:
+If you have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git), you can skip this next command block. Otherwise, clone and fork the sample repo. Enter your GitHub user name and access token at the prompt.
 
 ```
-pack build go-sample-app --builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
+hub clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go-sample-app
 ```{{execute}}
-
-You'll notice pack downloading the build and run base images. The build image includes all necessary buildpacks to build images for a variety of applications, including Go, Java, Nodejs, and more.
-
-The build log shows which buildpacks are detected as applicable to this app, applies them in the proper order, and exports the layers necessary for runtime to the run image.
-
-The built-in `lifecycle` component that is powering the build process is packaged into the builder image, and it provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse.
-For example, in subsequent builds, you would see the 'ANALYZING` an `RESTORING` phases reflected in the build log leveraging the cache and image layer metadata created in the first build.
-
-You can see the resulting image on the Docker daemon:
 
 ```
-docker images | grep go-sample-app
+hub fork --remote-name origin
 ```{{execute}}
 
-## Re-build the app, and publish to Docker Hub
+List the available branches
+```
+git ls-remote --heads | grep scenario
+```{{execute}}
 
-`pack` can also publish the image to a registry.  In order to build and publish the image, you must first authenticate against Docker Hub. Enter your access token at the prompt:
+Choose the branch that corresponds to the end of the last scenario. Copy and paste the following environment variable to the terminal window, then append the appropriate branch name. Use only the portion after `refs/heads/` (e.g. BRANCH=scenario-1-finished).
+```
+# Fill this in with the branch name (e.g. BRANCH=scenario-1-finished)
+BRANCH=
+```{{copy}}
+
+Check out the selected branch.
+```
+git checkout --track origin/$BRANCH
+```{{execute}}
+
+Replace the `springone-tour-2020-cicd` namespace with your namespaces:
 
 ```
-docker login -u ${IMG_NS}
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g"
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/ springone-tour-2020-cicd/ $IMG_NS/g"
 ```{{execute}}
-
-To simplify the `pack` command, you can also set the builder as a default:
 
 ```
-pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
+git add -A
+git commit -m "Reset from branch $BRANCH, updated namespaces"
+git rebase master
+git checkout master
+git merge $BRANCH
+git push -u origin master
 ```{{execute}}
-
-Now, you can rebuild the app and publish to Docker Hub with the following command. You should notice the build is faster this time, partially because the base images are now accessible locally, and partially because of efficient caching and image-layer re-use:
-
-```
-pack build $IMG_NS/go-sample-app --publish
-```{{execute}}
-
-## Additional features
-
-The `pack` CLI provides additional commands you can explore that expose the capabilities of Cloud native Buildpacks. You can leanr more through the project homepage, [buildpacks.io](buildpacks.io), or through the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks), or other online resources. For the purposes of this scenario, however, it is sufficient to know that:
-- The simple `pack build` command above would work for applications written in a variety of languages (e.g. Go, Java, Node.js, .NET Core, etc), and they implement best practices particular to each language
-- Builders make it trivial to manage and share buildpacks and base images
-- Any platform (pack, Tekton, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image
-- In addition to building images, CNB enables "rebasing" images, wherein the base image layers of an existing image can be updated within seconds or milliseconds without rebuilding the image. This is a efficient and powerful security feature not possible with Dockerfile

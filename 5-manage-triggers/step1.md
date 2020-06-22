@@ -1,78 +1,93 @@
-# Add a Trigger
+# Prepare environment
 
 Objective:
-Up until this point you’ve probably had this question pop up into your head: I can **manually** run my Tekton Pipeline, but how do I **automatically** run my pipeline?
-Maybe you want to automatically run your pipeline every time you create a pull request, push code to a repo, or merge a pull request into the master branch.
-Thankfully, the Tekton Triggers project solves this problem by automatically connecting events to your Tekton Pipelines.
+Prepare your local environment.
 
 In this step, you will:
-- Learn about the components of Tekton Triggers and how they work
+- Wait until the environment is initialized
+- Set env vars with your GitHub and Docker Hub namespaces
+- Create `dev` and `prod` namespaces in the Kubernetes cluster to represent deployment environments
+- Clone your GitHub repo (or the reference sample repo if you skipped the previous scenario)
 
-### Configure Tekton
+## Environment initialization
 
-Install the pipeline and trigger CRDs, and all the tasks we rely on.
+Please wait until `Environment ready!` appears in the terminal window.
 
-```
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
-kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
-```{{execute}}
+## Environment variables
 
-### Set up Git
-
-You'll need your GitHub username to be able to push to this repo.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
+Your GitHub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
 
 ```
-# Fill this in with your GitHub login
-GITHUB_USER=
+# Fill this in with your GitHub username or org
+GITHUB_NS=
 ```{{copy}}
 
-Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
+Your Docker Hub namespace (user or org name) will be needed in this scenario. For convenience, copy and paste the following environment variable to the terminal window, then append your GitHub namespace:
 
 ```
-GITHUB_USER=$GITHUB_NS
-```{{execute}}
-
-You will also need your GitHub access token to authenticate with the Git server.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
-
-```
-# Fill this in with your GitHub access token
-GITHUB_TOKEN=
+# Fill this in with your GitHub username or org
+IMG_NS=
 ```{{copy}}
 
-Use this token to create a new `Secret`.
+## Create namespaces
+
+To simulate the dev an prod environments into which we will be deploying the sample app, create dev and prod namepsaces.
 
 ```
-kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
+kubectl create ns dev
+kubectl create ns prod
 ```{{execute}}
 
-### Log into Docker Hub
+## Clone repos
 
-Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
+If you completed the previous scenario, clone your sample repo:
 
 ```
-docker login -u ${IMG_NS}
+git clone https://github.com/$GITHUB_NS/go-sample-app.git
 ```{{execute}}
 
-We can now create the registry `Secret`.
+## ALTERNATIVE: Clone the "short-cut" reference sample repo
+
+If you have not completed the previous scenario and want to skip ahead to this one, you can create a fork from the reference sample corresponding to this scenario.
+
+If you have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git), you can skip this next command block. Otherwise, clone and fork the sample repo. Enter your GitHub user name and access token at the prompt.
 
 ```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+hub clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go-sample-app
 ```{{execute}}
 
-## Trigger workflow
-Tekton Triggers adds mainly three new resource types to Kubernetes: the `EventListener`, the `TriggerBinding` and the `TriggerTemplate`.
+```
+hub fork --remote-name origin
+```{{execute}}
 
-An `EventListener` creates a Deployment and Service that listen for events.
-When the `EventListener` receives an event, it executes a specified `TriggerBinding` and `TriggerTemplate`.
-A `TriggerBinding` then describes what information you want to extract from an event to pass to your `TriggerTemplate`.
-And finally, a `TriggerTemplate` declares a specification for each Kubernetes resource you want to create when an event is received.
+List the available branches
+```
+git ls-remote --heads | grep scenario
+```{{execute}}
 
-![TriggerFlow](https://github.com/tektoncd/triggers/blob/master/images/TriggerFlow.png?raw=true)
+Choose the branch that corresponds to the end of the last scenario. Copy and paste the following environment variable to the terminal window, then append the appropriate branch name. Use only the portion after `refs/heads/` (e.g. BRANCH=scenario-1-finished).
+```
+# Fill this in with the branch name (e.g. BRANCH=scenario-1-finished)
+BRANCH=
+```{{copy}}
 
-Let's go through each of these resources and apply them to our existing Tekton `PipelineRun`.
+Check out the selected branch.
+```
+git checkout --track origin/$BRANCH
+```{{execute}}
+
+Replace the `springone-tour-2020-cicd` namespace with your namespaces:
+
+```
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g"
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/ springone-tour-2020-cicd/ $IMG_NS/g"
+```{{execute}}
+
+```
+git add -A
+git commit -m "Reset from branch $BRANCH, updated namespaces"
+git rebase master
+git checkout master
+git merge $BRANCH
+git push -u origin master
+```{{execute}}

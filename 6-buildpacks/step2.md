@@ -1,245 +1,125 @@
-# Use Buildpacks in Tekton Pipeline
+# Dockerfile vs Buildpacks
 
 Objective:
-Learn how you can use a Tekton Task to build apps using Cloud Native Buildpacks within a Tekton Pipeline.
+Understand some of the challenges in using Dockerfiles and how a higher-level abstraction, such as Cloud Native Buildpacks, can help.
+
+Note:
+For the rest of the scenario, we will use the terms _CNB_ or _buildpacks_ to refer to Cloud Native Buildpacks.
 
 In this step, you will:
-- Update your Tekton build pipeline to use Buildpacks instead of Dockerfile
+- Review the Dockerfile in the sample app
+- Build our sample app locally using the `pack` CLI and Paketo Buildpacks
+- Explore some of the characteristics and features of buildpacks
 
-## Update the build pipeline yaml
+## Github setup
 
-The build pipeline you configured in previous scenarios uses a Kaniko task to build an image using the Dockerfile in the app repo, and push the image to Docker Hub.
-Instead, we will use a The [Buildpacks task](https://github.com/tektoncd/catalog/blob/v1beta1/buildpacks/README.md).
-
-Clone the GitHub ops repo you created in the [triggers](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/5-manage-triggers) scenario.
-
-```
-cd ..
-git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git && cd go-sample-app-ops
-```{{execute}}
-
-Use `yq -x` to overwrite the build-image task configuration:
+Later on you'll need your GitHub username to be able to push to this repo.
+You can copy and paste the following command into the terminal window, then append your GitHub login:
 
 ```
-cd cicd/tekton
-yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
-yq m -i -a build-pipeline.yaml - <<EOF
-spec:
-  tasks:
-  - name: build-image
-    taskRef:
-      name: buildpacks-v3
-    runAfter:
-      - fetch-repository
-      - lint
-      - test
-    workspaces:
-      - name: source
-        workspace: shared-workspace
-    params:
-      - name: BUILDER_IMAGE
-        value: gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
-      - name: CACHE
-        value: buildpacks-cache
-    resources:
-      outputs:
-        - name: image
-          resource: build-image
-EOF
-```{{execute}}
+# Fill this in with your GitHub login
+GITHUB_USER=
+```{{copy}}
 
-This buildpacks task requires a slightly different configuration for the image reference. The following commands removes the kaniko-specific configuration and adds the buildpacks configuration:
+Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
 
 ```
-yq d -i build-pipeline.yaml - <<EOF
-spec:
-  params:
-  - name: image
-    description: reference of the image to build
-EOF
+GITHUB_USER=$GITHUB_NS
 ```{{execute}}
+
+You will also need your GitHub access token to authenticate with the Git server.
+You can copy and paste the following command into the terminal window, then append your GitHub login:
 
 ```
-yq m -i build-pipeline.yaml - <<EOF
-spec:
-  resources:
-    - name: build-image
-      type: image
-EOF
-```{{execute}}
+# Fill this in with your GitHub access token
+GITHUB_TOKEN=
+```{{copy}}
 
-## Introduce new `PersistentVolume` and `PersistentVolumeClaim`
-
-First we need to create a Persistent Volume.
+Use this token to create a new `Secret`.
 
 ```
-cat <<EOF >buildpacks-cache-pv.yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: buildpacks-cache-pv
-spec:
-  capacity:
-    storage: 3Gi
-  volumeMode: Filesystem
-  accessModes:
-  - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: local-storage
-  hostPath:
-    path: "/mnt/data"
-EOF
+kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
 ```{{execute}}
 
-Create the Persistent Volume Claim:
+## Examine the Dockerfile
+
+Take a look at the Dockerfile included in the repo
 
 ```
-cat <<EOF >>buildpacks-cache-pvc.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: buildpacks-cache-pvc
-spec:
-  storageClassName: local-storage
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
-EOF
+cd go-sample-app
+cat Dockerfile
 ```{{execute}}
 
-## Update the build pipeline run yaml
+This is a relatively simple Dockerfile, but every line represents a decision - good or bad - made by the Dockerfile author (use a multi-stage approach, use golang and scratch base images, handle modules and source separately, build the app as a statically-linked binary, tightly couple COPY/RUN/ENTRYPOINT to app-specific filenames, etc). Ommissions also represent Dockerfile author decisions (e.g. no .dockerfile, no LABELs, no base image version, etc).
 
-The difference in the way the image is configured betwee the kaniko and buildpacks task also requires a change to the `TriggerTemplate` resource.
+Some of these decisions are specific to Golang. If the author wanted to build a Java app, for example, they would need to make and support a new set of decisions. Moreover, the full burden of responsibility for ensuring this Dockerfile implements best practices for efficiency, security, etc, falls on the Dockerfile author.
+
+In addition, short of copying and pasting Dockerfiles into other app repos, there is no formalized mechanism for re-using or sharing Dockerfiles. There is also no formalized mechanism for managing Dockerfiles at enterprise-scale, where challenges of support, security, governance and transparency become critically important.
+
+## Build with pack and Paketo
+
+Recall the command to build and publish the app with Dockerfile:
+
+> ```
+> docker build . -t go-sample-app
+> ```
+
+In this case, we could say that the docker CLI is the tool we interact with in order to use Dockerfiles to create and publish images.
+The Docker daemon is also involved in the process, as the build is actually carried out by - and on - the daemon, rather than by the CLI itself.
+
+With Cloud Native Buildpacks, we have a choice of tools, or "platforms" to interact with (any tool that implements the CNB Platform API is a _platform_).
+The project itself provides a reference implementation in the form of a CLI called `pack`. Other examples include the Spring Boot 2.3.0+ Maven and Gradle plugins, Tekton, and a Kubernetes-native hostable service called kpack.
+In this scenario we will explore pack, Tekton, and kpack.
+
+To replace the role that Dockerfile plays, we need an implementation of the CNB Buildpack API, such as Paketo Buildpacks (the CNB variant of Cloud Foundry Buildpacks) or Heroku Buildpacks.
+These Buildpacks include the base images used for build and runtime (akin to the golang and scratch images in our sample Dockerfile), as well as the language-specific logic (aka, all of the logic you would otherwise script in your Dockerfiles).
+
+
+## Build with `pack` and Paketo
+
+Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks:
 
 ```
-yq d -i build-trigger-template.yaml 'spec.resourcetemplates[0].spec.params.(name==image)'
-
-yq m -i build-trigger-template.yaml - <<EOF
-spec:
-  resourcetemplates:
-    - spec:
-        resources:
-          - name: build-image
-            resourceRef:
-              name: buildpacks-app-image
-        podTemplate:
-          volumes:
-            - name: buildpacks-cache
-              persistentVolumeClaim:
-                claimName: buildpacks-cache-pvc
-EOF
+pack build go-sample-app --builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
 ```{{execute}}
 
-The resourceRef and persistentVolumeClaim above require new resources as well:
+You'll notice pack downloading the build and run base images. The build image includes all necessary buildpacks to build images for a variety of applications, including Go, Java, Nodejs, and more.
+
+The build log shows which buildpacks are detected as applicable to this app, applies them in the proper order, and exports the layers necessary for runtime to the run image.
+
+The built-in `lifecycle` component that is powering the build process is packaged into the builder image, and it provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse.
+For example, in subsequent builds, you would see the 'ANALYZING` an `RESTORING` phases reflected in the build log leveraging the cache and image layer metadata created in the first build.
+
+You can see the resulting image on the Docker daemon:
 
 ```
-cat <<EOF >buildpacks-app-image.yaml
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: buildpacks-app-image
-spec:
-  type: image
-  params:
-    - name: url
-      value: ${IMG_NS}/go-sample-app:1.0.3
-EOF
+docker images | grep go-sample-app
 ```{{execute}}
 
-## Deploy Tekton resources
+## Re-build the app, and publish to Docker Hub
 
-Since this is a new scenario, before running the updated pipeline, you need to re-install the Tekton CRDs, as well as the tasks being used in the build pipeline.
+`pack` can also publish the image to a registry.  In order to build and publish the image, you must first authenticate against Docker Hub. Enter your access token at the prompt:
 
 ```
-# Install Tekton CRDs
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
-kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
-
-# Install Tasks to clone app repo, lint and test the Go app
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
-#kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
-
-# Install new buildpacks Task to build image
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
+docker login -u ${IMG_NS}
 ```{{execute}}
 
-At this point you should see the four Tasks installed from the TektonCD Catalog, and no pipelines yet:
+To simplify the `pack` command, you can also set the builder as a default:
 
 ```
-tkn task list
-tkn pipeline list
+pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
 ```{{execute}}
 
-## Configure authentication for Docker Hub
-
-You have already logged in to docker, so you are ready to create the registry `Secret`.
+Now, you can rebuild the app and publish to Docker Hub with the following command. You should notice the build is faster this time, partially because the base images are now accessible locally, and partially because of efficient caching and image-layer re-use:
 
 ```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+pack build $IMG_NS/go-sample-app --publish
 ```{{execute}}
 
+## Additional features
 
-## Apply the updated pipeline
-
-```
-kubectl apply -f sa.yaml \
-              -f pv.yaml \
-              -f pvc.yaml \
-              -f buildpacks-cache-pv.yaml \
-              -f buildpacks-cache-pvc.yaml \
-              -f buildpacks-app-image.yaml
-```{{execute}}
-
-```
-kubectl apply -f build-pipeline.yaml \
-              -f build-trigger-template.yaml \
-              -f build-trigger-binding.yaml \
-              -f build-event-listener.yaml
-```{{execute}}
-
-## Test it out
-
-Wait for the deployment to finish.
-
-```
-kubectl rollout status deployment/el-build-event-listener
-```{{execute}}
-
-Let's port-forward our service.
-
-```
-kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
-```{{execute}}
-
-Now we can trigger a pull request event, which should create a new `PipelineRun`.
-
-```
-curl \
-    -H 'X-GitHub-Event: pull_request' \
-    -H 'Content-Type: application/json' \
-    -d '{
-      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
-      "pull_request": {"head": {"sha": "master"}}
-    }' \
-localhost:8080
-```{{execute}}
-
-Next, verify the `PipelineRun` executes without any errors.
-
-```
-tkn pipelinerun list
-tkn pipelinerun logs -f
-```{{execute}}
-
-Stop the port-forwarding process:
-```
-pkill kubectl && wait $!
-```{{execute}}
-
-
-
+The `pack` CLI provides additional commands you can explore that expose the capabilities of Cloud native Buildpacks. You can leanr more through the project homepage, [buildpacks.io](buildpacks.io), or through the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks), or other online resources. For the purposes of this scenario, however, it is sufficient to know that:
+- The simple `pack build` command above would work for applications written in a variety of languages (e.g. Go, Java, Node.js, .NET Core, etc), and they implement best practices particular to each language
+- Builders make it trivial to manage and share buildpacks and base images
+- Any platform (pack, Tekton, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image
+- In addition to building images, CNB enables "rebasing" images, wherein the base image layers of an existing image can be updated within seconds or milliseconds without rebuilding the image. This is a efficient and powerful security feature not possible with Dockerfile

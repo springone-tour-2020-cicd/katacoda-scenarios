@@ -1,76 +1,66 @@
-# Promote to production
+# Make a code change and re-deploy
 
 Objective:
-Understand the basic workflow of **promoting** a deployment to a downstream environment. In subsequent scenarios, we will continue to build on this flow.
+Understand the basic workflow of deploying an **update** to the application. In subsequent steps, we will continue to build on this flow.
 
 In this step, you will:
-1. Introduce a prod environment
-2. Duplicate the service and deployment yamls
-3. Use `yq` to manipulate the YAML resources
-4. Deploy the image to the prod environment and test it
+1. Make a code change to the app
+2. Re-build the image
+3. Update the deployment ops file
+4. Deploy the new image & re-test
 
-## Introduce prod environment
-
-Begin by creating a new namespace called `prod` that will serve as our production environment:
+## Make a code change to the app
+Use the following command to change "Hello, world!" to "Hello, sunshine!":
 
 ```
-kubectl create ns prod
+sed -i 's/world/sunshine/g' hello-server.go
 ```{{execute}}
 
-## Duplicate the yamls
-
-Your `deployment.yaml` and `service.yaml` files currently have a reference to the `dev` namespace, which needs to be changed for the production environment.
-
-Start by making a production copy of your ops files.
+## Re-build the image
+Re-build the image and push it to the registry as version 1.0.1:
 
 ```
-cd ops
-cp deployment.yaml deployment-prod.yaml
-cp service.yaml service-prod.yaml
+docker build . -t go-sample-app -t $IMG_NS/go-sample-app:1.0.1
+docker push $IMG_NS/go-sample-app:1.0.1
 ```{{execute}}
 
-## Manipulate resources with `yq`
-
-We need to change the namespace in the prod files. We could do this using `sed -i '' "s/dev/prod/g" *-prod.yaml`, but this is error prone. The `yq` command line tool is better suited for the job as it understands the yaml structure and can be used to make more controlled changes.
-
-Run the following commands to update the value of the metadata.namespace nodes in the prod yaml files:
+## Update ops yamls
+The only value in the ops files that needs to be updated is the image version in deployment.yaml:
 
 ```
-yq w -i deployment-prod.yaml "metadata.namespace" "prod"
-yq w -i service-prod.yaml "metadata.namespace" "prod"
+sed -i 's|1.0.0|1.0.1|g' ops/deployment.yaml
 ```{{execute}}
 
-## Deploy and test
-
-Apply the new ops files in order to deploy the app to the production namespace:
+## Re-deploy the image
+You can run `kubectl apply` using the directory containing the ops files:
 
 ```
-kubectl apply -f deployment-prod.yaml
-kubectl apply -f service-prod.yaml
+kubectl apply -f ops
 ```{{execute}}
 
-Wait for the deployment to finish:
+# Re-test the app
+
+Once again, wait for the deployment to finish:
 
 ```
-kubectl rollout status deployment/go-sample-app -n prod
+kubectl rollout status deployment/go-sample-app -n dev
 ```{{execute}}
 
 Set up port-forwarding again and test the app:
 
 ```
-kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
+kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 
-Send a request. Validate that the app responds with "Hello, sunshine!"
+Send a request.  This time you should get a response of "Hello, sunshine!"
 
 ```
 curl localhost:8080
 ```{{execute}}
 
 ## Cleanup
-Stop the port-forwarding process and return to the app's root directory:
+Stop the port-forwarding process:
 
 ```
 pkill kubectl && wait $!
-cd ..
 ```{{execute}}

@@ -1,58 +1,141 @@
-# Make a code change and re-deploy
+# Initial build & deploy
 
 Objective:
-Understand the basic workflow of deploying an **update** to the application. In subsequent steps, we will continue to build on this flow.
+Understand the basic workflow of deploying an application to Kubernetes. In subsequent steps, we will build on this basic flow.
 
 In this step, you will:
-1. Make a code change to the app
-2. Re-build the image
-3. Update the deployment ops file
-4. Deploy the new image & re-test
+- Clone a sample app repo
+- Test the app locally
+- Build an image for the app
+- Publish the image to Docker Hub
+- Create "ops" config files for deployment to Kubernetes
+- Deploy to Kubernetes
+- Test the deployed application
 
-## Make a code change to the app
-Use the following command to change "Hello, world!" to "Hello, sunshine!":
+## Clone app repo
+We will be working with a sample app that is publicly available on GitHub.
 
-```
-sed -i 's/world/sunshine/g' hello-server.go
-```{{execute}}
-
-## Re-build the image
-Re-build the image and push it to the registry as version 1.0.1:
+Start by cloning the app repo and listing the contents. The app is a simple application written in Go.
 
 ```
-docker build . -t go-sample-app -t $IMG_NS/go-sample-app:1.0.1
-docker push $IMG_NS/go-sample-app:1.0.1
+git clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go-sample-app
+ls
 ```{{execute}}
 
-## Update ops yamls
-The only value in the ops files that needs to be updated is the image version in deployment.yaml:
+Test it locally to see how it behaves. First, start the 'hello-server' process in the background:
 
 ```
-sed -i 's|1.0.0|1.0.1|g' ops/deployment.yaml
+go run hello-server.go 2>&1 > /dev/null &
 ```{{execute}}
 
-## Re-deploy the image
-You can run `kubectl apply` using the directory containing the ops files:
+Next, send a request. Validate that the app responds with "Hello, world!" (if it fails initially, give the server a couple of seconds to finish starting up, and try again).
+
+```
+curl localhost:8080
+```{{execute}}
+
+Stop the app:
+
+```
+pkill hello-server && wait $!
+```{{execute}}
+
+## Build app image
+In order to deploy the app to Kubernetes, it needs to be packaged as a container image.
+
+There are various ways to turn an app into an image, ranging from Dockerfile scripts to higher level abstractions. In this step, you will use a Dockerfile script included in the app repo. The `docker build` command will find the file called `Dockerfile` automatically. The build will pull a base image called 'golang' from Docker Hub, build the app into a binary, and then copy the binary into a minimal _scratch_-based final image.
+
+```
+docker build . -t go-sample-app
+```{{execute}}
+
+Docker saves the image to the local docker daemon by default. List it using the following command:
+
+```
+docker images | grep go-sample-app
+```{{execute}}
+
+
+## Publish image to a registry
+The scenario environment is pre-configured with access to a Kubernetes cluster. In order to deploy the image to the cluster, you must publish the image to a registry that the cluster can access. For this purpose, we will use Docker Hub.
+
+To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. _docker.io/some_namespace/image_name_). The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace to the image name, which is already saved in $IMG_NS. It is also good practice to tag the image with a version.
+
+Log in to Docker Hub. At the prompt, enter your access token.
+
+```
+docker login -u $IMG_NS
+```{{execute}}
+
+Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub. Notice that we are assigning a version of `1.0.0` to the image.
+
+```
+docker tag go-sample-app $IMG_NS/go-sample-app:1.0.0
+docker push $IMG_NS/go-sample-app:1.0.0
+```{{execute}}
+
+Navigate to your account on [Docker Hub](https://hub.docker.com) to see the published image.
+
+## Deploy image to Kubernetes
+You are now ready to deploy the image to Kubernetes.
+
+Begin by creating a new namespace called `dev`:
+
+```
+kubectl create ns dev
+```{{execute}}
+
+A deployment can be done _imperatively_ using a CLI and command-line options operating on running resources, or _declaratively_ using a config file that describes the desired deployment. The latter is aligned with an "infrastructure as code" methodology, wherein the config files serve as a blueprint and "source of truth" for deployments, and they enable configuration of any aspect of the resource (as opposed to being limited to those exposed through the CLI).
+
+Using the following commands, you will create config files that express - or declare, as it were - the desired deployment. You will be using these declarative config files throughout this course. You'll notice that we are using imperative commands to create the yaml config files, but we are using the flags `--dry-run=client` and `-o yaml` to simply write the declarative configuration to a file rather than create any resources on Kubernetes.
+
+Create a yaml for the deployment. The deployment will eventually create three resources in Kubernetes: deployment, replica set, and pod.
+
+```
+mkdir ops
+kubectl create deployment go-sample-app --image=$IMG_NS/go-sample-app:1.0.0 -n dev --dry-run=client -o yaml > ops/deployment.yaml
+```{{execute}}
+
+In order to make the application accessible outside of the Kubernetes cluster, you need to expose it using a service. Run the following command to create the declarative definition of the service:
+
+```
+kubectl create service clusterip go-sample-app --tcp=8080:8080 -n dev --dry-run=client -o yaml > ops/service.yaml
+```{{execute}}
+
+You can review the declarative definitions of these resources:
+
+```
+cat ops/deployment.yaml
+cat ops/service.yaml
+```{{execute}}
+
+## Deploy & test the application
+
+Apply the yaml files to Kubernetes:
 
 ```
 kubectl apply -f ops
 ```{{execute}}
 
-# Re-test the app
+You can list the deployed resources using:
 
-Once again, wait for the deployment to finish:
+```
+kubectl get all -n dev
+```{{execute}}
+
+You can also use the following command to wait until the deployment "rollout" succeeds:
 
 ```
 kubectl rollout status deployment/go-sample-app -n dev
 ```{{execute}}
 
-Set up port-forwarding again and test the app:
+To test the app, you can use port-forwarding to forward traffic from a local endpoint (e.g. localhost:8080) to the service you just created. Run the following command to start a port-forwarding process in the background:
 
 ```
 kubectl port-forward service/go-sample-app 8080:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 
-Send a request.  This time you should get a response of "Hello, sunshine!"
+Send a request. Validate that the app responds with "Hello, world!"
 
 ```
 curl localhost:8080

@@ -1,49 +1,245 @@
-# Use kpack to build images
+# Use Buildpacks in Tekton Pipeline
 
 Objective:
-Use kpack, together with Paketo Buildpacks, to build an image for the sample app.
+Learn how you can use a Tekton Task to build apps using Cloud Native Buildpacks within a Tekton Pipeline.
 
 In this step, you will:
-- Install kpack
-- Configure kpack to build images when there is a new commit on the app repo
+- Update your Tekton build pipeline to use Buildpacks instead of Dockerfile
 
-## Install kpack
+## Update the build pipeline yaml
 
-`kpack` is a Kubernetes-native buildpack platform that runs as a service.  It can pull code from a source code or artifact repository, build an OCI image, and publish the image to a Docker registry.
+The build pipeline you configured in previous scenarios uses a Kaniko task to build an image using the Dockerfile in the app repo, and push the image to Docker Hub.
+Instead, we will use a The [Buildpacks task](https://github.com/tektoncd/catalog/blob/v1beta1/buildpacks/README.md).
 
-Install kpack to the kubernetes cluster:
-
-```
-kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/release-0.0.9.yaml
-```{{execute}}
-
-Review the output to see the list of resources created. Notice that it includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`. These deployment resources comprise the kpack service itself:
+Clone the GitHub ops repo you created in the [triggers](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/5-manage-triggers) scenario.
 
 ```
-kubectl get all -n kpack
+cd ..
+git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git && cd go-sample-app-ops
 ```{{execute}}
 
-Wait until the status of the two pods is `Running`.
+Use `yq -x` to overwrite the build-image task configuration:
 
-The installation also includes several Custom Resource Definitions (CRDs) that provide Kubernetes primitives to configure kpack:
 ```
-kubectl api-resources --api-group build.pivotal.io
+cd cicd/tekton
+yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
+yq m -i -a build-pipeline.yaml - <<EOF
+spec:
+  tasks:
+  - name: build-image
+    taskRef:
+      name: buildpacks-v3
+    runAfter:
+      - fetch-repository
+      - lint
+      - test
+    workspaces:
+      - name: source
+        workspace: shared-workspace
+    params:
+      - name: BUILDER_IMAGE
+        value: gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
+      - name: CACHE
+        value: buildpacks-cache
+    resources:
+      outputs:
+        - name: image
+          resource: build-image
+EOF
 ```{{execute}}
 
-We'll be able to list kpack resources that we create by querying for these CRDs. We haven't created any yet, so we expect the following command to return an empty result:
+This buildpacks task requires a slightly different configuration for the image reference. The following commands removes the kaniko-specific configuration and adds the buildpacks configuration:
+
 ```
-kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
+yq d -i build-pipeline.yaml - <<EOF
+spec:
+  params:
+  - name: image
+    description: reference of the image to build
+EOF
 ```{{execute}}
 
-## Configure kpack
+```
+yq m -i build-pipeline.yaml - <<EOF
+spec:
+  resources:
+    - name: build-image
+      type: image
+EOF
+```{{execute}}
 
-To build an image for our sample app, we need to configure a `kpack` Image resource with:
-- the builder to use
-- the source code on GitHub
-- the repository on Docker Hub, with proper write access
+## Introduce new `PersistentVolume` and `PersistentVolumeClaim`
+
+First we need to create a Persistent Volume.
+
+```
+cat <<EOF >buildpacks-cache-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: buildpacks-cache-pv
+spec:
+  capacity:
+    storage: 3Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  hostPath:
+    path: "/mnt/data"
+EOF
+```{{execute}}
+
+Create the Persistent Volume Claim:
+
+```
+cat <<EOF >>buildpacks-cache-pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: buildpacks-cache-pvc
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+EOF
+```{{execute}}
+
+## Update the build pipeline run yaml
+
+The difference in the way the image is configured betwee the kaniko and buildpacks task also requires a change to the `TriggerTemplate` resource.
+
+```
+yq d -i build-trigger-template.yaml 'spec.resourcetemplates[0].spec.params.(name==image)'
+
+yq m -i build-trigger-template.yaml - <<EOF
+spec:
+  resourcetemplates:
+    - spec:
+        resources:
+          - name: build-image
+            resourceRef:
+              name: buildpacks-app-image
+        podTemplate:
+          volumes:
+            - name: buildpacks-cache
+              persistentVolumeClaim:
+                claimName: buildpacks-cache-pvc
+EOF
+```{{execute}}
+
+The resourceRef and persistentVolumeClaim above require new resources as well:
+
+```
+cat <<EOF >buildpacks-app-image.yaml
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: buildpacks-app-image
+spec:
+  type: image
+  params:
+    - name: url
+      value: ${IMG_NS}/go-sample-app:1.0.3
+EOF
+```{{execute}}
+
+## Deploy Tekton resources
+
+Since this is a new scenario, before running the updated pipeline, you need to re-install the Tekton CRDs, as well as the tasks being used in the build pipeline.
+
+```
+# Install Tekton CRDs
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+
+# Install Tasks to clone app repo, lint and test the Go app
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
+#kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
+
+# Install new buildpacks Task to build image
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
+```{{execute}}
+
+At this point you should see the four Tasks installed from the TektonCD Catalog, and no pipelines yet:
+
+```
+tkn task list
+tkn pipeline list
+```{{execute}}
+
+## Configure authentication for Docker Hub
+
+You have already logged in to docker, so you are ready to create the registry `Secret`.
+
+```
+kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+```{{execute}}
 
 
-## Miscellaneous
+## Apply the updated pipeline
 
-kpack provides a CLI tool called `logs` specifically for accessing logs produced during image builds.
-`logs` is pre-installed in this environment - you can validate that by running `logs --help`{{execute}}.
+```
+kubectl apply -f sa.yaml \
+              -f pv.yaml \
+              -f pvc.yaml \
+              -f buildpacks-cache-pv.yaml \
+              -f buildpacks-cache-pvc.yaml \
+              -f buildpacks-app-image.yaml
+```{{execute}}
+
+```
+kubectl apply -f build-pipeline.yaml \
+              -f build-trigger-template.yaml \
+              -f build-trigger-binding.yaml \
+              -f build-event-listener.yaml
+```{{execute}}
+
+## Test it out
+
+Wait for the deployment to finish.
+
+```
+kubectl rollout status deployment/el-build-event-listener
+```{{execute}}
+
+Let's port-forward our service.
+
+```
+kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
+```{{execute}}
+
+Now we can trigger a pull request event, which should create a new `PipelineRun`.
+
+```
+curl \
+    -H 'X-GitHub-Event: pull_request' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
+      "pull_request": {"head": {"sha": "master"}}
+    }' \
+localhost:8080
+```{{execute}}
+
+Next, verify the `PipelineRun` executes without any errors.
+
+```
+tkn pipelinerun list
+tkn pipelinerun logs -f
+```{{execute}}
+
+Stop the port-forwarding process:
+```
+pkill kubectl && wait $!
+```{{execute}}
+
+
+

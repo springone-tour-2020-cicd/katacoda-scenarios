@@ -6,166 +6,73 @@ Maybe you want to automatically run your pipeline every time you create a pull r
 Thankfully, the Tekton Triggers project solves this problem by automatically connecting events to your Tekton Pipelines.
 
 In this step, you will:
-- Set up Tekton Triggers to automatically trigger the pipeline when a GitHub pull request is created
+- Learn about the components of Tekton Triggers and how they work
 
-## Trigger Templates
-As mentioned before, the `TriggerTemplate` resource defines a specification of a `PipelineRun`.
-Hence, we should take our existing `PipelineRun` resource, and wrap it in a new `TriggerTemplate` so it can be created dynamically.
+### Configure Tekton
 
-Let's start with renaming the file and nesting the `PipelineRun` inside a specification.
+Install the pipeline and trigger CRDs, and all the tasks we rely on.
 
 ```
-cd go-sample-app/cicd/tekton
-mv build-pipeline-run.yaml build-trigger-template.yaml
-yq p -i build-trigger-template.yaml spec.resourcetemplates[+]
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
 ```{{execute}}
 
-Now we can add anything specific to the `TriggerTemplate` in there.
+### Set up Git
+
+You'll need your GitHub username to be able to push to this repo.
+You can copy and paste the following command into the terminal window, then append your GitHub login:
 
 ```
-{ yq m -x - build-trigger-template.yaml >tmp.yaml && mv tmp.yaml build-trigger-template.yaml; } <<EOF
-apiVersion: triggers.tekton.dev/v1alpha1
-kind: TriggerTemplate
-metadata:
-  name: build-trigger-template
-EOF
-```{{execute}}
+# Fill this in with your GitHub login
+GITHUB_USER=
+```{{copy}}
 
-Each `TriggerTemplate` has parameters that can be substituted anywhere within the `PipelineRun` specification.
-Let's add a couple of our own.
+Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
 
 ```
-yq m -i -x build-trigger-template.yaml - <<EOF
-spec:
-  params:
-  - name: REPO_URL
-    description: The Git repository url to build and deploy.
-  - name: REVISION
-    description: The Git revision to build and deploy.
-  - name: IMAGE
-    description: Name and tag of the Docker container in the Deployment.
-EOF
+GITHUB_USER=$GITHUB_NS
 ```{{execute}}
 
-Of course we also need to use these parameters inside our `PipelineRun` specification.
+You will also need your GitHub access token to authenticate with the Git server.
+You can copy and paste the following command into the terminal window, then append your GitHub login:
 
 ```
-yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==repo-url).value" "\$(params.REPO_URL)"
-yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==revision).value" "\$(params.REVISION)"
-yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==image).value" "\$(params.IMAGE)"
-```{{execute}}
+# Fill this in with your GitHub access token
+GITHUB_TOKEN=
+```{{copy}}
 
-In order to generate new `PipelineRun` resources upon each trigger, we need to make sure the name is unique every time we create a `PipelineRun`.
-
-```
-yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].metadata.generateName" "build-pipeline-run-"
-yq d -i build-trigger-template.yaml "spec.resourcetemplates[0].metadata.name"
-```{{execute}}
-
-Let's take a look at our eventual `TriggerTemplate`.
+Use this token to create a new `Secret`.
 
 ```
-yq r -C build-trigger-template.yaml
+kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
 ```{{execute}}
 
-## Trigger Bindings
+### Log into Docker Hub
 
-The `TriggerBinding` specifies the values to use for your `TriggerTemplate`’s parameters.
-The REPO_URL and REVISION parameters are especially important because they are extracted from the pull request event body.
-Looking at the [GitHub pull request event documentation](https://developer.github.com/v3/activity/events/types/#pullrequestevent), you can find the JSON path for values of the REPO_URL and REVISION in the event body.
-
-Go ahead and create the new `TriggerBinding` resource.
-
-For the version we can use the current date and time as a quick solution.
+Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
 
 ```
-BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
-cat <<EOF >build-trigger-binding.yaml
-apiVersion: triggers.tekton.dev/v1alpha1
-kind: TriggerBinding
-metadata:
-  name: build-trigger-binding
-spec:
-  params:
-  - name: REPO_URL
-    value: \$(body.repository.clone_url)
-  - name: REVISION
-    value: \$(body.pull_request.head.sha)
-  - name: IMAGE
-    value: ${IMG_NS}/go-sample-app:${BUILD_DATE}
-EOF
+docker login -u ${IMG_NS}
 ```{{execute}}
 
-## Event Listeners
-
-The `EventListener` defines a list of triggers.
-This Listener will pair the `TriggerTemplate` with the `TriggerBindings`.
+We can now create the registry `Secret`.
 
 ```
-cat <<EOF >build-event-listener.yaml
-apiVersion: triggers.tekton.dev/v1alpha1
-kind: EventListener
-metadata:
-  name: build-event-listener
-spec:
-  serviceAccountName: build-bot
-  triggers:
-  - name: build-trigger
-    template:
-      name: build-trigger-template
-    bindings:
-    - ref: build-trigger-binding
-EOF
+kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```{{execute}}
 
-## Apply the trigger
+## Trigger workflow
+Tekton Triggers adds mainly three new resource types to Kubernetes: the `EventListener`, the `TriggerBinding` and the `TriggerTemplate`.
 
-```
-kubectl apply \
-    -f sa.yaml \
-    -f pv.yaml \
-    -f pvc.yaml \
-    -f build-pipeline.yaml \
-    -f build-trigger-template.yaml \
-    -f build-trigger-binding.yaml \
-    -f build-event-listener.yaml
-```{{execute}}
+An `EventListener` creates a Deployment and Service that listen for events.
+When the `EventListener` receives an event, it executes a specified `TriggerBinding` and `TriggerTemplate`.
+A `TriggerBinding` then describes what information you want to extract from an event to pass to your `TriggerTemplate`.
+And finally, a `TriggerTemplate` declares a specification for each Kubernetes resource you want to create when an event is received.
 
-## Test it out
+![TriggerFlow](https://github.com/tektoncd/triggers/blob/master/images/TriggerFlow.png?raw=true)
 
-Wait for the deployment to finish.
-
-```
-kubectl rollout status deployment/el-build-event-listener
-```{{execute}}
-
-Let's port-forward our service.
-
-```
-kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
-```{{execute}}
-
-Now we can trigger a pull request event, which should create a new `PipelineRun`.
-
-```
-curl \
-    -H 'X-GitHub-Event: pull_request' \
-    -H 'Content-Type: application/json' \
-    -d '{
-      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
-      "pull_request": {"head": {"sha": "master"}}
-    }' \
-localhost:8080
-```{{execute}}
-
-Next, verify the `PipelineRun` executes without any errors.
-
-```
-tkn pipelinerun list
-tkn pipelinerun logs -f
-```{{execute}}
-
-Stop the port-forwarding process:
-```
-pkill kubectl && wait $!
-```{{execute}}
+Let's go through each of these resources and apply them to our existing Tekton `PipelineRun`.

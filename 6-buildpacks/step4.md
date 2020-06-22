@@ -1,87 +1,49 @@
-# Step Title Here
+# Use kpack to build images
 
 Objective:
-...
+Use kpack, together with Paketo Buildpacks, to build an image for the sample app.
 
 In this step, you will:
-- ...
+- Install kpack
+- Configure kpack to build images when there is a new commit on the app repo
 
-# Configure kpack Cluster and Image
+## Install kpack
 
-Make a new directory for the kpack configuration
+`kpack` is a Kubernetes-native buildpack platform that runs as a service.  It can pull code from a source code or artifact repository, build an OCI image, and publish the image to a Docker registry.
+
+Install kpack to the kubernetes cluster:
+
 ```
-mkdir -p /workspace/go-sample-app-ops/cicd/kpack
-cd /workspace/go-sample-app-ops/cicd/kpack
+kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/release-0.0.9.yaml
 ```{{execute}}
 
-Configure a resource for the builder. This resource can be shared by many images:
+Review the output to see the list of resources created. Notice that it includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`. These deployment resources comprise the kpack service itself:
+
 ```
-cat <<EOF >builder.yaml
-apiVersion: build.pivotal.io/v1alpha1
-kind: Builder
-metadata:
-  name: paketo-builder
-spec:
-  image: gcr.io/paketo-buildpacks/builder:base
-EOF
+kubectl get all -n kpack
 ```{{execute}}
 
-Create a resource for the image. The image includes references to the source code, builder, and service account with write access to Docker Hub. By default, kpack will poll the source code repo for commits every 5 minutes, and will automatically re-build the image if it detects a new commit.
+Wait until the status of the two pods is `Running`.
 
+The installation also includes several Custom Resource Definitions (CRDs) that provide Kubernetes primitives to configure kpack:
 ```
-cat <<EOF >image.yaml
-apiVersion: build.pivotal.io/v1alpha1
-kind: Image
-metadata:
-  name: go-sample-app
-spec:
-  builder:
-    name: paketo-builder
-    kind: Builder
-  serviceAccount: build-bot
-  #cacheSize: "1.5Gi"
-  source:
-    git:
-      url: https://github.com/$GITHUB_NS/go-sample-app
-      revision: master
-  tag: $IMG_NS/go-sample-app:kpack-1.0.0
-EOF
+kubectl api-resources --api-group build.pivotal.io
 ```{{execute}}
 
-## Apply configuration to kpack
-
-We're now ready to apply the yaml files to the kubernetes cluster:
+We'll be able to list kpack resources that we create by querying for these CRDs. We haven't created any yet, so we expect the following command to return an empty result:
 ```
-kubectl apply -f builder.yaml \
-              -f image.yaml
+kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
 ```{{execute}}
 
-## Is it working?
+## Configure kpack
 
-kpack will create a Build resource for every commit it detects. For now, you should see a Build resource for the latest commit:
-```
-kubectl get builds
-```{{execute}}
+To build an image for our sample app, we need to configure a `kpack` Image resource with:
+- the builder to use
+- the source code on GitHub
+- the repository on Docker Hub, with proper write access
 
-Edit the name of the build in the following command to see the details:
-```
-kubectl describe build go-sample-app-build-1-<uuid>
-```{{copy}}
 
-The `Revision` field will contain the corresponding git commit id.
+## Miscellaneous
 
-The build is executed in a pod. Each build creates a new pod.
-```
-kubectl get pods
-```{{execute}}
-
-Each phase of the buildpack lifecycle is executed in a separate _init container_, so getting the logs directly from the pod involves appending the pods from each init container in the right order. To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
-```
-logs -image go-sample-app -build 1
-```{{execute}}
-
-The logs should look very similar to those we saw in the previous scenario scenarios on pack and Spring Boot.
-
-When the log shows that the build is done, check your Docker Hub organization to make sure a new image has been published.
-
-`Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
+kpack provides a CLI tool called `logs` specifically for accessing logs produced during image builds.
+`logs` is pre-installed in this environment - you can validate that by running `logs --help`{{execute}}.

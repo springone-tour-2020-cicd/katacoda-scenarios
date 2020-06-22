@@ -8,10 +8,6 @@
     "steps": [
       {
         "title": "",
-        "text": "step0.md"
-      },
-      {
-        "title": "",
         "text": "step1.md"
       },
       {
@@ -25,6 +21,10 @@
       {
         "title": "",
         "text": "step4.md"
+      },
+      {
+        "title": "",
+        "text": "step5.md"
       }
     ],
     "assets": {

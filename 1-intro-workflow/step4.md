@@ -1,21 +1,76 @@
-# Save your changes
+# Promote to production
 
-You will need your repo and the new files you've created for the labs ahead. In this step you will fork the sample repo into your own GitHub account and save your changes.
+Objective:
+Understand the basic workflow of **promoting** a deployment to a downstream environment. In subsequent scenarios, we will continue to build on this flow.
 
-## Fork the GitHub repo and push your changes
+In this step, you will:
+1. Introduce a prod environment
+2. Duplicate the service and deployment yamls
+3. Use `yq` to manipulate the YAML resources
+4. Deploy the image to the prod environment and test it
 
-Use the `hub` CLI to fork the sample repo and push your changes to GitHub. Enter your GitHub username and access token at the prompt to authenticate against GitHub.
+## Introduce prod environment
+
+Begin by creating a new namespace called `prod` that will serve as our production environment:
 
 ```
-hub fork --remote-name origin
+kubectl create ns prod
 ```{{execute}}
 
-`hub` automatically updates your `origin` remote to point to your fork of the repo, so you can simply commit and push the changes you made throughout this scenario. Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
+## Duplicate the yamls
+
+Your `deployment.yaml` and `service.yaml` files currently have a reference to the `dev` namespace, which needs to be changed for the production environment.
+
+Start by making a production copy of your ops files.
 
 ```
-git add -A
-git commit -m 'Changes from the Intro Scenario'
-git push origin master
+cd ops
+cp deployment.yaml deployment-prod.yaml
+cp service.yaml service-prod.yaml
 ```{{execute}}
 
-You are now ready to proceed with the other scenarios in this course.
+## Manipulate resources with `yq`
+
+We need to change the namespace in the prod files. We could do this using `sed -i '' "s/dev/prod/g" *-prod.yaml`, but this is error prone. The `yq` command line tool is better suited for the job as it understands the yaml structure and can be used to make more controlled changes.
+
+Run the following commands to update the value of the metadata.namespace nodes in the prod yaml files:
+
+```
+yq w -i deployment-prod.yaml "metadata.namespace" "prod"
+yq w -i service-prod.yaml "metadata.namespace" "prod"
+```{{execute}}
+
+## Deploy and test
+
+Apply the new ops files in order to deploy the app to the production namespace:
+
+```
+kubectl apply -f deployment-prod.yaml
+kubectl apply -f service-prod.yaml
+```{{execute}}
+
+Wait for the deployment to finish:
+
+```
+kubectl rollout status deployment/go-sample-app -n prod
+```{{execute}}
+
+Set up port-forwarding again and test the app:
+
+```
+kubectl port-forward service/go-sample-app 8080:8080 -n prod 2>&1 > /dev/null &
+```{{execute}}
+
+Send a request. Validate that the app responds with "Hello, sunshine!"
+
+```
+curl localhost:8080
+```{{execute}}
+
+## Cleanup
+Stop the port-forwarding process and return to the app's root directory:
+
+```
+pkill kubectl && wait $!
+cd ..
+```{{execute}}

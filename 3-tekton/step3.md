@@ -1,108 +1,95 @@
-# Install prerequisites for the tasks
+# Executing a simple Task
 
-We will now install some supporting Kubernetes resources in order to run a Task that will build a container containing the Go sample application and push it to Docker Hub.
+Let's create an echo Task that will simply print 'hello world' to the console.
 
-Tekton has a [catalog of pre-built tasks](https://github.com/tektoncd/catalog) that cover common cases in a CI system.
+The echo task uses the image `ubuntu` and then simply executes the command `echo hello world`.
 
-From that catalog, we will use the `git`, `golang` and `kaniko` tasks as the means to build the app, create the image and push it to Docker Hub.
+## Install the task definition
 
-To use these tasks there are a few things we need to set up in the Kubernetes cluster.
-
-1. Create a [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) so that the contents of the build cache will be available when new Pods are created to execute the build.
-1. Create a secret that contains your Docker Hub credentials.
-1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
-
-## Clone repo
-
-Start by cloning the GitHub repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
+Use `kubectl` to install the task definition into the cluster.
 
 ```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
-```{{execute}}
-
-## Create a Persistent Volume
-
-First we need to create a Persistent Volume.
-
-```
-mkdir -p cicd/tekton
-cd cicd/tekton
-cat <<EOF >pv.yaml
-apiVersion: v1
-kind: PersistentVolume
+cat <<EOF | kubectl apply -f -
+apiVersion: tekton.dev/v1alpha1
+kind: Task
 metadata:
-  name: workspace-pv
+  name: echo-hello-world
 spec:
-  capacity:
-    storage: 3Gi
-  volumeMode: Filesystem
-  accessModes:
-  - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: local-storage
-  hostPath:
-    path: "/mnt/data"
+  steps:
+    - name: echo
+      image: ubuntu
+      command:
+        - echo
+      args:
+        - "hello world"
 EOF
 ```{{execute}}
 
-Create the Persistent Volume Claim:
+
+You can list the installed tasks in the cluster using the `tkn` CLI.
+```
+tkn task list
+```{{execute}}
+
+
+More information about the task can be obtained using the `describe` command.
+```
+tkn tasks describe echo-hello-world
+```{{execute}}
+
+
+## Execute the task
+
+To execute this task directly, we can use the `tkn` CLI or create a `TaskRun` resource in a YAML file.
+We will create the `TaskRun` resource using a YAML file.
 
 ```
-cat <<EOF >pvc.yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
+cat <<EOF | kubectl apply -f -
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
 metadata:
-  name: workspace-pvc
+  name: echo-hello-world-task-run
 spec:
-  storageClassName: local-storage
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
+  taskRef:
+    name: echo-hello-world
 EOF
 ```{{execute}}
 
-Apply both and verify whether the Persistent Volume Claim is bound.
+There isn't anything that is customizing the task, so it is just referencing the `echo-hello-world` task.
+You can view the other configuration options for a `TaskRun` in the [reference documentation.](https://github.com/tektoncd/pipeline/blob/v0.13.2/docs/taskruns.md)
+
+Now let's get a description of the `TaskRun` that was created.
 
 ```
-kubectl apply -f .
-kubectl get pvc
+tkn taskrun describe echo-hello-world-task-run
 ```{{execute}}
 
-## Create a ServiceAccount
 
-Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
+You should see in the last part of the output of this command the status of the pod that is running the echo command
+
 
 ```
-docker login -u $IMG_NS
-```{{execute}}
+🦶 Steps
 
-This creates a `config.json` file that caches your Docker Hub credentials.
+ NAME     STATUS
+ ∙ echo   PodInitializing
+ ```
 
-```
-cat /root/.docker/config.json
-```{{execute}}
+Keep executing the `tkn taskrun describe` command and you will eventually see that the pod status is `COMPLETED`.
 
-You can [create a secret from existing credentials](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#registry-secret-existing-credentials) with the following command.
 
-```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
-```{{execute}}
-
-Now create the service account.
-The name of the service account is `build-bot` and will be referenced in Tekton's TaskRun resource that will run the task.
+Now look at the output of `TaskRun`
 
 ```
-cat <<EOF >sa.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: build-bot
-secrets:
-  - name: regcred
-EOF
-kubectl apply -f sa.yaml
+tkn taskrun logs echo-hello-world-task-run
 ```{{execute}}
 
-With these prerequisites installed in the cluster, we can now start creating the required Tasks.
+You will see the log from the `echo` step
+
+```
+[echo] hello world
+```
+
+Hello Tekton! 
+
+

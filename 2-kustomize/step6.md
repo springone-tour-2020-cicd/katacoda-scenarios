@@ -1,12 +1,35 @@
-# Save your changes
+# Customize production deployment
 
-You will need the new files you've created for the labs ahead. In this step you will push your changes to your GitHub repo.
-Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
+Objective:
+Explore additional customizations that can be done by editing `kustomization.yaml` directly.
+
+In this step, you will:
+1. Add label 'env: prod' to all resources
+
+## Label Customization
+
+We want resources in production environment to have certain labels so that we can query them by label selector.
+
+`kustomize` does not have `edit set label` command to add a label, but we can always edit `kustomization.yaml` directly:
 
 ```
-git add -A
-git commit -m 'Changes from the Kustomize scenario'
-git push origin master
+cat <<EOF >>kustomization.yaml
+commonLabels:
+  env: prod
+EOF
 ```{{execute}}
 
-You are now ready to proceed with the other scenarios in this course.
+Verify whether all the resources now have the label tuple `env:prod`:
+
+```
+kustomize build --load_restrictor none . | grep -C 3 env
+```{{execute}}
+
+Since label selectors of a `Deployment` are immutable, we need to recreate it.
+
+```
+kustomize build --load_restrictor none . | kubectl delete -f -
+kustomize build --load_restrictor none . | kubectl apply -f -
+
+kubectl get all -n prod --show-labels
+```{{execute}}

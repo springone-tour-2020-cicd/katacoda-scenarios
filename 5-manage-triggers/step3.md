@@ -1,106 +1,171 @@
-# Automating promotion
+# Add a Trigger
 
-Assuming the `PipelineRun` finished successfully, you now have a new image in your Docker Hub account.
+Objective:
+Up until this point you’ve probably had this question pop up into your head: I can **manually** run my Tekton Pipeline, but how do I **automatically** run my pipeline?
+Maybe you want to automatically run your pipeline every time you create a pull request, push code to a repo, or merge a pull request into the master branch.
+Thankfully, the Tekton Triggers project solves this problem by automatically connecting events to your Tekton Pipelines.
 
-In order for you to deploy this image to the dev environment, you need to manually update the Kustomization file with the new image's tag.
-As seen in the [previous scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/4-argocd), Argo CD will then go on to automatically deploy the resources.
+In this step, you will:
+- Set up Tekton Triggers to automatically trigger the pipeline when a GitHub pull request is created
 
-Instead of doing this manually, it'd be better to have another pipeline update the Kustomization file automatically, based on a trigger listening to Docker Hub webook events.
+## Trigger Templates
+As mentioned before, the `TriggerTemplate` resource defines a specification of a `PipelineRun`.
+Hence, we should take our existing `PipelineRun` resource, and wrap it in a new `TriggerTemplate` so it can be created dynamically.
 
-## Endless commit loop
-
-Let's say you'd implement the promotion pipeline with the Docker Hub trigger.
-The flow would be as follows:
-
-1. A developer makes a change to the Go source code and pushes it to Git
-1. The Git change to the repo triggers our build pipeline
-1. The build pipeline pushes a new image to Docker Hub
-1. The new image in Docker Hub triggers the promotion pipeline
-1. The promotion pipeline changes the Kustomization file which Argo CD will deploy
-1. The promotion pipeline pushes the code change to Git
-1. The Git change to the repo triggers our build pipeline
-1. And on and on we go...
-
-This flow would trigger an endless loop, creating Docker images and Git commits until storage runs out.
-
-You could alter the trigger to look for changes based on regular expressions or file paths, but there might be a better and cleaner alternative.
-
-## GitOps repositories
-
-Until now, we've put our Kubernetes and Kustomize resource files inside the `ops` directory of our application source code repository.
-
-However, keeping the config separate from your application source code inside a separate Git repository is highly recommended for the following reasons:
-
-- It provides a clean separation of application code vs. application config.
-There will be times when you wish to modify just the manifests without triggering an entire CI build.
-For example, you likely do not want to trigger a build if you simply wish to bump the number of replicas in a Deployment spec.
-
-- Cleaner audit log. For auditing purposes, a repo which only holds configuration will have a much cleaner Git history of what changes were made, without the noise coming from check-ins due to normal development activity.
-
-- Your application may be comprised of services built from multiple Git repositories, but is deployed as a single unit.
-It may not make sense to store the manifests in one of the source code repositories of a single component.
-
-- Separation of access.
-The developers who are developing the application, may not necessarily be the same people who can/should push to production environments, either intentionally or unintentionally.
-By having separate repos, commit access can be given to the source code repo, and not the application config repo.
-
-If you are automating your CI pipeline, pushing manifest changes to the same Git repository can trigger an infinite loop of build jobs and Git commit triggers. Having a separate repo to push config changes to, prevents this from happening.
-
-Most of these concerns can still be solved by configuring conditional triggers, using specific Git commit messages, or build conditions based on files changed.
-Nevertheless, using Git as the elbow joints of different pipeline parts makes a remarkably good fit.
-It allows pipelines to be modular and can easily be expanded and retracted when required.
-
-Let's adopt separate GitOps repositories for the development and production environment.
-
-## Moving the ops files
-
-Go ahead and move the ops files to another repository.
+Let's start with renaming the file and nesting the `PipelineRun` inside a specification.
 
 ```
-cd ../../..
-mkdir go-sample-app-ops
-mv go-sample-app/ops go-sample-app-ops
+cd go-sample-app/cicd/tekton
+mv build-pipeline-run.yaml build-trigger-template.yaml
+yq p -i build-trigger-template.yaml spec.resourcetemplates[+]
 ```{{execute}}
 
-You can also move the Tekton and Argo CD files, so that Argo CD will also automatically deploy them to Kubernetes.
+Now we can add anything specific to the `TriggerTemplate` in there.
 
 ```
-mv go-sample-app/cicd go-sample-app-ops/cicd
-tree .
+{ yq m -x - build-trigger-template.yaml >tmp.yaml && mv tmp.yaml build-trigger-template.yaml; } <<EOF
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: build-trigger-template
+EOF
 ```{{execute}}
 
-Change the references from the old repository to the new one in the Argo CD files.
+Each `TriggerTemplate` has parameters that can be substituted anywhere within the `PipelineRun` specification.
+Let's add a couple of our own.
 
 ```
-sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo/argo-deploy-dev.yaml
-sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo/argo-deploy-prod.yaml
+yq m -i -x build-trigger-template.yaml - <<EOF
+spec:
+  params:
+  - name: REPO_URL
+    description: The Git repository url to build and deploy.
+  - name: REVISION
+    description: The Git revision to build and deploy.
+  - name: IMAGE
+    description: Name and tag of the Docker container in the Deployment.
+EOF
 ```{{execute}}
 
-Let's commit the changes to the source code repository first.
-Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
+Of course we also need to use these parameters inside our `PipelineRun` specification.
 
 ```
-cd go-sample-app
-git add -A
-git commit -m "Moved ops and tekton directories to their own repo"
-git push origin master
+yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==repo-url).value" "\$(params.REPO_URL)"
+yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==revision).value" "\$(params.REVISION)"
+yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params.(name==image).value" "\$(params.IMAGE)"
 ```{{execute}}
 
-You can create the new ops repository on GitHub using `hub`.
-Enter your GitHub username and access token at the prompt to authenticate against GitHub.
+In order to generate new `PipelineRun` resources upon each trigger, we need to make sure the name is unique every time we create a `PipelineRun`.
 
 ```
-cd ../go-sample-app-ops
-git init
-hub create
+yq w -i build-trigger-template.yaml "spec.resourcetemplates[0].metadata.generateName" "build-pipeline-run-"
+yq d -i build-trigger-template.yaml "spec.resourcetemplates[0].metadata.name"
 ```{{execute}}
 
-And finally commit all the moved files into it.
+Let's take a look at our eventual `TriggerTemplate`.
 
 ```
-git add -A
-git commit -m "Files moved from go-sample-app repo"
-git push origin master
+yq r -C build-trigger-template.yaml
 ```{{execute}}
 
-Now that you've avoided infinite loops by adopting a specialized ops repo, you can now safely add the promotion pipeline.
+## Trigger Bindings
+
+The `TriggerBinding` specifies the values to use for your `TriggerTemplate`’s parameters.
+The REPO_URL and REVISION parameters are especially important because they are extracted from the pull request event body.
+Looking at the [GitHub pull request event documentation](https://developer.github.com/v3/activity/events/types/#pullrequestevent), you can find the JSON path for values of the REPO_URL and REVISION in the event body.
+
+Go ahead and create the new `TriggerBinding` resource.
+
+For the version we can use the current date and time as a quick solution.
+
+```
+BUILD_DATE=`date +%Y.%m.%d-%H.%M.%S`
+cat <<EOF >build-trigger-binding.yaml
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: build-trigger-binding
+spec:
+  params:
+  - name: REPO_URL
+    value: \$(body.repository.clone_url)
+  - name: REVISION
+    value: \$(body.pull_request.head.sha)
+  - name: IMAGE
+    value: ${IMG_NS}/go-sample-app:${BUILD_DATE}
+EOF
+```{{execute}}
+
+## Event Listeners
+
+The `EventListener` defines a list of triggers.
+This Listener will pair the `TriggerTemplate` with the `TriggerBindings`.
+
+```
+cat <<EOF >build-event-listener.yaml
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: build-event-listener
+spec:
+  serviceAccountName: build-bot
+  triggers:
+  - name: build-trigger
+    template:
+      name: build-trigger-template
+    bindings:
+    - ref: build-trigger-binding
+EOF
+```{{execute}}
+
+## Apply the trigger
+
+```
+kubectl apply \
+    -f sa.yaml \
+    -f pv.yaml \
+    -f pvc.yaml \
+    -f build-pipeline.yaml \
+    -f build-trigger-template.yaml \
+    -f build-trigger-binding.yaml \
+    -f build-event-listener.yaml
+```{{execute}}
+
+## Test it out
+
+Wait for the deployment to finish.
+
+```
+kubectl rollout status deployment/el-build-event-listener
+```{{execute}}
+
+Let's port-forward our service.
+
+```
+kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
+```{{execute}}
+
+Now we can trigger a pull request event, which should create a new `PipelineRun`.
+
+```
+curl \
+    -H 'X-GitHub-Event: pull_request' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
+      "pull_request": {"head": {"sha": "master"}}
+    }' \
+localhost:8080
+```{{execute}}
+
+Next, verify the `PipelineRun` executes without any errors.
+
+```
+tkn pipelinerun list
+tkn pipelinerun logs -f
+```{{execute}}
+
+Stop the port-forwarding process:
+```
+pkill kubectl && wait $!
+```{{execute}}

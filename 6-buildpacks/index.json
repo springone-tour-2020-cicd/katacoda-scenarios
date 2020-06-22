@@ -8,10 +8,6 @@
     "steps": [
       {
         "title": "",
-        "text": "step0.md"
-      },
-      {
-        "title": "",
         "text": "step1.md"
       },
       {
@@ -37,7 +33,11 @@
 	  {
 		"title": "",
 		"text": "step7.md"
-	  }
+	  },
+      {
+        "title": "",
+        "text": "step8.md"
+      }
     ],
     "assets": {
       "host01": [
