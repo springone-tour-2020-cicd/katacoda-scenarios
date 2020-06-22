@@ -19,7 +19,7 @@ Do **not** change:
 
 This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
 
-**Scenario Overview: <SCENARIO NAME HERE>**
+**Scenario Overview**
 
 Provide an overview to the scenario here...
 

@@ -2,7 +2,7 @@
 
 This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
 
-**Scenario Overview: Improve Image Lifecycle with Buildpacks**
+**Scenario Overview**
 
 As compared to Dockerfile, Cloud Native Buildpacks provide a higher level of abstraction and make it significantly easier for developers and operators to build images and manage them at scale.
 

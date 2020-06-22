@@ -2,7 +2,7 @@
 
 This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
 
-**Scenario Overview: Getting Started with Kustomize**
+**Scenario Overview**
 
 [Kustomize](https://kustomize.io) provides a template-free way to customize application configuration.  It is available as a standalone executable called `kustomize`, and it is also integrated with `kubectl apply` using the `-k` flag.
 

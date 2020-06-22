@@ -10,7 +10,7 @@ With Kubernetes, everything from deployment to monitoring to scaling is more sta
 This presents the possibility to achieve a more effective and comprehensive CI/CD experience. 
 We can incorporate the practice of infrastructure-as-code and take advantage of a flourishing ecosystem of tools to improve and fully automate our application deployment strategies.
 
-**Scenario Overview: Intro Workflow and Prerequisites Setup**
+**Scenario Overview**
 
 By the end of this scenario, you will have a new GitHub repo with sample app source code and "ops" deployment files. 
 You will also understand the basic flow that needs to be automated: _**change code --> build image --> update ops files --> deploy to dev --> promote to prod**_.

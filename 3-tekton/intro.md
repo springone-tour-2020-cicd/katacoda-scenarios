@@ -2,7 +2,7 @@
 
 This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
 
-**Scenario Overview: Getting Started with Tekton**
+**Scenario Overview**
 
 [Tekton](https://tekton.dev) is a Kubernetes-native framework for creating CI/CD systems. It includes [Pipeline and Task](https://github.com/tektoncd/pipeline) resources for declaring CI/CD workflows, as well as a [catalog](https://github.com/tektoncd/catalog) of shared resources that you can re-use.
 
