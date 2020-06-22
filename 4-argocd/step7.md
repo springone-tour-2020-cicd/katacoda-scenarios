@@ -5,7 +5,7 @@ Understand the use case for a self-healing sync.
 
 In this step, you will:
 * Enable automatic self-healing in Argo CD
-* Create a change in the live depoyment that Kubernetes would not recover
+* Create a change in the live deployment that Kubernetes would not recover
 * Observe Argo CD heal the deployment based on the declared state
 
 ## Enable automatic self-healing
