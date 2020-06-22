@@ -57,7 +57,7 @@ Let's adopt separate GitOps repositories for the development and production envi
 Go ahead and move the ops files to another repository.
 
 ```
-cd ../..
+cd ../../..
 mkdir go-sample-app-ops
 mv go-sample-app/ops go-sample-app-ops
 ```{{execute}}
@@ -65,7 +65,6 @@ mv go-sample-app/ops go-sample-app-ops
 You can also move the Tekton and Argo CD files, so that Argo CD will also automatically deploy them to Kubernetes.
 
 ```
-mv go-sample-app/tekton go-sample-app-ops/tekton
 mv go-sample-app/cicd go-sample-app-ops/cicd
 tree .
 ```{{execute}}
@@ -73,8 +72,8 @@ tree .
 Change the references from the old repository to the new one in the Argo CD files.
 
 ```
-sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo-deploy-dev.yaml
-sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo-deploy-prod.yaml
+sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo/argo-deploy-dev.yaml
+sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo/argo-deploy-prod.yaml
 ```{{execute}}
 
 Let's commit the changes to the source code repository first.

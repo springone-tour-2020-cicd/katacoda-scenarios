@@ -15,7 +15,7 @@ Hence, we should take our existing `PipelineRun` resource, and wrap it in a new 
 Let's start with renaming the file and nesting the `PipelineRun` inside a specification.
 
 ```
-cd tekton
+cd cicd/tekton
 mv build-pipeline-run.yaml build-trigger-template.yaml
 yq p -i build-trigger-template.yaml spec.resourcetemplates[+]
 ```{{execute}}
