@@ -70,7 +70,7 @@ EOF
 Let's take a look at our entire `PipelineRun` resource.
 
 ```
-cat build-pipeline-run.yaml
+yq r -C build-pipeline-run.yaml
 ```{{execute}}
 
 If you're ready to execute the pipeline, issue the following command.
