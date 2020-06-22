@@ -137,16 +137,16 @@ Apply the yaml files to Kubernetes:
 kubectl apply -f ops
 ```{{execute}}
 
-You can list the deployed resources using:
-
-```
-kubectl get all -n dev
-```{{execute}}
-
-You can also use the following command to wait until the deployment "rollout" succeeds:
+You can use the following command to wait until the deployment "rollout" succeeds:
 
 ```
 kubectl rollout status deployment/go-sample-app -n dev
+```{{execute}}
+
+You can list the deployed resources using. At this point the deployment and pod `READY` column should show `1/1`.
+
+```
+kubectl get all -n dev
 ```{{execute}}
 
 ## Test deployed app
