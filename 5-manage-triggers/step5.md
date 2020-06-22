@@ -31,6 +31,7 @@ spec:
       type: string
       description: Name of the secret holding the github-token.
     - name: github-token-secret-key
+      type: string
       description: Name of the secret key holding the github-token.
   workspaces:
     - name: shared-workspace

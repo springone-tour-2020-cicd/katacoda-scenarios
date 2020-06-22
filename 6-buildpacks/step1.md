@@ -13,6 +13,20 @@ In this step, you will:
 
 ## Github setup
 
+Later on you'll need your GitHub username to be able to push to this repo.
+You can copy and paste the following command into the terminal window, then append your GitHub login:
+
+```
+# Fill this in with your GitHub login
+GITHUB_USER=
+```{{copy}}
+
+Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
+
+```
+GITHUB_USER=$GITHUB_NS
+```{{execute}}
+
 You will also need your GitHub access token to authenticate with the Git server.
 You can copy and paste the following command into the terminal window, then append your GitHub login:
 
