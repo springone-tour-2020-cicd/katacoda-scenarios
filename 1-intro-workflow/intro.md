@@ -4,11 +4,13 @@ This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](
 In this course, we explore some options for Kubernetes-centric tooling for Continuous Integration (CI) and Continuous Delivery (CD), including Kustomize, Tekton, Argo CD, Cloud Native Buildpacks, and kpack. 
 Through these excercises, we will also see how GitOps can be leveraged for CI/CD.
 
-**Introduction**
-
 With Kubernetes, everything from deployment to monitoring to scaling is more standardized and inherently easier to automate. 
 This presents the possibility to achieve a more effective and comprehensive CI/CD experience. 
 We can incorporate the practice of infrastructure-as-code and take advantage of a flourishing ecosystem of tools to improve and fully automate our application deployment strategies.
+
+The scenarios in this course are designed to be completed in order as they appear on the course home page. 
+You will begin with a manual build-deploy-promote workflow and automate it as you explore the tools and techniques included in this course. 
+"Short-cut" reference repos are also provided in case you want to skip ahead.
 
 **Scenario Overview**
 

@@ -1,6 +1,7 @@
 **Course Overview**
 
 This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd).
+Please visit the [intro scenario](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) for more information about the course.
 
 **Scenario Overview**
 
