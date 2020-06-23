@@ -307,7 +307,7 @@ spec:
   project: default
   source:
     path: cicd/kpack
-    repoURL: https://github.com/andreasevers/go-sample-app-ops.git
+    repoURL: https://github.com/${GITHUB_NS}/go-sample-app-ops.git
     targetRevision: HEAD
   syncPolicy:
     automated: {}
@@ -329,7 +329,7 @@ spec:
   project: default
   source:
     path: cicd/tekton
-    repoURL: https://github.com/andreasevers/go-sample-app-ops.git
+    repoURL: https://github.com/${GITHUB_NS}/go-sample-app-ops.git
     targetRevision: HEAD
   syncPolicy:
     automated: {}
