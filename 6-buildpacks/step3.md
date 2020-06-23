@@ -11,11 +11,10 @@ In this step, you will:
 The build pipeline you configured in previous scenarios uses a Kaniko task to build an image using the Dockerfile in the app repo, and push the image to Docker Hub.
 Instead, we will use a The [Buildpacks task](https://github.com/tektoncd/catalog/blob/v1beta1/buildpacks/README.md).
 
-Clone the GitHub ops repo you created in the [triggers](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/5-manage-triggers) scenario.
+First, let's go into the `go-sample-app-ops` directory which you already cloned in step 1.
 
 ```
-cd ..
-git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git && cd go-sample-app-ops
+cd ../go-sample-app-ops
 ```{{execute}}
 
 Use `yq -x` to overwrite the build-image task configuration:
