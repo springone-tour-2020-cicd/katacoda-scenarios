@@ -1,14 +1,14 @@
 # Validate the duplication in ops files
 
 Objective:
-Review the ops files created in the prerequisite scenario and understand the challenge of managing a growing and diverging set of configuration files.
+Review the ops files created in the previous scenario and understand the challenge of managing a growing and diverging set of configuration files.
 
 In this step, you will:
 - Validate the duplication in the ops files
 
 ## Validate duplication of ops configuration
 
-In the prerequisite scenario, you created two sets of ops files corresponding to two deployment environments, dev and prod, and you used `yq` to change the value of the metadata.namespace node for prod.
+In the previous scenario, you created two sets of ops files corresponding to two deployment environments, dev and prod, and you used `yq` to change the value of the metadata.namespace node for prod.
 
 Use the following command to confirm that the dev and prod configuration files are identical, except for the name of the namespace.
 

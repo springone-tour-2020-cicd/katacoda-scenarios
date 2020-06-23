@@ -7,7 +7,7 @@ Please visit the [intro scenario](https://www.katacoda.com/springone-tour-2020-c
 
 [Kustomize](https://kustomize.io) provides a template-free way to customize application configuration.  It is available as a standalone executable called `kustomize`, and it is also integrated with `kubectl apply` using the `-k` flag.
 
-In this scenario, you will learn how to use several features of Kustomize to better manage the dev and ops YAML files you created in the prerequisite scenario.
+In this scenario, you will learn how to use several features of Kustomize to better manage the dev and ops YAML files you created in the previous scenario.
 
 By the end of this scenario, you will have:
 
