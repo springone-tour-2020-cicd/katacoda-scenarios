@@ -88,7 +88,7 @@ You'll notice pack downloading the build and run base images. The build image in
 The build log shows which buildpacks are detected as applicable to this app, applies them in the proper order, and exports the layers necessary for runtime to the run image.
 
 The built-in `lifecycle` component that is powering the build process is packaged into the builder image, and it provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse.
-For example, in subsequent builds, you would see the 'ANALYZING` an `RESTORING` phases reflected in the build log leveraging the cache and image layer metadata created in the first build.
+For example, in subsequent builds, you would see the `ANALYZING` and `RESTORING` phases reflected in the build log leveraging the cache and image layer metadata created in the first build.
 
 You can see the resulting image on the Docker daemon:
 
