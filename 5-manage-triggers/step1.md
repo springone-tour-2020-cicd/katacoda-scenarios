@@ -82,11 +82,22 @@ find . -name *.yaml -exec sed -i "s/\/springone-tour-2020-cicd/\/${GITHUB_NS}/g"
 find . -name *.yaml -exec sed -i "s/ springone-tour-2020-cicd/ ${IMG_NS}/g" {} +
 ```{{execute}}
 
+Commit your changes:
 ```
 git add -A
 git commit -m "Reset from branch $BRANCH, updated namespaces"
-git rebase master
-git checkout master
-git merge $BRANCH
-git push -u origin master
+```{{execute}}
+
+Rename branches so that the scenario branch becomes the master branch:
+
+```
+git branch -m master old-master
+git branch -m $BRANCH master
+```{{execute}}
+
+Push your changes and delete the local copy of the "old-master" branch:
+```
+git push -f -u origin master
+git push -f origin old-master
+git branch -d old-master
 ```{{execute}}

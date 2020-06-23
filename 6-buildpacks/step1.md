@@ -46,11 +46,9 @@ git clone https://github.com/$GITHUB_NS/go-sample-app.git
 git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git
 ```{{execute}}
 
-## ALTERNATIVE: Clone the "short-cut" reference sample repos
+## ALTERNATIVE: Clone the "short-cut" reference sample repo
 
-If you have not completed the previous scenario and want to skip ahead to this one, you can create a fork from the reference samples corresponding to this scenario.
-
-Start with the app repo:
+If you have not completed the previous scenario and want to skip ahead to this one, you can create a fork from the reference sample corresponding to this scenario.
 
 If you have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git), you can skip this next command block. Otherwise, clone and fork the sample repo. Enter your GitHub user name and access token at the prompt.
 
@@ -85,13 +83,24 @@ find . -name *.yaml -exec sed -i "s/\/springone-tour-2020-cicd/\/${GITHUB_NS}/g"
 find . -name *.yaml -exec sed -i "s/ springone-tour-2020-cicd/ ${IMG_NS}/g" {} +
 ```{{execute}}
 
+Commit your changes:
 ```
 git add -A
 git commit -m "Reset from branch $BRANCH, updated namespaces"
-git rebase master
-git checkout master
-git merge $BRANCH
-git push -u origin master
+```{{execute}}
+
+Rename branches so that the scenario branch becomes the master branch:
+
+```
+git branch -m master old-master
+git branch -m $BRANCH master
+```{{execute}}
+
+Push your changes and delete the local copy of the "old-master" branch:
+```
+git push -f -u origin master
+git push -f origin old-master
+git branch -d old-master
 ```{{execute}}
 
 Repeat the same steps for the ops repo:
@@ -104,8 +113,9 @@ find . -name *.yaml -exec sed -i "s/\/springone-tour-2020-cicd/\/${GITHUB_NS}/g"
 find . -name *.yaml -exec sed -i "s/ springone-tour-2020-cicd/ ${IMG_NS}/g" {} +
 git add -A
 git commit -m "Reset from branch $BRANCH, updated namespaces"
-git rebase master
-git checkout master
-git merge $BRANCH
-git push -u origin master
+git branch -m master old-master
+git branch -m $BRANCH master
+git push -f -u origin master
+git push -f origin old-master
+git branch -d old-master
 ```{{execute}}
