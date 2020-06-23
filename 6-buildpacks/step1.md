@@ -81,8 +81,8 @@ git checkout --track origin/$BRANCH
 Replace the `springone-tour-2020-cicd` namespace with your namespaces:
 
 ```
-find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g"
-find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/ springone-tour-2020-cicd/ $IMG_NS/g"
+find . -name "*.yaml" -exec sed -i "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g" {} +
+find . -name "*.yaml" -exec sed -i "s/ springone-tour-2020-cicd/ $IMG_NS/g" {} +
 ```{{execute}}
 
 ```
@@ -100,8 +100,8 @@ Repeat the same steps for the ops repo:
 hub clone https://github.com/springone-tour-2020-cicd/go-sample-app-ops.git && cd go-sample-app-ops
 hub fork --remote-name origin
 git checkout --track origin/$BRANCH
-find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g"
-find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/ springone-tour-2020-cicd/ $IMG_NS/g"
+find . -name "*.yaml" -exec sed -i "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g" {} +
+find . -name "*.yaml" -exec sed -i "s/ springone-tour-2020-cicd/ $IMG_NS/g" {} +
 git add -A
 git commit -m "Reset from branch $BRANCH, updated namespaces"
 git rebase master
