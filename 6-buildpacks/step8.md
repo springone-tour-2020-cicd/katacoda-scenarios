@@ -99,43 +99,76 @@ Argo's automatic synchronization should have kicked off a kpack build.
 kubectl get builds
 ```{{execute}}
 
-Edit the name of the build in the following command to see the details:
-```
-kubectl describe build go-sample-app-build-1-<uuid>
-```{{copy}}
+Take a look at the details of the latest build.
 
-The `Revision` field will contain the corresponding git commit id.
-
-The build is executed in a pod. Each build creates a new pod.
 ```
-kubectl get pods
+kubectl describe build $(kubectl get builds -o yaml | yq r - "items[-1].metadata.name")
+```{{execute}}
+
+The `Revision` field will contain the corresponding Git commit id.
+
+```
+kubectl describe build $(kubectl get builds -o yaml | yq r - "items[-1].metadata.name") | grep Revision
 ```{{execute}}
 
 Each phase of the buildpack lifecycle is executed in a separate _init container_, so getting the logs directly from the pod involves appending the pods from each init container in the right order. To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
 ```
-logs -image go-sample-app -build 1
+BUILD_NR=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.labels.[image.build.pivotal.io/buildNumber]")
+logs -image go-sample-app -build $BUILD_NR
+```{{execute}}
+
+If kpack's build finished successfully, you should now have a new image in Docker Hub.
+
+Our tutorial environment doesn't expose public IP addresses for `LoadBalancer` services, so we need to manually simulate a webhook call.
+
+Let's port-forward our service.
+
+```
+kubectl port-forward --address 0.0.0.0 svc/el-ops-dev-event-listener 8082:8080 2>&1 > /dev/null &
+```{{execute}}
+
+Now we can simulate an image pushed event, which should create a new `PipelineRun`.
+
+You'll need the tag of the new image in Docker Hub.
+
+```
+TAG=$(logs -image go-sample-app -build $BUILD_NR | grep kpack- | grep index.docker.io | cut -d ":" -f2)
+echo $TAG
+```{{execute}}
+
+```
+curl \
+   -H 'Content-Type: application/json' \
+   -d '{
+         "push_data": {
+           "tag": "${TAG}"
+         }
+       }' \
+localhost:8082
+```{{execute}}
+
+Next, verify the new `PipelineRun` executes without any errors.
+
+```
+tkn pipelinerun list
+tkn pipelinerun logs -f
+```{{execute}}
+
+If the pipeline finishes without errors, Argo CD should have noticed a change in the dev manifest.
+Argo's automatic synchronization should have kicked off a deployment to the dev environment.
+
+```
+kubectl get deploy -n dev
+
+kubectl rollout status deployment/dev-go-sample-app -n dev
 ```{{execute}}
 
 ## Port-forward the Argo CD Server
-
-Wait until Argo CD is fully initialized. This may take a few minutes.
-
-```
-kubectl rollout status deployment/argocd-server -n argocd
-```{{execute}}
 
 In order to expose the Argo CD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwaring:
 
 ```
 kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &
-```{{execute}}
-
-## Log in using the argocd CLI
-
-First, we need to obtain login credentials. The default admin username is `admin`.
-In order to get the default admin password, run:
-```
-kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
 ```{{execute}}
 
 ## Log in using the Argo CD UI
@@ -149,3 +182,6 @@ Alternatively, you can click on the link below and open in a separate tab in you
 https://[[HOST_SUBDOMAIN]]-8080-[[KATACODA_HOST]].environments.katacoda.com
 
 Enter the same credentials you used for the CLI.
+
+Take a look at the various Argo CD Applications.
+You'll notice Argo CD now also tracks and visualizes all the Tekton, kpack and Argo CD resources.
