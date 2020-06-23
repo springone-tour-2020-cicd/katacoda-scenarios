@@ -163,13 +163,24 @@ kubectl get deploy -n dev
 kubectl rollout status deployment/dev-go-sample-app -n dev
 ```{{execute}}
 
+Set up port-forwarding again and test the app:
+
+```
+kubectl port-forward service/dev-go-sample-app 8083:8080 -n dev 2>&1 > /dev/null &
+```{{execute}}
+
+Send a request. Validate that the app responds with "Hello, sunshine!"
+
+```
+curl localhost:8083
+```{{execute}}
+
 ## Port-forward the Argo CD Server
 
 First, we need to obtain login credentials. The default admin username is `admin`. In order to get the default admin password, run:
 ```
 kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
 ```{{execute}}
-
 
 In order to expose the Argo CD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwaring:
 
