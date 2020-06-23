@@ -78,8 +78,8 @@ git checkout --track origin/$BRANCH
 Replace the `springone-tour-2020-cicd` namespace with your namespaces:
 
 ```
-find . -name "*.yaml" -print0 | xargs -0 sed -i "s/\/andreasevers/\/ciberkleid/g"
-find . -name "*.yaml" -print0 | xargs -0 sed -i "s/andreasevers/ciberkleid/g"
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g"
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/ springone-tour-2020-cicd/ $IMG_NS/g"
 ```{{execute}}
 
 ```
