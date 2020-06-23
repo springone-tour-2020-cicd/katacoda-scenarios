@@ -39,15 +39,18 @@ kubectl create ns prod
 
 ## Clone repos
 
-If you completed the previous scenario, clone your sample repo:
+If you completed the previous scenario, clone your sample repos:
 
 ```
 git clone https://github.com/$GITHUB_NS/go-sample-app.git
+git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git
 ```{{execute}}
 
-## ALTERNATIVE: Clone the "short-cut" reference sample repo
+## ALTERNATIVE: Clone the "short-cut" reference sample repos
 
-If you have not completed the previous scenario and want to skip ahead to this one, you can create a fork from the reference sample corresponding to this scenario.
+If you have not completed the previous scenario and want to skip ahead to this one, you can create a fork from the reference samples corresponding to this scenario.
+
+Start with the app repo:
 
 If you have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git), you can skip this next command block. Otherwise, clone and fork the sample repo. Enter your GitHub user name and access token at the prompt.
 
@@ -83,6 +86,22 @@ find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/ springone-tour
 ```{{execute}}
 
 ```
+git add -A
+git commit -m "Reset from branch $BRANCH, updated namespaces"
+git rebase master
+git checkout master
+git merge $BRANCH
+git push -u origin master
+```{{execute}}
+
+Repeat the same steps for the ops repo:
+
+```
+hub clone https://github.com/springone-tour-2020-cicd/go-sample-app-ops.git && cd go-sample-app-ops
+hub fork --remote-name origin
+git checkout --track origin/$BRANCH
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/\/springone-tour-2020-cicd/\/$GITHUB_NS/g"
+find . -type f -name "*.yaml" -print0 | xargs -0 sed -i '' -e "s/ springone-tour-2020-cicd/ $IMG_NS/g"
 git add -A
 git commit -m "Reset from branch $BRANCH, updated namespaces"
 git rebase master

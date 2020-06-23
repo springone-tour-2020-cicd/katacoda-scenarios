@@ -37,7 +37,7 @@ kubectl create ns dev
 kubectl create ns prod
 ```{{execute}}
 
-## Clone repos
+## Clone repo
 
 If you completed the previous scenario, clone your sample repo:
 
