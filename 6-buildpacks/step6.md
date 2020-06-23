@@ -97,10 +97,9 @@ kubectl apply -f update-image-revision-task.yaml
 
 We can now use this newly created `Task` to trigger kpack.
 
-First of all we need to remove the two existing image related tasks from the build pipeline, as well as the image resource.
+First of all we need to remove the existing image related task from the build pipeline, as well as the image resource.
 
 ```
-yq d -i build-pipeline.yaml "spec.tasks.(name==verify-digest)"
 yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
 yq d -i build-pipeline.yaml "spec.resources"
 ```{{execute}}

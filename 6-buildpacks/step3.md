@@ -21,6 +21,7 @@ Use `yq -x` to overwrite the build-image task configuration:
 
 ```
 cd cicd/tekton
+yq d -i build-pipeline.yaml "spec.tasks.(name==verify-digest)"
 yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
 yq m -i -a build-pipeline.yaml - <<EOF
 spec:
