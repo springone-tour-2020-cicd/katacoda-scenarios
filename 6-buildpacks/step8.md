@@ -49,7 +49,7 @@ sed -i 's/sunshine/pipeline/g' hello-server.go
 git add hello-server.go
 git commit -m "Hello pipeline!"
 git push
-```
+```{{execute}}
 
 Store the pushed commit for the simulated webhook.
 
