@@ -100,6 +100,7 @@ git branch -d scenario-1-start
 Repeat the same steps for the ops repo:
 
 ```
+cd ..
 hub clone https://github.com/springone-tour-2020-cicd/go-sample-app-ops.git && cd go-sample-app-ops
 hub fork --remote-name origin
 git checkout --track origin/$BRANCH
@@ -112,4 +113,5 @@ git branch -m $BRANCH master
 git push -f -u origin master
 git push -f origin scenario-1-start
 git branch -d scenario-1-start
+cd ..
 ```{{execute}}
