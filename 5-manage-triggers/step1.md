@@ -59,19 +59,9 @@ hub clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go
 hub fork --remote-name origin
 ```{{execute}}
 
-List the available branches
+Check out the "short-cut" branch.
 ```
-git ls-remote --heads | grep scenario
-```{{execute}}
-
-Choose the branch that corresponds to the end of the last scenario. Copy and paste the following environment variable to the terminal window, then append the appropriate branch name. Use only the portion after `refs/heads/` (e.g. BRANCH=scenario-1-finished).
-```
-# Fill this in with the branch name (e.g. BRANCH=scenario-1-finished)
-BRANCH=
-```{{copy}}
-
-Check out the selected branch.
-```
+BRANCH=scenario-4-finished
 git checkout --track origin/$BRANCH
 ```{{execute}}
 
@@ -91,13 +81,17 @@ git commit -m "Reset from branch $BRANCH, updated namespaces"
 Rename branches so that the scenario branch becomes the master branch:
 
 ```
-git branch -m master old-master
+git branch -m master scenario-1-start
 git branch -m $BRANCH master
 ```{{execute}}
 
-Push your changes and delete the local copy of the "old-master" branch:
+Push the new master branch to GitHub. Authenticate at the prompt.
 ```
 git push -f -u origin master
-git push -f origin old-master
-git branch -d old-master
+```{{execute}}
+
+Optionally, save the old master to GitHub as well and delete the local copy (ignore the warning):
+```
+git push -f origin scenario-1-start
+git branch -d scenario-1-start
 ```{{execute}}
