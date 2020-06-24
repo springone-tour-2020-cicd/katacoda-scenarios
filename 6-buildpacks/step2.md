@@ -77,49 +77,73 @@ These Buildpacks include the base images used for build and runtime (akin to the
 
 ## Build with `pack` and Paketo
 
-Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks:
-
-```
-pack build go-sample-app --builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
-```{{execute}}
-
-You'll notice pack downloading the build and run base images. The build image includes all necessary buildpacks to build images for a variety of applications, including Go, Java, Nodejs, and more.
-
-The build log shows which buildpacks are detected as applicable to this app, applies them in the proper order, and exports the layers necessary for runtime to the run image.
-
-The built-in `lifecycle` component that is powering the build process is packaged into the builder image, and it provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse.
-For example, in subsequent builds, you would see the `ANALYZING` and `RESTORING` phases reflected in the build log leveraging the cache and image layer metadata created in the first build.
-
-You can see the resulting image on the Docker daemon:
-
-```
-docker images | grep go-sample-app
-```{{execute}}
-
-## Re-build the app, and publish to Docker Hub
-
-`pack` can also publish the image to a registry.  In order to build and publish the image, you must first authenticate against Docker Hub. Enter your access token at the prompt:
+In this section, you will build the image using Paketo Buildpacks and publish the image to the registry in a single command. Hence, you must authenticate with Docker Hub first. Enter your access token at the prompt.
 
 ```
 docker login -u ${IMG_NS}
 ```{{execute}}
 
-To simplify the `pack` command, you can also set the builder as a default:
+Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks. The `--publish` flag instructs pack to push the image to Docker Hub.
 
 ```
 pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
-```{{execute}}
 
-Now, you can rebuild the app and publish to Docker Hub with the following command. You should notice the build is faster this time, partially because the base images are now accessible locally, and partially because of efficient caching and image-layer re-use:
-
-```
 pack build $IMG_NS/go-sample-app --publish
 ```{{execute}}
 
+You'll notice `pack` downloading two images:
+- The `builder` image provides a build environment, analogous to the golang image in the first stage of our Dockerfile. The `builder` also contains all necessary buildpacks to build images for a variety of applications, including Go, Java, Nodejs, and more. This is analogous to all of the instructions in our Dockerfile, with implemented best practices on building a variety of applications. Finally, the builder includes the "engine" (called `lifecycle`) that powers the build. This is analogous to the role that the docker daemon plays with a `docker build`.
+- The `run` image is analogous to the base image in the second stage of our Dockerfile. It provides a slimmer base with only the necessary components for runtime.
+
+The build log shows which buildpacks are applied to the application, and the layers that arre copied to the run image.
+
+Subsequent builds will be faster. The `lifecycle` provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse. In future builds you would see the `ANALYZING` and `RESTORING` phases leveraging the cache and image layer metadata created in the first build.
+
+Take note of the digest (sha256 uuid) reported at the end of the build log.
+
+You can also check your [Docker Hub](https://hub.docker.com/) account to see the image published by pack. You should see the same digest there.  
+
+You can also see the Paketo base and run images that were downloaded locally:
+
+```
+docker images | grep paketo
+```{{execute}}
+
+## Rebase
+
+Imagine that a vulnerability has been detected in the base OS, and that an OS patch is made availabel. With Dockerfile, it would be very challenging to patch images, especially at scale. You would need to have insight into the images that different Dockerfiles use, determine which need patching, make or obtain patched versions of the base images, and rebuild all images. This means you would likely need substantial re-testing as well.
+
+Cloud Native Buildpacks improves this challenge in several ways:
+- The same run image is used across across all applications
+- The run image is managed centrally through the builder, so the update can be easily provided for all future builds
+- The update run image is guaranteed to be compatible, via an Application Binary Interface
+- The patching operation updates existing app images to point to updated base image layers in the new run image. This operation is fast and does not involve rebuilding the application or the image.
+
+Let's simulate this using the `pack rebase` command.
+
+First, download the "patched" OS (we will simply use a run image of a different version than the one used to build the image).
+```
+docker pull gcr.io/paketo-buildpacks/run:0.0.19-base-cnb
+docker images | grep paketo
+```{{execute}}
+
+The builder is pointing to a run image with tag `paketobuildpacks/run:base-cnb`. For simplicity, rename the run image you just downloaded using this tag. You can compare the IDs of the images on the daemon to validate that the default tag is pointing to the image you just downloaded.
+```
+docker tag gcr.io/paketo-buildpacks/run:0.0.19-base-cnb paketobuildpacks/run:base-cnb
+docker images | grep paketo
+```{{execute}}
+
+Now, rebase the image. Use the `--no-pull` flag ensure pack uses the local run image you just tagged.
+```
+pack rebase $IMG_NS/go-sample-app --publish --no-pull
+```{{execute}}
+
+Notice that the image digest is different. You can validate that a new image with the new digest has been pushed to Docker Hub as well.
+
 ## Additional features
 
-The `pack` CLI provides additional commands you can explore that expose the capabilities of Cloud native Buildpacks. You can leanr more through the project homepage, [buildpacks.io](buildpacks.io), or through the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks), or other online resources. For the purposes of this scenario, however, it is sufficient to know that:
+The `pack` CLI provides additional commands you can explore that expose the capabilities of Cloud native Buildpacks. You can learn more through the project homepage, [buildpacks.io](buildpacks.io), or through the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks), or other online resources. For the purposes of this scenario, however, it is sufficient to know that:
 - The simple `pack build` command above would work for applications written in a variety of languages (e.g. Go, Java, Node.js, .NET Core, etc), and they implement best practices particular to each language
 - Builders make it trivial to manage and share buildpacks and base images
-- Any platform (pack, Tekton, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image
-- In addition to building images, CNB enables "rebasing" images, wherein the base image layers of an existing image can be updated within seconds or milliseconds without rebuilding the image. This is a efficient and powerful security feature not possible with Dockerfile
+- Any platform (pack, Tekton, Spring Boot, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image
+- ~~Rebasing~~ images, wherein the base image layers of an existing image can be updated within seconds or milliseconds without rebuilding the image, is a powerful and efficient security feature not possible with Dockerfile
