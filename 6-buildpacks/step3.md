@@ -48,7 +48,8 @@ spec:
 EOF
 ```{{execute}}
 
-This buildpacks task requires a slightly different configuration for the image reference. The following commands removes the kaniko-specific configuration and adds the buildpacks configuration:
+This buildpacks task requires a slightly different configuration for the image reference.
+The following commands removes the kaniko-specific configuration and adds the buildpacks configuration:
 
 ```
 yq d -i build-pipeline.yaml - <<EOF

@@ -36,7 +36,9 @@ Read more about viewing kpack logs in this [blog post](https://starkandwayne.com
 
 ## Enable caching
 
-kpack requires the default persistent volume (PV) to be configured in the Kuberrnetes cluster in order to cache layers between builds. Our scenario environment does not have a PV. To see caching and re-use in action in kpack:
+kpack requires the default persistent volume (PV) to be configured in the Kuberrnetes cluster in order to cache layers between builds.
+Our scenario environment does not have a PV.
+To see caching and re-use in action in kpack:
 
 1. Try this exercise, including the extra credit above, on a cluster with a default PV
 2. Before creating the image, uncomment the "cacheSize" setting in the image yaml configuration file. This will enable caching between builds

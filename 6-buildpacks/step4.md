@@ -9,7 +9,8 @@ In this step, you will:
 
 ## Install kpack
 
-`kpack` is a Kubernetes-native buildpack platform that runs as a service.  It can pull code from a source code or artifact repository, build an OCI image, and publish the image to a Docker registry.
+`kpack` is a Kubernetes-native buildpack platform that runs as a service.
+It can pull code from a source code or artifact repository, build an OCI image, and publish the image to a Docker registry.
 
 Install kpack to the kubernetes cluster:
 
@@ -17,7 +18,9 @@ Install kpack to the kubernetes cluster:
 kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/release-0.0.9.yaml
 ```{{execute}}
 
-Review the output to see the list of resources created. Notice that it includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`. These deployment resources comprise the kpack service itself:
+Review the output to see the list of resources created.
+Notice that it includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`.
+These deployment resources comprise the kpack service itself:
 
 ```
 kubectl get all -n kpack
@@ -30,7 +33,8 @@ The installation also includes several Custom Resource Definitions (CRDs) that p
 kubectl api-resources --api-group build.pivotal.io
 ```{{execute}}
 
-We'll be able to list kpack resources that we create by querying for these CRDs. We haven't created any yet, so we expect the following command to return an empty result:
+We'll be able to list kpack resources that we create by querying for these CRDs.
+We haven't created any yet, so we expect the following command to return an empty result:
 ```
 kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
 ```{{execute}}

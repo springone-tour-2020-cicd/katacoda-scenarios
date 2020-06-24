@@ -14,7 +14,8 @@ mkdir -p /workspace/go-sample-app-ops/cicd/kpack
 cd /workspace/go-sample-app-ops/cicd/kpack
 ```{{execute}}
 
-Configure a resource for the builder. This resource can be shared by many images:
+Configure a resource for the builder.
+This resource can be shared by many images:
 ```
 cat <<EOF >builder.yaml
 apiVersion: build.pivotal.io/v1alpha1
@@ -26,7 +27,9 @@ spec:
 EOF
 ```{{execute}}
 
-Create a resource for the image. The image includes references to the source code, builder, and service account with write access to Docker Hub. By default, kpack will poll the source code repo for commits every 5 minutes, and will automatically re-build the image if it detects a new commit.
+Create a resource for the image.
+The image includes references to the source code, builder, and service account with write access to Docker Hub.
+By default, kpack will poll the source code repo for commits every 5 minutes, and will automatically re-build the image if it detects a new commit.
 
 ```
 cat <<EOF >image.yaml
@@ -58,7 +61,8 @@ kubectl apply -f builder.yaml \
 
 ## Is it working?
 
-kpack will create a Build resource for every commit it detects. For now, you should see a Build resource for the latest commit:
+kpack will create a Build resource for every commit it detects.
+For now, you should see a Build resource for the latest commit:
 ```
 kubectl get builds
 ```{{execute}}
@@ -70,12 +74,14 @@ kubectl describe build go-sample-app-build-1-<uuid>
 
 The `Revision` field will contain the corresponding git commit id.
 
-The build is executed in a pod. Each build creates a new pod.
+The build is executed in a pod.
+Each build creates a new pod.
 ```
 kubectl get pods
 ```{{execute}}
 
-Each phase of the buildpack lifecycle is executed in a separate _init container_, so getting the logs directly from the pod involves appending the pods from each init container in the right order. To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
+Each phase of the buildpack lifecycle is executed in a separate _init container_, so getting the logs directly from the pod involves appending the pods from each init container in the right order.
+To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
 ```
 logs -image go-sample-app -build 1
 ```{{execute}}

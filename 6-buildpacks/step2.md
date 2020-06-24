@@ -50,11 +50,15 @@ cd go-sample-app
 cat Dockerfile
 ```{{execute}}
 
-This is a relatively simple Dockerfile, but every line represents a decision - good or bad - made by the Dockerfile author (use a multi-stage approach, use golang and scratch base images, handle modules and source separately, build the app as a statically-linked binary, tightly couple COPY/RUN/ENTRYPOINT to app-specific filenames, etc). Ommissions also represent Dockerfile author decisions (e.g. no .dockerfile, no LABELs, no base image version, etc).
+This is a relatively simple Dockerfile, but every line represents a decision - good or bad - made by the Dockerfile author (use a multi-stage approach, use golang and scratch base images, handle modules and source separately, build the app as a statically-linked binary, tightly couple COPY/RUN/ENTRYPOINT to app-specific filenames, etc).
+Ommissions also represent Dockerfile author decisions (e.g. no .dockerfile, no LABELs, no base image version, etc).
 
-Some of these decisions are specific to Golang. If the author wanted to build a Java app, for example, they would need to make and support a new set of decisions. Moreover, the full burden of responsibility for ensuring this Dockerfile implements best practices for efficiency, security, etc, falls on the Dockerfile author.
+Some of these decisions are specific to Golang.
+If the author wanted to build a Java app, for example, they would need to make and support a new set of decisions.
+Moreover, the full burden of responsibility for ensuring this Dockerfile implements best practices for efficiency, security, etc, falls on the Dockerfile author.
 
-In addition, short of copying and pasting Dockerfiles into other app repos, there is no formalized mechanism for re-using or sharing Dockerfiles. There is also no formalized mechanism for managing Dockerfiles at enterprise-scale, where challenges of support, security, governance and transparency become critically important.
+In addition, short of copying and pasting Dockerfiles into other app repos, there is no formalized mechanism for re-using or sharing Dockerfiles.
+There is also no formalized mechanism for managing Dockerfiles at enterprise-scale, where challenges of support, security, governance and transparency become critically important.
 
 ## Build with pack and Paketo
 
@@ -68,7 +72,8 @@ In this case, we could say that the docker CLI is the tool we interact with in o
 The Docker daemon is also involved in the process, as the build is actually carried out by - and on - the daemon, rather than by the CLI itself.
 
 With Cloud Native Buildpacks, we have a choice of tools, or "platforms" to interact with (any tool that implements the CNB Platform API is a _platform_).
-The project itself provides a reference implementation in the form of a CLI called `pack`. Other examples include the Spring Boot 2.3.0+ Maven and Gradle plugins, Tekton, and a Kubernetes-native hostable service called kpack.
+The project itself provides a reference implementation in the form of a CLI called `pack`.
+Other examples include the Spring Boot 2.3.0+ Maven and Gradle plugins, Tekton, and a Kubernetes-native hostable service called kpack.
 In this scenario we will explore pack, Tekton, and kpack.
 
 To replace the role that Dockerfile plays, we need an implementation of the CNB Buildpack API, such as Paketo Buildpacks (the CNB variant of Cloud Foundry Buildpacks) or Heroku Buildpacks.
@@ -77,13 +82,16 @@ These Buildpacks include the base images used for build and runtime (akin to the
 
 ## Build with `pack` and Paketo
 
-In this section, you will build the image using Paketo Buildpacks and publish the image to the registry in a single command. Hence, you must authenticate with Docker Hub first. Enter your access token at the prompt.
+In this section, you will build the image using Paketo Buildpacks and publish the image to the registry in a single command.
+Hence, you must authenticate with Docker Hub first.
+Enter your access token at the prompt.
 
 ```
 docker login -u ${IMG_NS}
 ```{{execute}}
 
-Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks. The `--publish` flag instructs pack to push the image to Docker Hub.
+Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks.
+The `--publish` flag instructs pack to push the image to Docker Hub.
 
 ```
 pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
@@ -97,11 +105,14 @@ You'll notice `pack` downloading two images:
 
 The build log shows which buildpacks are applied to the application, and the layers that arre copied to the run image.
 
-Subsequent builds will be faster. The `lifecycle` provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse. In future builds you would see the `ANALYZING` and `RESTORING` phases leveraging the cache and image layer metadata created in the first build.
+Subsequent builds will be faster.
+The `lifecycle` provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse.
+In future builds you would see the `ANALYZING` and `RESTORING` phases leveraging the cache and image layer metadata created in the first build.
 
 Take note of the digest (sha256 uuid) reported at the end of the build log.
 
-You can also check your [Docker Hub](https://hub.docker.com/) account to see the image published by pack. You should see the same digest there.  
+You can also check your [Docker Hub](https://hub.docker.com/) account to see the image published by pack.
+You should see the same digest there.
 
 You can also see the Paketo base and run images that were downloaded locally:
 
@@ -111,7 +122,10 @@ docker images | grep paketo
 
 ## Rebase
 
-Imagine that a vulnerability has been detected in the base OS, and that an OS patch is made availabel. With Dockerfile, it would be very challenging to patch images, especially at scale. You would need to have insight into the images that different Dockerfiles use, determine which need patching, make or obtain patched versions of the base images, and rebuild all images. This means you would likely need substantial re-testing as well.
+Imagine that a vulnerability has been detected in the base OS, and that an OS patch is made availabel.
+With Dockerfile, it would be very challenging to patch images, especially at scale.
+You would need to have insight into the images that different Dockerfiles use, determine which need patching, make or obtain patched versions of the base images, and rebuild all images.
+This means you would likely need substantial re-testing as well.
 
 Cloud Native Buildpacks improves this challenge in several ways:
 - The same run image is used across across all applications
@@ -127,22 +141,28 @@ docker pull gcr.io/paketo-buildpacks/run:0.0.19-base-cnb
 docker images | grep paketo
 ```{{execute}}
 
-The builder is pointing to a run image with tag `paketobuildpacks/run:base-cnb`. For simplicity, rename the run image you just downloaded using this tag. You can compare the IDs of the images on the daemon to validate that the default tag is pointing to the image you just downloaded.
+The builder is pointing to a run image with tag `paketobuildpacks/run:base-cnb`.
+For simplicity, rename the run image you just downloaded using this tag.
+You can compare the IDs of the images on the daemon to validate that the default tag is pointing to the image you just downloaded.
 ```
 docker tag gcr.io/paketo-buildpacks/run:0.0.19-base-cnb paketobuildpacks/run:base-cnb
 docker images | grep paketo
 ```{{execute}}
 
-Now, rebase the image. Use the `--no-pull` flag ensure pack uses the local run image you just tagged.
+Now, rebase the image.
+Use the `--no-pull` flag ensure pack uses the local run image you just tagged.
 ```
 pack rebase $IMG_NS/go-sample-app --publish --no-pull
 ```{{execute}}
 
-Notice that the image digest is different. You can validate that a new image with the new digest has been pushed to Docker Hub as well.
+Notice that the image digest is different.
+You can validate that a new image with the new digest has been pushed to Docker Hub as well.
 
 ## Additional features
 
-The `pack` CLI provides additional commands you can explore that expose the capabilities of Cloud native Buildpacks. You can learn more through the project homepage, [buildpacks.io](buildpacks.io), or through the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks), or other online resources. For the purposes of this scenario, however, it is sufficient to know that:
+The `pack` CLI provides additional commands you can explore that expose the capabilities of Cloud native Buildpacks.
+You can learn more through the project homepage, [buildpacks.io](buildpacks.io), or through the Katacoda course [Getting Started with Cloud Native Buildpacks](https://www.katacoda.com/ciberkleid/courses/cloud-native-buildpacks), or other online resources.
+For the purposes of this scenario, however, it is sufficient to know that:
 - The simple `pack build` command above would work for applications written in a variety of languages (e.g. Go, Java, Node.js, .NET Core, etc), and they implement best practices particular to each language
 - Builders make it trivial to manage and share buildpacks and base images
 - Any platform (pack, Tekton, Spring Boot, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image

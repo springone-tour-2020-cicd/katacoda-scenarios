@@ -111,7 +111,8 @@ The `Revision` field will contain the corresponding Git commit id.
 kubectl describe build $(kubectl get builds -o yaml | yq r - "items[-1].metadata.name") | grep Revision
 ```{{execute}}
 
-Each phase of the buildpack lifecycle is executed in a separate _init container_, so getting the logs directly from the pod involves appending the pods from each init container in the right order. To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
+Each phase of the buildpack lifecycle is executed in a separate _init container_, so getting the logs directly from the pod involves appending the pods from each init container in the right order.
+To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
 ```
 BUILD_NR=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.labels.[image.build.pivotal.io/buildNumber]")
 logs -image go-sample-app -build $BUILD_NR
@@ -169,7 +170,8 @@ Set up port-forwarding again and test the app:
 kubectl port-forward service/dev-go-sample-app 8083:8080 -n dev 2>&1 > /dev/null &
 ```{{execute}}
 
-Send a request. Validate that the app responds with "Hello, sunshine!"
+Send a request.
+Validate that the app responds with "Hello, sunshine!"
 
 ```
 curl localhost:8083
@@ -177,7 +179,9 @@ curl localhost:8083
 
 ## Port-forward the Argo CD Server
 
-First, we need to obtain login credentials. The default admin username is `admin`. In order to get the default admin password, run:
+First, we need to obtain login credentials.
+The default admin username is `admin`.
+In order to get the default admin password, run:
 ```
 kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
 ```{{execute}}
