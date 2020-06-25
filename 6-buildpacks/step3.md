@@ -23,21 +23,12 @@ cd /workspace/go-sample-app-ops/cicd/tekton
 
 You need to update Tekton Pipeline (`build-pipeline.yaml`) and TriggerTemplate (`build-trigger-template.yaml`).
 
-First, remove the Kaniko `build-image` and `verify-digest` tasks.
+First, remove the Kaniko `build-image` and `verify-digest` tasks, as well as the image param, from the build pipeline.
 
 ```
 yq d -i build-pipeline.yaml "spec.tasks.(name==verify-digest)"
 yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
-```{{execute}}
-
-Remove the Kaniko-specific image configuration.
-```
-yq d -i build-pipeline.yaml - <<EOF
-spec:
-  params:
-  - name: image
-    description: reference of the image to build
-EOF
+yq d -i build-pipeline.yaml "spec.params.(name==image)"
 ```{{execute}}
 
 Remove the TriggerTemplate used for the image.

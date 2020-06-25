@@ -89,9 +89,6 @@ If you have an existing fork of the [sample app repo](https://github.com/springo
 
 ```
 hub clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go-sample-app
-```{{execute}}
-
-```
 hub fork --remote-name origin
 ```{{execute}}
 
