@@ -11,36 +11,6 @@ In this step, you will:
 - Build our sample app locally using the `pack` CLI and Paketo Buildpacks
 - Explore some of the characteristics and features of buildpacks
 
-## Github setup
-
-Later on you'll need your GitHub username to be able to push to this repo.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
-
-```
-# Fill this in with your GitHub login
-GITHUB_USER=
-```{{copy}}
-
-Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
-
-```
-GITHUB_USER=$GITHUB_NS
-```{{execute}}
-
-You will also need your GitHub access token to authenticate with the Git server.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
-
-```
-# Fill this in with your GitHub access token
-GITHUB_TOKEN=
-```{{copy}}
-
-Use this token to create a new `Secret`.
-
-```
-kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
-```{{execute}}
-
 ## Examine the Dockerfile
 
 Take a look at the Dockerfile included in the repo
@@ -91,13 +61,18 @@ pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
 pack build $IMG_NS/go-sample-app:pack-0.0.1 --publish
 ```{{execute}}
 
-You'll notice `pack` downloading two images:
-- The `builder` image provides a build environment, analogous to the golang image in the first stage of our Dockerfile. The `builder` also contains all necessary buildpacks to build images for a variety of applications, including Go, Java, Nodejs, and more. This is analogous to all of the instructions in our Dockerfile, with implemented best practices on building a variety of applications. Finally, the builder includes the "engine" (called `lifecycle`) that powers the build. This is analogous to the role that the docker daemon plays with a `docker build`.
-- The `run` image is analogous to the base image in the second stage of our Dockerfile. It provides a slimmer base with only the necessary components for runtime.
+You'll notice `pack` downloading a builder image.
+The `builder` image provides a build environment, analogous to the golang image in the first stage of our Dockerfile. 
+The `builder` also contains all necessary buildpacks to build images for a variety of applications, including Go, Java, Nodejs, and more. 
+This is analogous to all of the instructions in our Dockerfile, with implemented best practices on building a variety of applications. 
+
+The build log also shows downloading a `lifecycle`. 
+The `lifecycle` is the engine that powers the build. This is analogous to the role that the docker daemon plays with a `docker build`.
 
 The build log shows which buildpacks are applied to the application, and the layers that arre copied to the run image.
 
-Subsequent builds will be faster.
+The `EXPORTING` phase of the build log copies layers generated during the build to a slimmer `run` image, which is analogous to the base image in the second stage of our Dockerfile. It also populates a cache to speed up subsequent builds.
+
 The `lifecycle` provides optimizations that enhance image inspection and transparency through metadata, as well as build performance through sophisticated caching and layer reuse.
 In future builds you would see the `ANALYZING` and `RESTORING` phases leveraging the cache and image layer metadata created in the first build.
 
@@ -106,7 +81,7 @@ Take note of the digest (sha256 uuid) reported at the end of the build log.
 You can also check your [Docker Hub](https://hub.docker.com/) account to see the image published by pack.
 You should see the same digest there.
 
-You can also see the Paketo base and run images that were downloaded locally:
+You can also see the Paketo builder image that `pack` downloaded locally in order to carry out the build:
 
 ```
 docker images | grep paketo
@@ -133,11 +108,10 @@ docker pull gcr.io/paketo-buildpacks/run:0.0.19-base-cnb
 docker images | grep paketo
 ```{{execute}}
 
-The builder is pointing to a run image with tag `paketobuildpacks/run:base-cnb`.
-For simplicity, rename the run image you just downloaded using this tag.
-You can compare the IDs of the images on the daemon to validate that the default tag is pointing to the image you just downloaded.
+The builder is pointing to a run image with tag `gcr.io/paketo-buildpacks/run:base-cnb`. 
+Add this tag to the run image.
 ```
-docker tag gcr.io/paketo-buildpacks/run:0.0.19-base-cnb paketobuildpacks/run:base-cnb
+docker tag gcr.io/paketo-buildpacks/run:0.0.19-base-cnb gcr.io/paketo-buildpacks/run:base-cnb
 docker images | grep paketo
 ```{{execute}}
 

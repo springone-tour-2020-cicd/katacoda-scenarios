@@ -121,13 +121,13 @@ To see details of the build, copy and paste the following command to the termina
 kubectl describe build go-sample-app-build-1-<uuid>
 ```{{copy}}
 
-The build is executed in a pod (Eech build creates a new pod).
+The build is executed in a pod (Each build creates a new pod).
 
 ```
-kubectl get pods
+kubectl get pods | grep go-sample-app-build-
 ```{{execute}}
 
-Each phase of the buildpack lifecycle is executed in a separate _init container_, so getting the logs directly from the pod involves appending the pods from each init container in the right order.
+Each phase of the buildpack lifecycle is executed in a separate _init_ container, so getting the logs directly from the pod involves appending the pods from each init container in the right order.
 To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
 
 ```
@@ -136,7 +136,7 @@ logs -image go-sample-app -build 1
 
 You should see the same lifecycle phases as you observed earlier in this scenario.
 
-When the log shows that the build is done, check your [Docker Hub](https://hub.docker.com) to validate that an image has been published.
+When the log shows that the build is done, check your [Docker Hub](https://hub.docker.com) to validate that an image has been published. The image will have a tag as specified in your Image configuration, as well as an auto-generated tag. Both tags are aliasing the same image digest.
 
 `Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
 
@@ -146,7 +146,7 @@ By default, kpack will poll the source code repo, the builder image, and the run
 
 Notice that the Image resource is configured to poll the master branch on the app repo. That means any commit to the master branch will trigger a build.
 
-Make a code change and push to GitHub.
+Make a code change and push to GitHub. Provide your access token at the prompt.
 
 ```
 cd /workspace/go-sample-app

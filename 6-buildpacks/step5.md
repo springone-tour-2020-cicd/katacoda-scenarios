@@ -1,338 +1,96 @@
-# From polling to pushing
+# Rebasing with kpack
 
 Objective:
-As mentioned before, kpack will by default, poll the source code repo for commits every 5 minutes, and automatically re-build the image if it detects a new commit.
-
-This means kpack is not a sequential part of the build pipeline like Kaniko or the Tekton Buildpack Task.
-This is fine, as long as you always wish to build an image regardless of linting and testing feedback.
+Demonstrate a rebase using `kpack`.
 
 In this step, you will:
-- Make kpack builds conditional on linting and testing feedback, using a push instead of a poll model
+- Reconfigure the `kpack` Builder resource so that you can demonstrate a rebase
+- Trigger a rebase and observe `kpack` update the image
 
-We can trigger kpack at the end of the build pipeline by updating the `Image` resource.
-The kpack controller tracks all `Image` resources in the cluster.
-If the Git revision of an `Image` were to change, the controller will automatically kick off a build and push.
+## Reconfigure the Builder resource
 
-## Change the Git revision in a new Task
+In the last step, you configured a Builder that points to the Paketo Buildpacks at `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`. 
+If that builder is updated, or if the run image that it references is updated, `kpack` will rebuild (or rebase) the go-sample-app image.
 
-Create the `Task` responsible for updating the `Image` file with the new revision.
-This `Task` is very similar to the one we created for promoting newly pushed images to the dev environment in the triggers [triggers](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/5-manage-triggers) scenarios.
+Since these builder and run images are controlled by the Paketo Buildpacks project, we cannot influence the release of an update in order to catalyze a rebase. 
+However, we can reconfigure our Builder in such a way that we can trigger a rebase.
+
+Create a new CustomBuilder in which you can separately define the building blocks of a builder:
+- [Store](https://github.com/pivotal/kpack/blob/master/docs/custombuilders.md#store): a list of images that contain **buildpacks**. As we explained earlier, builders include buildpacks, so we can use a builder as a source of buildpacks.
+- [Stack](https://github.com/pivotal/kpack/blob/master/docs/custombuilders.md#stack): the OS stack, used for both the build-time and run-time images. You will use `io.buildpacks.stacks.bionic` in the configuration below (Ubuntu 18.04), but you can use `pack suggest-builders`{{execute}} to see some additional OSS options.
+- [CustomBuilder](https://github.com/pivotal/kpack/blob/master/docs/custombuilders.md#custom-builders): the builder, which comprises the _Store_ (buildpacks) and _Stack_ (base OS), and specifies the order in which to process buildpack groups. For reference of how to configure this, you can check `pack inspect-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`
+
+Review the configuration below, and execute the command to save it to a file.
 
 ```
-cd ../tekton
-cat <<EOF >update-image-revision-task.yaml
-apiVersion: tekton.dev/v1beta1
-kind: Task
+cat <<EOF >custom-builder.yaml
+apiVersion: experimental.kpack.pivotal.io/v1alpha1
+kind: Store
 metadata:
-  name: update-image-revision
+  name: paketo-store
 spec:
-  workspaces:
-    - name: source
-  params:
-    - name: GITHUB_TOKEN_SECRET
-      type: string
-      description: Name of the secret holding the github-token.
-      default: github-token
-    - name: GITHUB_TOKEN_SECRET_KEY
-      type: string
-      description: Name of the secret key holding the github-token.
-      default: GITHUB_TOKEN
-    - name: REVISION
-      type: string
-      description: The source code repository's Git revision to build with kpack.
-EOF
-```{{execute}}
-
-You can now add two steps.
-The first step modifies the `Image` with the new revision.
-
-```
-cat <<EOF >>update-image-revision-task.yaml
-  steps:
-  - name: update-revision
-    image: mikefarah/yq
-    workingDir: \$(workspaces.source.path)
-    script: |
-        cd cicd/kpack
-        yq w -i image.yaml "spec.source.git.revision" "\$(params.REVISION)"
-EOF
-```{{execute}}
-
-And the second step commits the changes.
-
-```
-cat <<EOF >>update-image-revision-task.yaml
-  - name: git-commit
-    image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1
-    workingDir: \$(workspaces.source.path)
-    script: |
-      apk add tree
-      tree
-      git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
-      git config user.name build-bot
-      git config user.email build-bot@bots.bot
-      git checkout -b temp-branch
-      git add cicd/kpack/image.yaml
-      git commit -m "Setting revision to current source code repo commit to trigger kpack"
-      git checkout master
-      git merge temp-branch
-      git push origin master
-    env:
-      - name: GITHUB_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: \$(params.GITHUB_TOKEN_SECRET)
-            key: \$(params.GITHUB_TOKEN_SECRET_KEY)
-EOF
-```{{execute}}
-
-Take a look at the entire `Task`, and apply it to the cluster.
-
-```
-yq r -C update-image-revision-task.yaml
-kubectl apply -f update-image-revision-task.yaml
-```{{execute}}
-
-## Update the build pipeline
-
-We can now use this newly created `Task` to trigger kpack.
-
-First of all we need to remove the existing image related task from the build pipeline, as well as the image resource.
-
-```
-yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
-yq d -i build-pipeline.yaml "spec.resources"
-```{{execute}}
-
-The `Image` manifest is now part of the ops repository, instead of the source code repository.
-You'll need to clone this repository as well to make any changes to it.
-
-```
-yq m -i -a build-pipeline.yaml - <<EOF
-spec:
-  tasks:
-    - name: fetch-ops-repository
-      runAfter:
-        - fetch-repository
-        - lint
-        - test
-      taskRef:
-        name: git-clone
-      workspaces:
-        - name: output
-          workspace: shared-ops-workspace
-      params:
-        - name: url
-          value: https://github.com/${GITHUB_NS}/go-sample-app-ops.git
-        - name: revision
-          value: master
-        - name: deleteExisting
-          value: "true"
-EOF
-```{{execute}}
-
-As you can see the `fetch-ops-repository` task is now using a different workspace.
-Make sure to add the new workspace to the list of workspaces for the pipeline.
-
-```
-yq m -i -a build-pipeline.yaml - <<EOF
-spec:
-  workspaces:
-    - name: shared-ops-workspace
-      description: This workspace will receive the cloned Git ops repo and be passed to the next Task.
-EOF
-```{{execute}}
-
-Next, you'll need to reference the new `update-image-revision` `Task`, and add another git-clone before it.
-
-```
-yq m -i -a build-pipeline.yaml - <<EOF
-spec:
-  tasks:
-    - name: update-image-revision
-      taskRef:
-        name: update-image-revision
-      runAfter:
-        - fetch-repository
-        - lint
-        - test
-        - fetch-ops-repository
-      workspaces:
-        - name: source
-          workspace: shared-ops-workspace
-      params:
-        - name: GITHUB_TOKEN_SECRET
-          value: \$(params.github-token-secret)
-        - name: GITHUB_TOKEN_SECRET_KEY
-          value: \$(params.github-token-secret-key)
-        - name: REVISION
-          value: \$(params.revision)
-EOF
-```{{execute}}
-
-Don't forget to add the new parameters to the pipeline.
-
-```
-yq m -i -a build-pipeline.yaml - <<EOF
-spec:
-  params:
-    - name: github-token-secret
-      type: string
-      description: Name of the secret holding the github-token.
-    - name: github-token-secret-key
-      description: Name of the secret key holding the github-token.
-EOF
-```{{execute}}
-
-And you can also remove the image parameter, as that will be generated by kpack.
-
-```
-yq d -i build-pipeline.yaml "spec.params.(name==image)"
-```{{execute}}
-
-Take a look at the entire `Pipeline`.
-
-```
-yq r -C build-pipeline.yaml
-```{{execute}}
-
-## Update the trigger
-
-Changing the pipeline of course also means you have to update the `TriggerTemplate`.
-
-Start by adding the missing parameters.
-
-```
-yq d -i build-trigger-template.yaml "spec.resourcetemplates[0].spec.params"
-yq m -i build-trigger-template.yaml - <<EOF
-spec:
-  resourcetemplates:
-    - spec:
-        params:
-          - name: repo-url
-            value: \$(params.REPO_URL)
-          - name: revision
-            value: \$(params.REVISION)
-          - name: github-token-secret
-            value: github-token
-          - name: github-token-secret-key
-            value: GITHUB_TOKEN
-EOF
-```{{execute}}
-
-The new workspace also needs to be assigned a `PersistentVolumeClaim` in the `TriggerTemplate`.
-
-```
-yq m -i build-trigger-template.yaml - <<EOF
-spec:
-  resourcetemplates:
-    - spec:
-        workspaces:
-          - name: shared-workspace
-            persistentvolumeclaim:
-              claimName: workspace-pvc
-          - name: shared-ops-workspace
-            persistentvolumeclaim:
-              claimName: workspace-pvc
-EOF
-```{{execute}}
-
-And also remove the unused `IMAGE` parameter from the `TriggerTemplate`.
-
-```
-yq d -i build-trigger-template.yaml "spec.params.(name==IMAGE)"
-```{{execute}}
-
-Take a look at the entire `TriggerTemplate`.
-
-```
-yq r -C build-trigger-template.yaml
-```{{execute}}
-
-Finally also get rid of the `IMAGE` parameter from the `TriggerBinding` as well.
-
-```
-yq d -i build-trigger-template.yaml "spec.params.(name==IMAGE)"
-```{{execute}}
-
-Go ahead and apply the resources to the cluster.
-
-```
-kubectl apply -f .
-```{{execute}}
-
-## Turn off polling
-
-You can now turn off the automatic polling, by changing the `updatePolicy` to `external`.
-
-```
-cd ../kpack
-yq m -i builder.yaml - <<EOF
-spec:
-  updatePolicy: external
-EOF
-```{{execute}}
-
-Go ahead and apply the `Builder` to the cluster as well.
-
-```
-kubectl apply -f builder.yaml
-```{{execute}}
-
-## Using Argo CD to trigger kpack
-
-If you would now trigger the build pipeline, the `Image` file will be modified with a new revision in Git.
-For now, you'd have to apply the new `Image` modification to the cluster manually, or have another `Task` in the pipeline that does this.
-
-We can however use Argo CD for this as well.
-Argo CD should pick up the changed manifest and apply it to the cluster automatically.
-
-Instruct Argo CD to automatically keep our CI/CD pipeline, including the updated `Image` from the previous step, in sync with the cluster.
-For this you can add two Argo CD `Application` resources.
-
-The first one will track changes in kpack manifests, including the `Image` resource.
-
-```
-cd ../argo
-cat <<EOF >argo-deploy-image.yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+  sources:
+  - image: gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
+---
+apiVersion: experimental.kpack.pivotal.io/v1alpha1
+kind: Stack
 metadata:
-  name: go-sample-app-image
+  name: paketo-bionic-stack
 spec:
-  destination:
-    namespace: default
-    server: https://kubernetes.default.svc
-  project: default
-  source:
-    path: cicd/kpack
-    repoURL: https://github.com/${GITHUB_NS}/go-sample-app-ops.git
-    targetRevision: HEAD
-  syncPolicy:
-    automated: {}
+  id: "io.buildpacks.stacks.bionic"
+  buildImage:
+    image: "gcr.io/paketo-buildpacks/build:0.0.19-base-cnb"
+  runImage:
+    image: "gcr.io/paketo-buildpacks/run:0.0.19-base-cnb"
+---
+apiVersion: experimental.kpack.pivotal.io/v1alpha1
+kind: CustomBuilder
+metadata:
+  name: paketo-custom-builder
+spec:
+  tag: $IMG_NS/paketo-custom-builder
+  serviceAccount: build-bot
+  stack: paketo-bionic-stack
+  store: paketo-store
+  order:
+  - group:
+    - id:  paketo-buildpacks/go
+  - group:
+    - id:  paketo-buildpacks/java
+  - group:
+    -id: paketo-buildpacks/nodejs
+  - group:
+    -id: paketo-buildpacks/dotnet-core
+  - group:
+    -id: paketo-buildpacks/nginx
+  - group:
+    -id: paketo-buildpacks/procfile
 EOF
 ```{{execute}}
 
-The second one will track changes in Tekton manifests, including your pipelines.
+Note - for convenience, we are reusing the build-bot service account and Docker Hub credentials that were configured for Tekton.
+
+Update the image you created in the last step to use the custom builder:
 
 ```
-cat <<EOF >argo-deploy-tekton.yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: tekton
-spec:
-  destination:
-    namespace: default
-    server: https://kubernetes.default.svc
-  project: default
-  source:
-    path: cicd/tekton
-    repoURL: https://github.com/${GITHUB_NS}/go-sample-app-ops.git
-    targetRevision: HEAD
-  syncPolicy:
-    automated: {}
-EOF
+yq w -i image.yaml "spec.builder.kind" CustomBuilder 
+yq w -i image.yaml "spec.builder.name" paketo-custom-builder
 ```{{execute}}
 
-Let's move on to put the entire flow together.
+Apply the CustomBuilder to the cluster.
+
+```
+kubectl apply -f custom-builder.yaml
+```{{execute}}
+
+At some point, you should see a builder image called paketo-custom-builder published to your Docker Hub account. With the above configuration, you have effectively created your own builder.
+
+Now, apply the updated Image manifest. The image will usee the builder you just created.
+
+```
+kubectl apply -f image.yaml
+```{{execute}}
+
+Use `kubectl get builds`{{execute}} and `kubectl describe build kubectl describe build go-sample-app-build-<num>-<uuid>`{{copy}}, as before, to track progress. You can also use `logs -image go-sample-app -build <num>`{{copy}}.
+
+

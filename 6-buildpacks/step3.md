@@ -201,18 +201,20 @@ curl \
     -H 'X-GitHub-Event: pull_request' \
     -H 'Content-Type: application/json' \
     -d '{
-      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
+      "repository": {"clone_url": "'"https://github.com/${GITHUB_NS}/go-sample-app"'"},
       "pull_request": {"head": {"sha": "master"}}
     }' \
 localhost:8080
 ```{{execute}}
 
-Verify the `PipelineRun` executes without any errors.
+Verify the `PipelineRun` executes without any errors. It might take a few minutes to start seeing logs, and some more minutes to complete. The `fetch-repository` task will run first, followed by the `lint` and `test` tasks, and then the `build-image` task. At that point you should see evidence in the logs of the same lifecycle execution that you observed with `pack`. In this case, Tekton - rather than pack - is orchestrating the lifecycle, but it us using the same base images and the same buildpacks, so it will produce the same image.
 
 ```
 tkn pipelinerun list
 tkn pipelinerun logs -f
 ```{{execute}}
+
+When the pipeline run completes, you should see a new image (go-sample-app:1.0.3) in your Docker Hub account.
 
 Stop the port-forwarding process.
 
