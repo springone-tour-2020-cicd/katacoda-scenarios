@@ -12,9 +12,9 @@ The project brings the benefits of buildpacks to the Kubernetes ecosystem, inclu
 This project also improves upon the previous generation of Cloud Foundry and Heroku buildpacks by:
 
 1. Making buildpacks accessible to the broader Kubernetes community - run them anywhere & deploy the resulting OCI image anywhere
-2. Making it easy to modularize buildpacks - decoupled generic build process from app-specific build concerns
-3. Providing a well-defined API between platforms and buildpacks, thereby fostering an ecosystem of platforms and buildpacks
-4. Embracing modern container standards (e.g. OCI, Docker V2) to provide advanced features (e.g. rebasing OS layer in milliseconds) 
+2. Making it easy to modularize buildpacks - decouple generic build process from app-specific build concerns
+3. Providing a well-defined API between platforms and buildpacks - foster an ecosystem of platforms and buildpacks
+4. Embracing modern container standards (e.g. OCI, Docker V2) - provide advanced features (e.g. rebasing OS layer in milliseconds) 
 
 In this scenario, you will:
 * Review the benefits of using a higher-level abstraction over Dockerfile
