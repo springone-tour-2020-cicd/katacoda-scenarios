@@ -83,38 +83,48 @@ Briefly, you should see a builder image called paketo-custom-builder published t
 kubectl get store,stack,custombuilder
 ```{{execute}}
 
-## Trigger builds
+## Build images
 
-To show kpack operating "at scale", create three images with three different names, using the new CustomBuilder you just created. Give each image a different name, to simulate different applications you might be building:
-
-```
-yq w -i image.yaml "spec.builder.kind" CustomBuilder 
-yq w -i image.yaml "spec.builder.name" paketo-custom-builder
-```{{execute}}
-
-Now, apply the updated Image manifest. The image will use the builder you just created.
+To show kpack building and rebasing images "at scale", create three new Image manifests using the new CustomBuilder you just created. Give each image a different name, to simulate different applications you might be building.
 
 ```
-kubectl apply -f image.yaml
+yq w image.yaml "metadata.name" go-sample-app-1 | \
+    yq w - "spec.builder.kind" CustomBuilder | \
+    yq w - "spec.builder.name" paketo-custom-builder > image-1.yaml
+
+yq w image-1.yaml "metadata.name" go-sample-app-2 > image-2.yaml
+
+yq w image-1.yaml "metadata.name" go-sample-app-3 > image-3.yaml
 ```{{execute}}
 
-To track the progress of the build, you can use the commands below.
+Apply the new Image manifests.
+
+```
+kubectl apply -f image-1.yaml \
+              -f image-2.yaml \
+              -f image-3.yaml
+```{{execute}}
+
+After a short time, you should see three new images on your Docker Hub account.
+
+You can also track the progress of the builds using the commands you used earlier:
+
 
 ```
 kubectl get builds
 ```{{execute}}
 
 ```
-kubectl describe build go-sample-app-build-<num>-<uuid>
+kubectl describe build <BUILD_NAME>
 ```{{copy}}
 
 Notice that the `kubectl describe build` output includes an Annotation stating that the reason for build was "CONFIG".
 
 ```
-logs -image go-sample-app -build <num>
+logs -image go-sample-app-1 -build 1
 ```{{copy}}
 
-## Update the run image to trigger a rebase
+## Rebase images
 
 To trigger a rebase, update the Stack resource with an updated run image, and apply the change to the cluster.
 
@@ -123,3 +133,17 @@ sed -i 's/run:0.0.19-base-cnb/run:0.0.20-base-cnb/g' custom-builder.yaml
 
 kubectl apply -f custom-builder.yaml
 ```{{execute}}
+
+Monitor builds again, and notice that kpack automatically updates all images using the updated stack.
+
+You can validate that `kpack` is rebasing rather than rebuilding in a couple of ways. The build log specifically reflects a rebase rather than a build:
+
+```
+logs -image go-sample-app-1 -build 2
+```{{copy}}
+
+In addition, the reason reported in the Build resource is "STACK". Run the command belwo and find the  Annotation stating the build reason.
+
+```
+kubectl describe build <BUILD_NAME>
+```{{copy}}

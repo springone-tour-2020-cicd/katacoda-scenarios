@@ -40,7 +40,8 @@ kubectl rollout status deployment/kpack-controller -n kpack
 kubectl rollout status deployment/kpack-webhook -n kpack
 ```{{execute}}
 
-The installation also includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack. Notice the "KIND" column. In this step, we will configure a Builder and an Image.
+The installation also includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack. 
+Notice the "KIND" column. In this step, we will configure a Builder and an Image.
 
 ```
 kubectl api-resources --api-group build.pivotal.io
@@ -95,7 +96,10 @@ EOF
 
 Note: We are leaving cacheSize commented out above because the katacoda scenario environment would require some additional configuration to provide the underlying storage-provisioning to support caching.
 
-Finally, kpack will need write access to Docker Hub in order to publish images. Rather than re-using the Tekton service account, create a new one for kpack, matching the name of the service account specified in the Image above. The new service account can reference the same `regcred` secret with Docker Hub credentials.
+To provide write access to Docker Hub, notice that a new service account, `kpack-bot`, is specified in the Image above. 
+It is better practice to set up a new service account, rather thn re-use the Tekton service account. 
+The new service account can leverage the same `regcred` secret with Docker Hub credentials. 
+Create the service account:
 
 ```
 cat <<EOF >sa.yaml
@@ -120,36 +124,41 @@ kubectl apply -f builder.yaml \
 
 ## Validate that an image was built
 
-Within a short time, you should see a new image in your [Docker Hub](https://hub.docker.com) account. In the meantime, continue reading to learn how kpack works behind the scenes and how you can trace progress and results.
+Within a short time, you should see a new image in your [Docker Hub](https://hub.docker.com) account. 
+In the meantime, continue reading to learn how kpack works behind the scenes and how you can trace progress and results.
 
 ## Behind the scenes
 
-To understand some of the mechanics of how the image is created, notice that a Build resource and a Pod were created for the build.
+To understand some of the mechanics of how the image is created, notice that the Image resource creates a Build resource for each build that it does. At the moment you should see one Build resoure:
 
 ```
 kubectl get builds
-
-kubectl get pods | grep go-sample-app-build-1
 ```{{execute}}
 
-You can glean more info from each of these. To see details of the build, copy and paste the following command to the terminal and append the uuid at the end of the build name. The Build resource details include, for example, the source code commit id (see the `Revision` node).
+
+You can use `kubectl describe` to get more information about the build, including, for example, the git commit id of the source code (see the `Revision` node).
 
 ```
 kubectl describe build go-sample-app-build-1-
 ```{{copy}}
 
-You can also check the Pod logs. Each phase of the buildpack lifecycle is executed in a separate _init_ container, so getting the logs directly from the pod involves appending the pods from each init container in the right order.
-To facilitate this, kpack provides a special `logs` CLI that makes it easy to get the build log:
+The Build creates a Pod in order to execute the build and produce the image.
+
+```
+kubectl get pods | grep go-sample-app-build-1
+```{{execute}}
+
+The Pod comprises a separate _init_ container for each phase of the lifecycle, and a simple `kubectl logs` command will not expose the logs of each init container. Therefor, kpack provides a `logs` CLI to make it easy to extract the logs for a build.
 
 ```
 logs -image go-sample-app -build 1
 ```{{execute}}
 
-You should see the same lifecycle phases in the log as you observed earlier in this scenario.
+You should see logging similar to the logging you saw with `pack` and Tekton, since the underlying process using the Paketo Builder is the same.
 
 When the log shows that the build is done, check your [Docker Hub](https://hub.docker.com) to validate that an image has been published. The image will have a tag as specified in your Image configuration, as well as an auto-generated tag. Both tags are aliasing the same image digest.
 
-`Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
+If necessary, `Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
 
 ## Trigger a new build
 

@@ -11,6 +11,13 @@ In this step you will push your changes to your GitHub repo.
 If prompted, enter your GitHub username and access token to authenticate.
 
 ```
+cd /workspace/go-sample-app
+git add -A
+git commit -m 'Changes from the Buildpacks scenario'
+git push origin master
+```{{execute}}
+
+```
 cd /workspace/go-sample-app-ops
 git add -A
 git commit -m 'Changes from the Buildpacks scenario'
