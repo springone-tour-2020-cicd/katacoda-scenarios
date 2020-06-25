@@ -94,7 +94,7 @@ Now, apply the updated Image manifest. The image will use the builder you just c
 kubectl apply -f image.yaml
 ```{{execute}}
 
-To track the progress of the build, you cna use the commands below.
+To track the progress of the build, you can use the commands below.
 
 ```
 kubectl get builds
