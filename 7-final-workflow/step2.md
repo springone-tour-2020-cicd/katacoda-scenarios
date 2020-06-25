@@ -9,17 +9,23 @@ In this step, you will:
 - Implement a solution wherein Tekton triggers kpack builds
 - Test the solution
 
-## Examine the options
+## Problem statement
 
 Given our setup of Tekton and kpack, when a commit occurs on the master branch of the sample app repo, both Tekton and kpack will be independently triggered. 
 Tekton will lint & test the code, and then build & publish an image to Docker Hub using the Buildpacks task. 
 At the same time, kpack will build & publish an image to Docker Hub using Buildpacks as well.
 
 There are a couple of issues with this setup:
-1. For every commit to the master branch, two processes are building identical images. We only need one - either the Tekton Buildpacks task, or kpack. Given kpack's advantages (easier and more centralized configuration, ability to respond to builder and run image updates, and ability to rebase), we will opt for kpack. This means we can remove the Buildpacks task from the Tekton pipeline.
-2. kpack will build images for all commits to master, irrespective of whether or not they pass testing. It would be prefereable to introduce some coordination so that kpack only builds from code that Tekton has successfully tested. There are several ways to resolve this issue. One solution, for example, is to use git branches and configure kpack to listen on a branch that receives only tested commits. Another approach is to configure kpack to build from a specific git commit, rather than a branch. Both solutions are valid, as others may be, and depend on the workflow appropriate for a particular team or organization.
+1. For every commit to the master branch, two processes are building identical images. We only need one - either the Tekton Buildpacks task, or kpack.
+2. kpack will build images for all commits to master, irrespective of whether or not they pass testing. It would be prefereable to introduce some coordination so that kpack only builds from code that Tekton has successfully tested. 
 
-In this step, we will solve these issues by removing the Buildpacks task and configuring Tekton to set the `revision` node of the kpack image.yaml file with the specific git commit that has passed testing. kpack will continue to rebuild when the Builder changes, and it will continue to rebase as well, but it will only build from the specific git commits that are explicitly configured in the Image resource.
+## Examine the options
+
+For problem 1, given the benefits of kpack (easier and more centralized configuration, ability to respond to builder and run image updates, and ability to rebase), we will choose kpack as the tool for building images. This means we can remove the Buildpacks task from the Tekton pipeline.
+
+For problem 2, there are several approaches we could consider. One solution, for example, is to use git branches and configure kpack to listen on a branch that receives only tested commits. Another approach is to configure kpack to build from a specific git commit, rather than a branch. Both solutions are valid, as others may be, and depend on the workflow appropriate for a particular team or organization.
+
+We will opt in favor of "trunk based development" (as opposed to "feature branch development"), where all commits are pushed to master. In this case both Tekton and kpack work off of the same master branch. We will configure Tekton to set the `revision` node of the kpack image.yaml file with the specific git commit that has passed testing. That will effectively moot kpack's polling of the git source code since that revision will never change. kpack will, however, continue to rebuild and rebase automatically when the builder or run images change, and it will continue to rebase as well, so we can resolve the conflict without sacrificing the additional benefits of kpack.
 
 One question remains: how should we configure the mechanics of the communication between Tekton and kpack? In keeping with the methodology we have been applying thus far, the first step is to update the kpack image.yaml in the ops repo with the git commit id every time Tekton validates a code change. This means we need a new Tekton task that will push a change to GitHub.
 

@@ -10,6 +10,7 @@ In this step, you will:
 - Create `dev` and `prod` namespaces in the Kubernetes cluster to represent deployment environments
 - Clone your GitHub repo (or the reference sample repo if you skipped the previous scenario)
 - Install Tekton and provide it write access to Docker Hub
+- Install kpack
 
 ## Validate environment initialization
 
