@@ -49,8 +49,10 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gola
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
 ```{{execute}}
 
-Tekton needs write access to Docker Hub.
-To create the Kubernetes `Secret` for Tekton, first log in to Docker Hub locally.
+## Write access to Docker Hub
+
+Several steps in this scenario require publishing images to Docker Hub. 
+You need to authenticate through the `docker` CLI and also create a Secret in Kubernetes.
 Enter your Docker Hub access token at the prompt.
 
 ```

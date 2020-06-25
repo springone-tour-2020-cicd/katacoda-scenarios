@@ -133,4 +133,4 @@ For the purposes of this scenario, however, it is sufficient to know that:
 - The simple `pack build` command above would work for applications written in a variety of languages (e.g. Go, Java, Node.js, .NET Core, etc), and they implement best practices particular to each language
 - Builders make it trivial to manage and share buildpacks and base images
 - Any platform (pack, Tekton, Spring Boot, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image
-- ~~Rebasing~~ images, wherein the base image layers of an existing image can be updated within seconds or milliseconds without rebuilding the image, is a powerful and efficient security feature not possible with Dockerfile
+- Rebasing images, wherein the base image layers of an existing image can be updated within seconds or milliseconds without rebuilding the image, is a powerful and efficient security feature not possible with Dockerfile

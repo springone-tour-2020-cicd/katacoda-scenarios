@@ -33,23 +33,17 @@ kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/relea
 ```{{execute}}
 
 The installation includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`.
-These deployment resources comprise the kpack service itself:
+Use the following commands to wait until the deployment "rollouts" succeed:
 
 ```
-kubectl get all -n kpack
+kubectl rollout status deployment/kpack-controller -n kpack
+kubectl rollout status deployment/kpack-webhook -n kpack
 ```{{execute}}
 
-Wait until the status of the two pods is `Running`.
+The installation also includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack. Notice the "KIND" column. In this step, we will configure a Builder and an Image.
 
-The installation also includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack:
 ```
 kubectl api-resources --api-group build.pivotal.io
-```{{execute}}
-
-You can list kpack resources that you create by querying for these CRDs.
-For the moment, the following command should return an empty result:
-```
-kubectl get builders,builds,clusterbuilders,images,sourceresolvers --all-namespaces
 ```{{execute}}
 
 ## Configure kpack
@@ -74,7 +68,7 @@ spec:
 EOF
 ```{{execute}}
 
-Finally, configure an Image resource, which will trigger Builds as necesssary. As with `pack` and Tekton, you need to provide three inputs:
+Configure an Image resource. The Image resource will create a Build every time it needs to produce an image. As with `pack` and Tekton, you need to provide three inputs:
 - the builder to use
 - the source code on GitHub
 - the Docker Hub repository and credentials
@@ -89,7 +83,7 @@ spec:
   builder:
     name: paketo-builder
     kind: Builder
-  serviceAccount: build-bot
+  serviceAccount: kpack-bot
   #cacheSize: "1.5Gi"
   source:
     git:
@@ -99,43 +93,59 @@ spec:
 EOF
 ```{{execute}}
 
+Note: We are leaving cacheSize commented out above because the katacoda scenario environment would require some additional configuration to provide the underlying storage-provisioning to support caching.
+
+Finally, kpack will need write access to Docker Hub in order to publish images. Rather than re-using the Tekton service account, create a new one for kpack, matching the name of the service account specified in the Image above. The new service account can reference the same `regcred` secret with Docker Hub credentials.
+
+```
+cat <<EOF >sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kpack-bot
+secrets:
+  - name: regcred
+EOF
+```{{execute}}
+
 ## Apply the kpack resources
 
 Apply the kpack resources to the kubernetes cluster:
 
 ```
 kubectl apply -f builder.yaml \
+              -f sa.yaml \
               -f image.yaml
 ```{{execute}}
 
-## Explore the automated build
+## Validate that an image was built
 
-Within a short time, you should see a Build resource for the latest commit.
+Within a short time, you should see a new image in your [Docker Hub](https://hub.docker.com) account. In the meantime, continue reading to learn how kpack works behind the scenes and how you can trace progress and results.
+
+## Behind the scenes
+
+To understand some of the mechanics of how the image is created, notice that a Build resource and a Pod were created for the build.
 
 ```
 kubectl get builds
+
+kubectl get pods | grep go-sample-app-build-1
 ```{{execute}}
 
-To see details of the build, copy and paste the following command to the terminal and edit it using the name of your build. The `Revision` field, for example, will contain the corresponding git commit id.
+You can glean more info from each of these. To see details of the build, copy and paste the following command to the terminal and append the uuid at the end of the build name. The Build resource details include, for example, the source code commit id (see the `Revision` node).
 
 ```
-kubectl describe build go-sample-app-build-1-<uuid>
+kubectl describe build go-sample-app-build-1-
 ```{{copy}}
 
-The build is executed in a pod (Each build creates a new pod).
-
-```
-kubectl get pods | grep go-sample-app-build-
-```{{execute}}
-
-Each phase of the buildpack lifecycle is executed in a separate _init_ container, so getting the logs directly from the pod involves appending the pods from each init container in the right order.
-To facilitate this, kpack includes a special `logs` CLI that makes it easy to get the build log:
+You can also check the Pod logs. Each phase of the buildpack lifecycle is executed in a separate _init_ container, so getting the logs directly from the pod involves appending the pods from each init container in the right order.
+To facilitate this, kpack provides a special `logs` CLI that makes it easy to get the build log:
 
 ```
 logs -image go-sample-app -build 1
 ```{{execute}}
 
-You should see the same lifecycle phases as you observed earlier in this scenario.
+You should see the same lifecycle phases in the log as you observed earlier in this scenario.
 
 When the log shows that the build is done, check your [Docker Hub](https://hub.docker.com) to validate that an image has been published. The image will have a tag as specified in your Image configuration, as well as an auto-generated tag. Both tags are aliasing the same image digest.
 
