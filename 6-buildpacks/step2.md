@@ -82,16 +82,8 @@ These Buildpacks include the base images used for build and runtime (akin to the
 
 ## Build with `pack` and Paketo
 
-In this section, you will build the image using Paketo Buildpacks and publish the image to the registry in a single command.
-Hence, you must authenticate with Docker Hub first.
-Enter your access token at the prompt.
-
-```
-docker login -u ${IMG_NS}
-```{{execute}}
-
-Run the following command in order to build the sample app using the `pack` CLI and Paketo Buildpacks.
-The `--publish` flag instructs pack to push the image to Docker Hub.
+In this section, you will build the image using Paketo Buildpacks and publish the image to the registry in a single command. 
+You have already authenticated with Docker Hub, so you can simply run the following command in order to build and publish  the sample app using the `pack` CLI and Paketo Buildpacks.
 
 ```
 pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
