@@ -30,6 +30,39 @@ GITHUB_NS=
 IMG_NS=
 ```{{copy}}
 
+## Install Tekton and provide it write access to Docker Hub
+
+Install Tekton, along with the additional Tekton resources that you will need in this scenario.
+
+```
+# Install Tekton CRDs
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+
+# Install Tasks to clone app repo, lint and test the Go app (skip Kaniko as it is not needed for this scenario)
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
+#kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
+
+# Install new buildpacks Task to build image
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
+```{{execute}}
+
+Tekton needs write access to Docker Hub.
+To create the Kubernetes `Secret` for Tekton, first log in to Docker Hub locally.
+Enter your Docker Hub access token at the prompt.
+
+```
+docker login -u ${IMG_NS}
+```{{execute}}
+
+Create the `Secret`.
+
+```
+kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+```{{execute}}
+
 ## Create namespaces
 
 To simulate the dev an prod environments into which we will be deploying the sample app, create dev and prod namepsaces.
@@ -41,7 +74,7 @@ kubectl create ns prod
 
 ## Clone repos
 
-If you completed the previous scenario, clone your sample repos and skip to the section below titled "Install Tekton".
+If you completed the previous scenario, clone your sample repos and skip ahead to the next step.
 
 ```
 git clone https://github.com/$GITHUB_NS/go-sample-app.git
@@ -116,37 +149,4 @@ git push -f -u origin master
 git push -f origin scenario-1-start
 git branch -d scenario-1-start
 cd ..
-```{{execute}}
-
-## Install Tekton and provide it write access to Docker Hub
-
-Install Tekton, along with the additional Tekton resources that you will need in thie scenario.
-
-```
-# Install Tekton CRDs
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
-kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
-
-# Install Tasks to clone app repo, lint and test the Go app (skip Kaniko as it is not needed for this scenario)
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
-#kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
-
-# Install new buildpacks Task to build image
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
-```{{execute}}
-
-Tekton needs write access to Docker Hub.
-To create the Kubernetes `Secret` for Tekton, first log in to Docker Hub locally.
-Enter your Docker Hub access token at the prompt.
-
-```
-docker login -u ${IMG_NS}
-```{{execute}}
-
-Create the `Secret`.
-
-```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```{{execute}}
