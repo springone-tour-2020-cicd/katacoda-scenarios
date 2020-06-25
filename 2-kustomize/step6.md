@@ -1,6 +1,8 @@
 # Customize production deployment
 
 Objective:
+
+
 Explore additional customizations that can be done by editing `kustomization.yaml` directly.
 
 In this step, you will:

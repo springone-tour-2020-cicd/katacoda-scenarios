@@ -1,6 +1,8 @@
 # Install and configure Argo CD
 
 Objective:
+
+
 Install and configure Argo CD.
 
 In this step, you will:

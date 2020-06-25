@@ -1,6 +1,8 @@
 # Install Tekton
 
 Objective:
+
+
 Install Tekton.
 
 In this step, you will:

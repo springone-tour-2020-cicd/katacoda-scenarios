@@ -1,6 +1,7 @@
 # Use kpack to build images
 
 Objective:
+
 Use kpack, together with Paketo Buildpacks, to configure builds and rebases of images.
 
 In this step, you will:

@@ -1,6 +1,7 @@
 # Add a Trigger
 
 Objective:
+
 Up until this point you’ve probably had this question pop up into your head: I can **manually** run my Tekton Pipeline, but how do I **automatically** run my pipeline?
 Maybe you want to automatically run your pipeline every time you create a pull request, push code to a repo, or merge a pull request into the master branch.
 Thankfully, the Tekton Triggers project solves this problem by automatically connecting events to your Tekton Pipelines.

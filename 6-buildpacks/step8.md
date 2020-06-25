@@ -1,6 +1,7 @@
 # The entire flow
 
 Objective:
+
 You now have all the necessary building blocks to put entire build and deploy pipeline together.
 
 ## Argo CD applications

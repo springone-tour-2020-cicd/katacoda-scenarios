@@ -1,6 +1,8 @@
 # Pruning
 
 Objective:
+
+
 Understand use cases where resources need to be deleted from the cluster
 
 In this step, you will:

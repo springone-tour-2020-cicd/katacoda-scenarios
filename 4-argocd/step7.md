@@ -1,6 +1,8 @@
 # Self-Healing Reconciliation Loop
 
 Objective:
+
+
 Understand the use case for a self-healing sync.
 
 In this step, you will:

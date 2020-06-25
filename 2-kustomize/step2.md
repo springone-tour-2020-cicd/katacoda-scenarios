@@ -1,6 +1,8 @@
 # Validate the duplication in ops files
 
 Objective:
+
+
 Review the ops files created in the previous scenario and understand the challenge of managing a growing and diverging set of configuration files.
 
 In this step, you will:

@@ -1,6 +1,7 @@
 # Dockerfile vs Buildpacks
 
 Objective:
+
 Understand some of the challenges in using Dockerfiles and how a higher-level abstraction, such as Cloud Native Buildpacks, can help.
 
 Note:

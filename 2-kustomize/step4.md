@@ -1,6 +1,8 @@
 # Customize production deployment
 
 Objective:
+
+
 Explore additional customizations that can be done using `kustomize edit`.
 
 In this step, you will:

@@ -1,6 +1,8 @@
 # Deploy to production environment
 
 Objective:
+
+
 Use a declarative approach to deploy the sample application to the prod environment.
 
 In this step, you will:

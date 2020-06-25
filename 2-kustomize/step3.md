@@ -1,6 +1,8 @@
 # Use overlays to transform resources
 
 Objective:
+
+
 Eliminate the duplication of configuration information.
 
 In this step, you will:

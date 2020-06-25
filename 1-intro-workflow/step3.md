@@ -1,6 +1,8 @@
 # Make a code change and re-deploy
 
 Objective:
+
+
 Understand the basic workflow of deploying an **update** to the application.
 
 In this step, you will:

@@ -1,6 +1,7 @@
 # Prepare environment
 
 Objective:
+
 Prepare your local environment.
 
 In this step, you will:

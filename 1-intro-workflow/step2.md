@@ -1,6 +1,8 @@
 # Initial build & deploy
 
 Objective:
+
+
 Understand the basic workflow of deploying an application to Kubernetes. 
 In subsequent steps, you will build on this basic flow.
 

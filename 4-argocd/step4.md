@@ -1,6 +1,8 @@
 # Driving change through GitOps
 
 Objective:
+
+
 Show how any change to the ops repo on GitHub causes Argo CD to update the deployment.
 
 In this step, you will:

@@ -1,6 +1,7 @@
 # From polling to pushing
 
 Objective:
+
 As mentioned before, kpack will by default, poll the source code repo for commits every 5 minutes, and automatically re-build the image if it detects a new commit.
 
 This means kpack is not a sequential part of the build pipeline like Kaniko or the Tekton Buildpack Task.

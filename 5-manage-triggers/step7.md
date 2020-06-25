@@ -1,6 +1,7 @@
 # Add a Deployment Pipeline
 
 Objective:
+
 Assuming the `PipelineRun` finished successfully, you now have a new image in your Docker Hub account.
 That image's reference however needs to be manually updated in the Kustomize files.
 Let's make a pipeline for this purpose as well.

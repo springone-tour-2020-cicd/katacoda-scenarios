@@ -1,6 +1,8 @@
 # Save your changes
 
 Objective:
+
+
 Save the sample repo, including the new ops directory with the deployment manifests, to your GitHub account. You will need the repo to build on this flow throughout the remaining scenarios.
 
 In this step, you will:

@@ -1,6 +1,8 @@
 # Customize production deployment
 
 Objective:
+
+
 Explore additional customizations that can be done using Kustomize patches.
 
 In this step, you will:
