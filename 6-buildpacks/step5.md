@@ -61,13 +61,13 @@ spec:
   - group:
     - id:  paketo-buildpacks/java
   - group:
-    -id: paketo-buildpacks/nodejs
+    - id: paketo-buildpacks/nodejs
   - group:
-    -id: paketo-buildpacks/dotnet-core
+    - id: paketo-buildpacks/dotnet-core
   - group:
-    -id: paketo-buildpacks/nginx
+    - id: paketo-buildpacks/nginx
   - group:
-    -id: paketo-buildpacks/procfile
+    - id: paketo-buildpacks/procfile
 EOF
 ```{{execute}}
 
