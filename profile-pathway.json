@@ -22,14 +22,19 @@
       "id": "4-argocd"
     },
     {
-      "title": "Manage Triggers to Pull It All Together",
-      "description": "Use Tekton triggers to complete the workflow automation",
+      "title": "Add Triggers for Autonomous Workflows",
+      "description": "Use Tekton triggers to enable workflows to start automatically",
       "id": "5-manage-triggers"
     },
     {
       "title": "Improve Image Lifecycle with Buildpacks and kpack",
       "description": "Use Cloud Native Buildpacks to increase consistency, security, and governance of container images",
       "id": "6-buildpacks"
+    },
+    {
+      "title": "Putting It All Together",
+      "description": "The whole enchilada",
+      "id": "7-final-workflow"
     }
   ]
 }
