@@ -90,15 +90,15 @@ docker images | grep paketo
 
 ## Rebase
 
-Imagine that a vulnerability has been detected in the base OS, and that an OS patch is made availabel.
+Imagine that a vulnerability has been detected in the base OS, and that an OS patch is made available.
 With Dockerfile, it would be very challenging to patch images, especially at scale.
-You would need to have insight into the images that different Dockerfiles use, determine which need patching, make or obtain patched versions of the base images, and rebuild all images.
+You would need to have insights into the images that different Dockerfiles use, determine which need patching, make or obtain patched versions of the base images, and rebuild all images.
 This means you would likely need substantial re-testing as well.
 
 Cloud Native Buildpacks improves this challenge in several ways:
-- The same run image is used across across all applications
+- The same run image is used across all applications
 - The run image is managed centrally through the builder, so the update can be easily provided for all future builds
-- The update run image is guaranteed to be compatible, via an Application Binary Interface
+- The updated run image is guaranteed to be compatible, via an Application Binary Interface
 - The patching operation updates existing app images to point to updated base image layers in the new run image. This operation is fast and does not involve rebuilding the application or the image.
 
 Let's simulate this using the `pack rebase` command.
