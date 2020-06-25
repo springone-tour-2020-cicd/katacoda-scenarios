@@ -18,7 +18,7 @@ Now that you understand the advantages of Cloud Native Buildpacks over Dockerfil
 Go to the 'ops' repository, to the directory containing Tekton configuration.
 
 ```
-cd ../go-sample-app-ops/cicd/tekton
+cd /workspace/go-sample-app-ops/cicd/tekton
 ```{{execute}}
 
 You need to update Tekton Pipeline (`build-pipeline.yaml`) and TriggerTemplate (`build-trigger-template.yaml`).

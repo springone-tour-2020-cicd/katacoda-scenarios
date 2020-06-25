@@ -1,44 +1,55 @@
-# From polling to pushing
+# Deliberate image builds
 
 Objective:
 
-As mentioned before, kpack will by default, poll the source code repo for commits every 5 minutes, and automatically re-build the image if it detects a new commit.
-
-This means kpack is not a sequential part of the build pipeline like Kaniko or the Tekton Buildpack Task.
-This is fine, as long as you always wish to build an image regardless of linting and testing feedback.
+Fine-tune the workflow so that `kpack` only builds images from code that has been tested.
 
 In this step, you will:
-- Make kpack builds conditional on linting and testing feedback, using a push instead of a poll model
+- Review the options to address this issue
+- Implement a solution wherein Tekton triggers kpack builds
+- Test the solution
 
-We can trigger kpack at the end of the build pipeline by updating the `Image` resource.
-The kpack controller tracks all `Image` resources in the cluster.
-If the Git revision of an `Image` were to change, the controller will automatically kick off a build and push.
+## Examine the options
 
-## Github setup
+Given our setup of Tekton and kpack, when a commit occurs on the master branch of the sample app repo, both Tekton and kpack will be independently triggered. 
+Tekton will lint & test the code, and then build & publish an image to Docker Hub using the Buildpacks task. 
+At the same time, kpack will build & publish an image to Docker Hub using Buildpacks as well.
 
-Later on you'll need your GitHub username to be able to push to this repo.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
+There are a couple of issues with this setup:
+1. For every commit to the master branch, two processes are building identical images. We only need one - either the Tekton Buildpacks task, or kpack. Given kpack's advantages (easier and more centralized configuration, ability to respond to builder and run image updates, and ability to rebase), we will opt for kpack. This means we can remove the Buildpacks task from the Tekton pipeline.
+2. kpack will build images for all commits to master, irrespective of whether or not they pass testing. It would be prefereable to introduce some coordination so that kpack only builds from code that Tekton has successfully tested. There are several ways to resolve this issue. One solution, for example, is to use git branches and configure kpack to listen on a branch that receives only tested commits. Another approach is to configure kpack to build from a specific git commit, rather than a branch. Both solutions are valid, as others may be, and depend on the workflow appropriate for a particular team or organization.
+
+In this step, we will solve these issues by removing the Buildpacks task and configuring Tekton to set the `revision` field of the kpack image.yaml file with the specific git commit that has passed testing. kpack will continue to rebuild when the Builder changes, and it will continue to rebase as well, but it will only build from the specific git commits that are explicitly configured in the Image resource.
+
+One question remains: how should we configure the mechanics of the communication between Tekton and kpack? In keeping with the methodology we have been applying thus far, the first step is to update the kpack image.yaml in the ops repo with the git commit id every time Tekton validates a code change. This means we need a new Tekton task that will push a change to GitHub.
+
+The second step is to apply the update image.yaml to the cluster. At first glance, it might seem natural to configure Tekton to do this. After all, producing an artifact is usually the last step of CI, the hand-off between CI and CD, so it seems intuitive for the "CI tool" to finish the CI workflow. However, in reality we have a tool that is purpose built to detect and apply manifest changes to Kubernetes: Argo CD. Rather than configure Tekton with access to the cluster, we can simply configure Argo CD to monitor the ops/cici/kpack directory in the ops repo. When Tekton updates the image.yaml in GitHub, Argo CD will apply the change to the cluster, and then kpack will create a new image in Docker Hub. It's a beautiful thing. Let's make it happen.
+
+## Github write access
+
+Since Tekton will need to push the updated image.yaml to GitHub, you need to authorize it with write access to your GitHub account.
+
+If your GitHub username is the same as your namespace/org, execute the following command.
+
+```
+GITHUB_USER=$GITHUB_NS
+```{{execute}}
+
+Otherwise, copy the following command to the terminal and provide your GitHub username.
 
 ```
 # Fill this in with your GitHub login
 GITHUB_USER=
 ```{{copy}}
 
-Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
-
-```
-GITHUB_USER=$GITHUB_NS
-```{{execute}}
-
-You will also need your GitHub access token to authenticate with the Git server.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
+Copy and paste the following command to the terminal window and provide your GitHub access token.
 
 ```
 # Fill this in with your GitHub access token
 GITHUB_TOKEN=
 ```{{copy}}
 
-Use this token to create a new `Secret`.
+Use the token to create a new `Secret`.
 
 ```
 kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
