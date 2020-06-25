@@ -77,10 +77,10 @@ Apply the CustomBuilder to the cluster.
 kubectl apply -f custom-builder.yaml
 ```{{execute}}
 
-Briefly, you should see a builder image called paketo-custom-builder published to your Docker Hub account. With the above configuration, you have effectively created your own builder. Alternatively, you can confirm that the resources have status "READY=True":
+Briefly, you should see a builder image called paketo-custom-builder published to your Docker Hub account. With the above configuration, you have effectively created your own builder. Alternatively, you can confirm that the image was published using the following command. You should see the image reference under the `LATESTIMAGE` column.
 
 ```
-kubectl get store,stack,custombuilder
+kubectl get custombuilder
 ```{{execute}}
 
 ## Build images
@@ -108,7 +108,6 @@ kubectl apply -f image-1.yaml \
 After a short time, you should see three new images on your Docker Hub account.
 
 You can also track the progress of the builds using the commands you used earlier:
-
 
 ```
 kubectl get builds
@@ -142,7 +141,7 @@ You can validate that `kpack` is rebasing rather than rebuilding in a couple of 
 logs -image go-sample-app-1 -build 2
 ```{{copy}}
 
-In addition, the reason reported in the Build resource is "STACK". Run the command belwo and find the  Annotation stating the build reason.
+In addition, the reason reported in the Build resource is "STACK". Run the command belwo and find the Annotation stating the build reason was "STACK".
 
 ```
 kubectl describe build <BUILD_NAME>
