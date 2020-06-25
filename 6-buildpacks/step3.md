@@ -6,7 +6,7 @@ Learn how you can use a Tekton Task to build apps using Cloud Native Buildpacks 
 In this step, you will:
 - Remove Tekton configuration used for the Dockerfile workflow
 - Add Tekton configuration needed for a Buildpacks workflow
-- Deploy the updated Tekton resources
+- Apply the updated Tekton resources
 - Test the new workflow
 
 ## Remove Tekton configuration used for the Dockerfile workflow
@@ -153,7 +153,7 @@ spec:
 EOF
 ```{{execute}}
 
-## Deploy the updated Tekton resources
+## Apply the updated Tekton resources
 
 You should see four Tasks available in your Tekton installation, and no Pipelines yet:
 

@@ -88,7 +88,7 @@ You have already authenticated with Docker Hub, so you can simply run the follow
 ```
 pack set-default-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
 
-pack build $IMG_NS/go-sample-app --publish
+pack build $IMG_NS/go-sample-app:pack-0.0.1 --publish
 ```{{execute}}
 
 You'll notice `pack` downloading two images:
@@ -144,7 +144,7 @@ docker images | grep paketo
 Now, rebase the image.
 Use the `--no-pull` flag ensure pack uses the local run image you just tagged.
 ```
-pack rebase $IMG_NS/go-sample-app --publish --no-pull
+pack rebase $IMG_NS/go-sample-app:pack-0.0.1 --publish --no-pull
 ```{{execute}}
 
 Notice that the image digest is different.
