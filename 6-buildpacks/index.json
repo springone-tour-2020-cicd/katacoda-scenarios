@@ -44,9 +44,7 @@
     }
   },
   "environment": {
-	"uilayout": "terminal-iframe",
-	"showdashboard": true,
-	"dashboards": [{"name": "Argo CD UI", "port": 8080}]
+    "uilayout": "terminal"
   },
   "backend": {
     "imageid": "kubernetes-cluster-running:1.18"
