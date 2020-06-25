@@ -31,7 +31,7 @@ yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
 yq d -i build-pipeline.yaml "spec.params.(name==image)"
 ```{{execute}}
 
-Remove the TriggerTemplate used for the image.
+Remove the TriggerTemplate parameter used for the image.
 
 ```
 yq d -i build-trigger-template.yaml 'spec.resourcetemplates[0].spec.params.(name==image)'
