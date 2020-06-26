@@ -1,7 +1,6 @@
 {
   "title": "The CI/CD Experience: Kubernetes Edition",
   "description": "An exploration of tools and techniques for CI/CD on Kubernetes",
-  "credits": "Cora Iberkleid and Andreas Evers",
   "courses": [
     {
       "title": "Intro Workflow and Prerequisites Setup",
