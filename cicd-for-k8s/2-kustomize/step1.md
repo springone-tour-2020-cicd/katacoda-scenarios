@@ -7,7 +7,7 @@ Prepare your local environment.
 
 In this step, you will:
 - Validate that the environment is initialized
-- Set env vars with your GitHub and Docker Hub namespaces
+- Configure setup for using GitHub and Docker Hub in the scenario
 - Create `dev` and `prod` namespaces in the Kubernetes cluster to represent deployment environments
 - Clone your GitHub repo (or the reference sample repo if you skipped the previous scenario)
 
@@ -15,20 +15,15 @@ In this step, you will:
 
 Please wait until `Environment ready!` appears in the terminal window.
 
-## Set environment variables
+## Set up access to GitHub and Docker Hub
 
-Your GitHub and Docker Hub namespaces (user or org names) will be needed in this scenario.
-Copy and paste the following environment variables to the terminal window, then append the appropriate namespace:
+You will use your GitHub account to create/update repos, and you will use your Docker Hub account to push images.
 
-```
-# Provide your GitHub user or org name
-GITHUB_NS=
-```{{copy}}
+Run the following script and provide your account details at the prompts. It is better practice to use an access token than a password. For more information, see [GitHub access tokens](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) (select "repo" access rights) and [Docker Hub access tokens](https://docs.docker.com/docker-hub/access-tokens).
 
 ```
-# Provide your Docker Hub user or org name
-IMG_NS=
-```{{copy}}
+source step1-init.sh
+```{{execute}}
 
 ## Create namespaces
 
