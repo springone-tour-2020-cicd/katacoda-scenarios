@@ -1,5 +1,4 @@
 {
-  "noindex": true,
   "title": "Scenario Template",
   "description": "Template for creating new scenarios",
   "difficulty": "Beginner",
@@ -28,10 +27,7 @@
       "code": "intro-foreground.sh"
     },
     "finish": {
-      "text": "step99-outro.md",
-      "data-katacoda-hidefinish": false,
-      "data-katacoda-ctatext": "",
-      "data-katacoda-cta": "<LINK-TO-NEXT-SCENARIO>"
+      "text": "step99-outro.md"
     }
   },
   "environment": {
