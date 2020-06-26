@@ -42,8 +42,11 @@
     "finish": {
       "text": "step99-outro.md",
       "data-katacoda-hidefinish": false,
-      "data-katacoda-ctatext": "",
-      "data-katacoda-cta": "https://www.google.com"
+      "data-katacoda-ctatext": "data-kc-next",
+      "data-katacoda-cta": "https://www.google.com",
+      "hidefinish": false,
+      "ctatext": "kc-next",
+      "cta": "https://www.cnn.com"
     }
   },
   "environment": {
