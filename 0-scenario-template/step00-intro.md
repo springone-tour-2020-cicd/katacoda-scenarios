@@ -7,7 +7,7 @@ Files to update:
 - if necessary, update environment and backend sections in _index.json_
 - add environment configuration to _assets/init-background_ as needed (note the "NO CHANGES ABOVE/BELOW" guidelines)
 - add user session configuration to _assets/init-foreground_ as needed
-- update _intro.md, step1.md, finish.md_ as needed
+- update _step00-intro.md, step1.md, step99-outro.md_ as needed
 - add additional stepX.md files as needed; remember to add them to _index.json_
 
 Do **not** change:

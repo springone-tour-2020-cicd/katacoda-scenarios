@@ -23,12 +23,15 @@
       ]
     },
     "intro": {
-      "text": "intro.md",
+      "text": "step00-intro.md",
       "courseData": "intro-background.sh",
       "code": "intro-foreground.sh"
     },
     "finish": {
-      "text": "finish.md"
+      "text": "step99-outro.md",
+      "data-katacoda-hidefinish": false,
+      "data-katacoda-ctatext": "",
+      "data-katacoda-cta": "<LINK-TO-NEXT-SCENARIO>"
     }
   },
   "environment": {
