@@ -4,6 +4,9 @@
   "description": "--> Set this value in profile-pathway.json <--",
   "difficulty": "Beginner",
   "time": "30",
+  "data-katacoda-ctatext": "data-kc-next",
+  "data-katacoda-cta": "https://www.google.com",
+  "data-katacoda-ctaurl": "https://www.google.com",
   "details": {
     "steps": [
       {
