@@ -22,7 +22,7 @@ You will use your GitHub account to create/update repos, and you will use your D
 Run the following script and provide your account details at the prompts. It is better practice to use an access token than a password. For more information, see [GitHub access tokens](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) (select "repo" access rights) and [Docker Hub access tokens](https://docs.docker.com/docker-hub/access-tokens).
 
 ```
-source step1-init.sh
+source set-credentials.sh
 ```{{execute}}
 
 ## Create namespaces

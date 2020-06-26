@@ -30,7 +30,7 @@
     ],
     "assets": {
       "host01": [
-        {"file": "step1-init.sh", "target": "/workspace", "chmod": "+x"},
+        {"file": "set-credentials.sh", "target": "/workspace", "chmod": "+x"},
         {"file": "init-foreground", "target": "/root/init-env/bin/", "chmod": "+x"},
         {"file": "init-background", "target": "/root/init-env/bin/", "chmod": "+x"},
         {"file": "init-controller", "target": "/root/init-env/bin/", "chmod": "+x"}
