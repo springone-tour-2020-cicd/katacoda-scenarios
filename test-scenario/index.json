@@ -7,8 +7,7 @@
     "steps": [
       {
         "title": "",
-        "text": "step1.md",
-        "code": "step1-init.sh"
+        "text": "step1.md"
       },
       {
         "title": "",
@@ -19,7 +18,8 @@
       "host01": [
         {"file": "init-foreground", "target": "/root/init-env/bin/", "chmod": "+x"},
         {"file": "init-background", "target": "/root/init-env/bin/", "chmod": "+x"},
-        {"file": "init-controller", "target": "/root/init-env/bin/", "chmod": "+x"}
+        {"file": "init-controller", "target": "/root/init-env/bin/", "chmod": "+x"},
+        {"file": "step1-init.sh", "target": "/workspace", "chmod": "+x"}
       ]
     },
     "intro": {
