@@ -1,0 +1,40 @@
+{
+  "title": "Test Scenario",
+  "description": "For figuring out Katacoda functionality",
+  "difficulty": "Beginner",
+  "time": "30",
+  "details": {
+    "steps": [
+      {
+        "title": "",
+        "text": "step1.md",
+        "code": "step1-init.sh.sh"
+      },
+      {
+        "title": "",
+        "text": "step2.md"
+      }
+    ],
+    "assets": {
+      "host01": [
+        {"file": "init-foreground", "target": "/root/init-env/bin/", "chmod": "+x"},
+        {"file": "init-background", "target": "/root/init-env/bin/", "chmod": "+x"},
+        {"file": "init-controller", "target": "/root/init-env/bin/", "chmod": "+x"}
+      ]
+    },
+    "intro": {
+      "text": "step00-intro.md",
+      "courseData": "intro-background.sh",
+      "code": "intro-foreground.sh"
+    },
+    "finish": {
+      "text": "step99-outro.md"
+    }
+  },
+  "environment": {
+    "uilayout": "terminal"
+  },
+  "backend": {
+    "imageid": "kubernetes-cluster-running:1.18"
+  }
+}
