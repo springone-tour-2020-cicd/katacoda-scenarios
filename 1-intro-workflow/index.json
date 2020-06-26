@@ -4,9 +4,7 @@
   "description": "--> Set this value in profile-pathway.json <--",
   "difficulty": "Beginner",
   "time": "30",
-  "data-katacoda-ctatext": "data-kc-next",
-  "data-katacoda-cta": "https://www.google.com",
-  "data-katacoda-ctaurl": "https://www.google.com",
+  "icon": "https://d18qp689yd19g7.cloudfront.net/2020/images/illustration-cicd.svg",
   "details": {
     "steps": [
       {
@@ -43,17 +41,15 @@
       "code": "intro-foreground.sh"
     },
     "finish": {
-      "text": "step99-outro.md",
-      "data-katacoda-hidefinish": false,
-      "data-katacoda-ctatext": "data-kc-next",
-      "data-katacoda-cta": "https://www.google.com",
-      "hidefinish": false,
-      "ctatext": "kc-next",
-      "cta": "https://www.cnn.com"
+      "text": "step99-outro.md"
     }
   },
   "environment": {
-    "uilayout": "terminal"
+    "uilayout": "terminal",
+    "hidefinish": false,
+    "data-katacoda-ctatext": "data-kc-next",
+    "data-katacoda-cta": "https://www.google.com",
+    "data-katacoda-ctaurl": "https://www.cnn.com"
   },
   "backend": {
     "imageid": "kubernetes-cluster-running:1.18"
