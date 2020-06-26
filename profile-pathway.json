@@ -1,40 +1,42 @@
 {
-  "courses": [],
-  "scenarios": [
+  "title": "The CI/CD Experience: Kubernetes Edition",
+  "description": "An exploration of tools and techniques for CI/CD on Kubernetes",
+  "courses": [
     {
       "title": "Intro Workflow and Prerequisites Setup",
       "description": "Set up the prerequisites for the course as you go through a manual build & deploy workflow",
-      "id": "1-intro-workflow"
+      "course_id": "1-intro-workflow"
     },
     {
       "title": "Getting Started with Kustomize",
       "description": "Use Kustomize to wrangle your YAML",
-      "id": "2-kustomize"
+      "course_id": "2-kustomize"
     },
     {
       "title": "Getting Started with Tekton",
       "description": "Use Tekton to build a container image",
-      "id": "3-tekton"
+      "course_id": "3-tekton"
     },
     {
       "title": "Getting Started with Argo CD",
       "description": "Use Argo CD to deploy to Kubernetes",
-      "id": "4-argocd"
+      "course_id": "4-argocd"
     },
     {
       "title": "Add Triggers for Autonomous Workflows",
       "description": "Use Tekton triggers to enable workflows to start automatically",
-      "id": "5-manage-triggers"
+      "course_id": "5-manage-triggers"
     },
     {
       "title": "Improve Image Lifecycle with Buildpacks and kpack",
       "description": "Use Cloud Native Buildpacks to increase consistency, security, and governance of container images",
-      "id": "6-buildpacks"
+      "course_id": "6-buildpacks"
     },
     {
       "title": "Putting It All Together",
       "description": "The whole enchilada",
-      "id": "7-final-workflow"
+      "course_id": "7-final-workflow"
     }
-  ]
+  ],
+  "scenarios": []
 }
