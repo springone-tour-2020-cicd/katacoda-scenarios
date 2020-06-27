@@ -1,215 +1,182 @@
-# Use Buildpacks in Tekton Pipeline
+# Use kpack to build images
 
 Objective:
 
-Learn how you can use a Tekton Task to build apps using Cloud Native Buildpacks within a Tekton Pipeline.
+Use kpack, together with Paketo Buildpacks, to configure builds and rebases of images.
 
 In this step, you will:
-- Remove Tekton configuration used for the Dockerfile workflow
-- Add Tekton configuration needed for a Buildpacks workflow
-- Apply the updated Tekton resources
-- Test the new workflow
+- Install kpack
+- Configure kpack to build images when there is a new commit on the app repo
+- Explore the automated build
+- Trigger a new build
 
-## Remove Tekton configuration used for the Dockerfile workflow
+## About kpack
 
-The build pipeline you configured in previous scenarios uses a Kaniko task to build an image using the Dockerfile in the app repo.
-Now that you understand the advantages of Cloud Native Buildpacks over Dockerfile, let's replace the Kaniko task with a Cloud Native Buildpacks task.
+In the previous step, you built images using the `pack` platform and the Paketo Buildpacks builder.
 
-Go to the 'ops' repository, to the directory containing Tekton configuration.
+In this step, you will explore another platform, `kpack`, which operates as a service and builds or rebases images automatically when it detects a change. 
+If the change is detected in the application or the buildpacks, `kpack` will automatically rebuild images. 
+If the change is detected only in the runtime base image, `kpack` will automaticelly rebase images.
+ 
+`kpack` is "Kubernetes-native" and provides resources that extend the Kubernetes API. 
+The `kpack` resources are purpose-built for Buildpacks, so they are simpler to use and offer additional functionality, including:
+- Default pull model: kpack polls for changes in source code/artifact, builder image and run image
+- Push model can be configured (trigger kpack by applying a change to one of its Kubernetes resources)
+- Supports both build and rebase, and automatically determines which is appropriate
+
+## Install kpack
+
+Install kpack to the kubernetes cluster.
 
 ```
-cd /workspace/go-sample-app-ops/cicd/tekton
+kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/release-0.0.9.yaml
 ```{{execute}}
 
-You need to update Tekton Pipeline (`build-pipeline.yaml`) and TriggerTemplate (`build-trigger-template.yaml`).
-
-First, remove the Kaniko `build-image` and `verify-digest` tasks, as well as the image param, from the build pipeline.
+The installation includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`.
+Use the following commands to wait until the deployment "rollouts" succeed:
 
 ```
-yq d -i build-pipeline.yaml "spec.tasks.(name==verify-digest)"
-yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
-yq d -i build-pipeline.yaml "spec.params.(name==image)"
+kubectl rollout status deployment/kpack-controller -n kpack
+kubectl rollout status deployment/kpack-webhook -n kpack
 ```{{execute}}
 
-Remove the TriggerTemplate parameter used for the image.
+The installation also includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack. 
+Notice the "KIND" column. In this step, we will configure a Builder and an Image.
 
 ```
-yq d -i build-trigger-template.yaml 'spec.resourcetemplates[0].spec.params.(name==image)'
+kubectl api-resources --api-group build.pivotal.io
 ```{{execute}}
 
-## Add Tekton configuration needed for a Buildpacks workflow
+## Configure kpack
 
-Next, add a new `build-image` task based on the [Buildpacks task](https://github.com/tektoncd/catalog/blob/v1beta1/buildpacks/README.md) available in the Tekton catalog and configure it to use the same Paketo Buildpacks builder you used in the previous step.
+Create a new directory to store the kpack yaml manifests.
 
 ```
-yq m -i -a build-pipeline.yaml - <<EOF
+mkdir ../kpack
+cd ../kpack
+```{{execute}}
+
+Create a Builder resource that specifies the same Paketo Buildpacks builder you used in previous steps.
+
+```
+cat <<EOF >builder.yaml
+apiVersion: build.pivotal.io/v1alpha1
+kind: Builder
+metadata:
+  name: paketo-builder
 spec:
-  tasks:
-  - name: build-image
-    taskRef:
-      name: buildpacks-v3
-    runAfter:
-      - fetch-repository
-      - lint
-      - test
-    workspaces:
-      - name: source
-        workspace: shared-workspace
-    params:
-      - name: BUILDER_IMAGE
-        value: gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
-      - name: CACHE
-        value: buildpacks-cache
-    resources:
-      outputs:
-        - name: image
-          resource: build-image
+  image: gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
 EOF
 ```{{execute}}
 
-Add the image configuration required by Buildpacks.
+Configure an Image resource. 
+The Image resource will set up monitoring of the source, builder and run images, and it will kick off a new build when changes are detected.
+As with `pack`, you need to provide three inputs:
+- the builder to use
+- the source code on GitHub
+- the Docker Hub repository and credentials
 
 ```
-yq m -i build-pipeline.yaml - <<EOF
+cat <<EOF >image.yaml
+apiVersion: build.pivotal.io/v1alpha1
+kind: Image
+metadata:
+  name: go-sample-app
 spec:
-  resources:
-    - name: build-image
-      type: image
+  builder:
+    name: paketo-builder
+    kind: Builder
+  serviceAccount: kpack-bot
+  #cacheSize: "1.5Gi"
+  source:
+    git:
+      url: https://github.com/$GITHUB_NS/go-sample-app
+      revision: master
+  tag: $IMG_NS/go-sample-app:kpack
 EOF
 ```{{execute}}
 
-In order to leverage the caching features provided by Buildpacks, you need to configure an additional Persistent Volume Claim. In the Katacoda environment, this requires that you create a corresponding Persistent Volume as well.
+Note: We are leaving cacheSize commented out above because the katacoda scenario environment would require some additional configuration to provide the underlying storage-provisioning to support caching.
+
+To provide write access to Docker Hub, notice that a new service account, `kpack-bot`, is specified in the Image above. 
+The new service account can leverage the `regcred` secret with Docker Hub credentials that you created in step 1. 
+Create the service account:
 
 ```
-cat <<EOF >buildpacks-cache-pv.yaml
+cat <<EOF >sa.yaml
 apiVersion: v1
-kind: PersistentVolume
+kind: ServiceAccount
 metadata:
-  name: buildpacks-cache-pv
-spec:
-  capacity:
-    storage: 3Gi
-  volumeMode: Filesystem
-  accessModes:
-  - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: local-storage
-  hostPath:
-    path: "/mnt/data"
-EOF
-
-cat <<EOF >>buildpacks-cache-pvc.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: buildpacks-cache-pvc
-spec:
-  storageClassName: local-storage
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 500Mi
+  name: kpack-bot
+secrets:
+  - name: regcred
 EOF
 ```{{execute}}
 
-Configure a new TriggerTemplate to use for the Buildpacks workflow.
+## Apply the kpack resources
+
+Apply the kpack resources to the kubernetes cluster:
 
 ```
-yq m -i build-trigger-template.yaml - <<EOF
-spec:
-  resourcetemplates:
-    - spec:
-        resources:
-          - name: build-image
-            resourceRef:
-              name: buildpacks-app-image
-        podTemplate:
-          volumes:
-            - name: buildpacks-cache
-              persistentVolumeClaim:
-                claimName: buildpacks-cache-pvc
-EOF
-
-cat <<EOF >buildpacks-app-image.yaml
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: buildpacks-app-image
-spec:
-  type: image
-  params:
-    - name: url
-      value: ${IMG_NS}/go-sample-app:1.0.3
-EOF
+kubectl apply -f builder.yaml \
+              -f sa.yaml \
+              -f image.yaml
 ```{{execute}}
 
-## Apply the updated Tekton resources
+## Validate that an image was built
 
-You should the Tasks you installed in step 1, and no Pipelines yet:
+Within a short time, you should see a new image in your [Docker Hub](https://hub.docker.com) account. 
+In the meantime, continue reading to learn how kpack works behind the scenes and how you can trace progress and results.
+
+## Behind the scenes
+
+To understand some of the mechanics of how the image is created, notice that the Image resource creates a Build resource for each build that it does. At the moment you should see one Build resoure:
 
 ```
-tkn task list
-tkn pipeline list
+kubectl get builds
 ```{{execute}}
 
-Apply the updated resources.
+
+You can use `kubectl describe` to get more information about the build, including, for example, the git commit id of the source code (see the `Revision` node).
 
 ```
-kubectl apply -f sa.yaml \
-              -f pv.yaml \
-              -f pvc.yaml \
-              -f buildpacks-cache-pv.yaml \
-              -f buildpacks-cache-pvc.yaml \
-              -f buildpacks-app-image.yaml
-```{{execute}}
+kubectl describe build go-sample-app-build-1-
+```{{copy}}
+
+The Build creates a Pod in order to execute the build and produce the image.
 
 ```
-kubectl apply -f build-pipeline.yaml \
-              -f build-trigger-template.yaml \
-              -f build-trigger-binding.yaml \
-              -f build-event-listener.yaml
+kubectl get pods | grep go-sample-app-build-1
 ```{{execute}}
 
-## Test it out
-
-Wait for the deployment to finish.
+The Pod comprises a separate _init_ container for each phase of the lifecycle, and a simple `kubectl logs` command will not expose the logs of each init container. Therefor, kpack provides a `logs` CLI to make it easy to extract the logs for a build.
 
 ```
-kubectl rollout status deployment/el-build-event-listener
+logs -image go-sample-app -build 1
 ```{{execute}}
 
-Port-forward the service to make it accessible from outside the cluster.
+You should see logging similar to the logging you saw with `pack`, since the underlying process using the Paketo Builder is the same.
+
+When the log shows that the build is done, check your [Docker Hub](https://hub.docker.com) to validate that an image has been published. The image will have a tag as specified in your Image configuration, as well as an auto-generated tag. Both tags are aliasing the same image digest.
+
+If necessary, `Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
+
+## Trigger a new build
+
+By default, kpack will poll the source code repo, the builder image, and the run image every 5 minutes, and will automatically rebuild - or rebase, as apporpriate - if it detects a new commit.
+
+Notice that the Image resource is configured to poll the master branch on the app repo. That means any commit to the master branch will trigger a build.
+
+Make a code change and push to GitHub. Provide your access token at the prompt.
 
 ```
-kubectl port-forward --address 0.0.0.0 svc/el-build-event-listener 8080:8080 2>&1 > /dev/null &
+cd /workspace/go-sample-app
+
+sed -i 's/sunshine/friends/g' hello-server.go
+
+git add -A
+git commit -m "Hello, friends!"
+git push origin master
 ```{{execute}}
 
-Trigger a pull request event, which should create a new `PipelineRun`.
-
-```
-curl \
-    -H 'X-GitHub-Event: pull_request' \
-    -H 'Content-Type: application/json' \
-    -d '{
-      "repository": {"clone_url": "'"https://github.com/${GITHUB_NS}/go-sample-app"'"},
-      "pull_request": {"head": {"sha": "master"}}
-    }' \
-localhost:8080
-```{{execute}}
-
-Verify the `PipelineRun` executes without any errors. It might take a few minutes to start seeing logs, and some more minutes to complete. The `fetch-repository` task will run first, followed by the `lint` and `test` tasks, and then the `build-image` task. At that point you should see evidence in the logs of the same lifecycle execution that you observed with `pack`. In this case, Tekton - rather than pack - is orchestrating the lifecycle, but it us using the same base images and the same buildpacks, so it will produce the same image.
-
-```
-tkn pipelinerun list
-tkn pipelinerun logs -f
-```{{execute}}
-
-When the pipeline run completes, you should see a new image (go-sample-app:1.0.3) in your Docker Hub account.
-
-Stop the port-forwarding process.
-
-```
-pkill kubectl && wait $!
-```{{execute}}
+Use the commands above or go to Docker Hub to validate that kpack builds a new image. Keep in mind it may take up to 5 minutes for kpack to detect the change. 

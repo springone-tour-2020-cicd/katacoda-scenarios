@@ -1,181 +1,170 @@
-# Use kpack to build images
+# Rebasing with kpack
 
 Objective:
 
-Use kpack, together with Paketo Buildpacks, to configure builds and rebases of images.
+Demonstrate a rebase using `kpack`.
 
 In this step, you will:
-- Install kpack
-- Configure kpack to build images when there is a new commit on the app repo
-- Explore the automated build
-- Trigger a new build
+- Configure a new `kpack` CustomBuilder resource so that you can demonstrate a rebase
+- Build an image using the CustomBuilder
+- Update the run-image version and observe `kpack` update the image
 
-## About kpack
+## Create a temporary directory
 
-At this point, you have built images using Cloud Native Buildpacks using two different platforms: `pack` and `Tekton`. In both cases, you used the same Paketo Buildpacks builder, hence producing the exact same image.
+This step is intended to demonstrate a rebase with kpack. You will not need the files created in this step moving forward.
 
-`pack` and `Tekton` fit different use cases. `pack` is optimized for a developer experience, and `Tekton` is optimized for automated pipelines.
-
-In this step, you will explore a third platform called `kpack`, which operates as a service that can monitor source repos, as well as buildpack image repos (builder images and run images), and it can automatically build or rebase images, as appropriate, when it detects a change in any of the three inputs.
- 
-Like Tekton, `kpack` is "Kubernetes-native" and provides resources that extend the Kubernetes API. 
-The `kpack` resources are purpose-built for Buildpacks, so they are simpler to use and offer additional functionality, including:
-- Default polling of source code/artifact, builder image and run image automatically configured
-- Supports pull and push model (you can disable polling and trigger `kpack` directly)
-- Supports both build and rebase, and automatically determines which is appropriate
-
-## Install kpack
-
-Install kpack to the kubernetes cluster.
+Create a temporary directory for this step to keep these files outside of your git repos.
 
 ```
-kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/release-0.0.9.yaml
+mkdir -p /workspace/kpack-rebase-demo
+cd /workspace/kpack-rebase-demo
 ```{{execute}}
 
-The installation includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`.
-Use the following commands to wait until the deployment "rollouts" succeed:
+## Create a CustomBuilder resource
+
+In the last step, you configured a Builder that points to the Paketo Buildpacks at `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`.
+If that builder is updated with new or updated buildpacks, kpack will automatically _rebuild_ the go-sample-app image. If only the stack (base image) is updated, kpack will automatically _rebase_ the go-sample-app image.
+
+Since these builder and run images are controlled by the Paketo Buildpacks project, we cannot influence the release of an update in order to catalyze a rebase.
+However, we can create a CustomBuilder that will give us finer-grain control and enable us to trigger a rebase.
+
+Create a new CustomBuilder in which you can separately define the building blocks of a builder:
+- [Store](https://github.com/pivotal/kpack/blob/master/docs/custombuilders.md#store): a list of images that contain **buildpacks**. As we explained earlier, builders include buildpacks, so we can use a builder as a source of buildpacks.
+- [Stack](https://github.com/pivotal/kpack/blob/master/docs/custombuilders.md#stack): the OS stack, used for both the build-time and run-time images. You will use `io.buildpacks.stacks.bionic` in the configuration below (Ubuntu 18.04), but you can use `pack suggest-stacks`{{execute}} to see some additional OSS options.
+- [CustomBuilder](https://github.com/pivotal/kpack/blob/master/docs/custombuilders.md#custom-builders): the builder, which comprises the _Store_ (buildpacks) and _Stack_ (base OS), and specifies the order in which to process buildpack groups. For reference of how to configure this, you can check `pack inspect-builder gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`{{execute}}
+
+Review the configuration below, and execute the command to save it to a file.
 
 ```
-kubectl rollout status deployment/kpack-controller -n kpack
-kubectl rollout status deployment/kpack-webhook -n kpack
-```{{execute}}
-
-The installation also includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack. 
-Notice the "KIND" column. In this step, we will configure a Builder and an Image.
-
-```
-kubectl api-resources --api-group build.pivotal.io
-```{{execute}}
-
-## Configure kpack
-
-Create a new directory to store the kpack yaml manifests.
-
-```
-mkdir ../kpack
-cd ../kpack
-```{{execute}}
-
-Create a Builder resource that specifies the same Paketo Buildpacks builder you used in previous steps.
-
-```
-cat <<EOF >builder.yaml
-apiVersion: build.pivotal.io/v1alpha1
-kind: Builder
+cat <<EOF >custom-builder.yaml
+apiVersion: experimental.kpack.pivotal.io/v1alpha1
+kind: Store
 metadata:
-  name: paketo-builder
+  name: paketo-store
 spec:
-  image: gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
+  sources:
+  - image: gcr.io/paketo-buildpacks/builder:base-platform-api-0.3
+---
+apiVersion: experimental.kpack.pivotal.io/v1alpha1
+kind: Stack
+metadata:
+  name: paketo-bionic-stack
+spec:
+  id: "io.buildpacks.stacks.bionic"
+  buildImage:
+    image: "gcr.io/paketo-buildpacks/build:0.0.19-base-cnb"
+  runImage:
+    image: "gcr.io/paketo-buildpacks/run:0.0.19-base-cnb"
+---
+apiVersion: experimental.kpack.pivotal.io/v1alpha1
+kind: CustomBuilder
+metadata:
+  name: paketo-custom-builder
+spec:
+  tag: $IMG_NS/paketo-custom-builder
+  serviceAccount: kpack-bot
+  stack: paketo-bionic-stack
+  store: paketo-store
+  order:
+  - group:
+    - id:  paketo-buildpacks/go
+  - group:
+    - id:  paketo-buildpacks/java
+  - group:
+    - id: paketo-buildpacks/nodejs
+  - group:
+    - id: paketo-buildpacks/dotnet-core
+  - group:
+    - id: paketo-buildpacks/nginx
+  - group:
+    - id: paketo-buildpacks/procfile
 EOF
 ```{{execute}}
 
-Configure an Image resource. The Image resource will create a Build every time it needs to produce an image. As with `pack` and Tekton, you need to provide three inputs:
-- the builder to use
-- the source code on GitHub
-- the Docker Hub repository and credentials
+Apply the CustomBuilder to the cluster.
 
 ```
-cat <<EOF >image.yaml
+kubectl apply -f custom-builder.yaml
+```{{execute}}
+
+Briefly, you should see a builder image called paketo-custom-builder published to your Docker Hub account. With the above configuration, you have effectively created your own builder. Alternatively, you can confirm that the image was published using the following command. You should see the image reference under the `LATESTIMAGE` column.
+
+```
+kubectl get custombuilder
+```{{execute}}
+
+## Build image
+
+To show kpack building and rebasing an image, create a new Image manifest using the new CustomBuilder you just created. 
+
+Note the Image resource name and the image tag.
+
+```
+cat <<EOF >rebase-demo-image.yaml
 apiVersion: build.pivotal.io/v1alpha1
 kind: Image
 metadata:
-  name: go-sample-app
+  name: rebase-demo-app
 spec:
   builder:
-    name: paketo-builder
-    kind: Builder
+    name: paketo-custom-builder
+    kind: ClusterBuilder
   serviceAccount: kpack-bot
   #cacheSize: "1.5Gi"
   source:
     git:
       url: https://github.com/$GITHUB_NS/go-sample-app
       revision: master
-  tag: $IMG_NS/go-sample-app:kpack-0.0.1
+  tag: $IMG_NS/rebase-demo-img
 EOF
 ```{{execute}}
 
-Note: We are leaving cacheSize commented out above because the katacoda scenario environment would require some additional configuration to provide the underlying storage-provisioning to support caching.
-
-To provide write access to Docker Hub, notice that a new service account, `kpack-bot`, is specified in the Image above. 
-It is better practice to set up a new service account, rather thn re-use the Tekton service account. 
-The new service account can leverage the same `regcred` secret with Docker Hub credentials. 
-Create the service account:
+Apply the new Image manifest.
 
 ```
-cat <<EOF >sa.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: kpack-bot
-secrets:
-  - name: regcred
-EOF
+kubectl apply -f rebase-demo-image.yaml
 ```{{execute}}
 
-## Apply the kpack resources
+After a short time, you should see a image repository on your Docker Hub account. Notice the digest of the image.
 
-Apply the kpack resources to the kubernetes cluster:
-
-```
-kubectl apply -f builder.yaml \
-              -f sa.yaml \
-              -f image.yaml
-```{{execute}}
-
-## Validate that an image was built
-
-Within a short time, you should see a new image in your [Docker Hub](https://hub.docker.com) account. 
-In the meantime, continue reading to learn how kpack works behind the scenes and how you can trace progress and results.
-
-## Behind the scenes
-
-To understand some of the mechanics of how the image is created, notice that the Image resource creates a Build resource for each build that it does. At the moment you should see one Build resoure:
+You can also track the progress of the builds using the commands you used earlier:
 
 ```
 kubectl get builds
 ```{{execute}}
 
-
-You can use `kubectl describe` to get more information about the build, including, for example, the git commit id of the source code (see the `Revision` node).
-
 ```
-kubectl describe build go-sample-app-build-1-
+kubectl describe build <BUILD_NAME>
 ```{{copy}}
 
-The Build creates a Pod in order to execute the build and produce the image.
+Notice that the `kubectl describe build` output includes an Annotation stating that the reason for build was "CONFIG".
 
 ```
-kubectl get pods | grep go-sample-app-build-1
-```{{execute}}
+logs -image go-sample-app-1 -build 1
+```{{copy}}
 
-The Pod comprises a separate _init_ container for each phase of the lifecycle, and a simple `kubectl logs` command will not expose the logs of each init container. Therefor, kpack provides a `logs` CLI to make it easy to extract the logs for a build.
+## Rebase the image
 
-```
-logs -image go-sample-app -build 1
-```{{execute}}
-
-You should see logging similar to the logging you saw with `pack` and Tekton, since the underlying process using the Paketo Builder is the same.
-
-When the log shows that the build is done, check your [Docker Hub](https://hub.docker.com) to validate that an image has been published. The image will have a tag as specified in your Image configuration, as well as an auto-generated tag. Both tags are aliasing the same image digest.
-
-If necessary, `Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
-
-## Trigger a new build
-
-By default, kpack will poll the source code repo, the builder image, and the run image every 5 minutes, and will automatically rebuild - or rebase, as apporpriate - if it detects a new commit.
-
-Notice that the Image resource is configured to poll the master branch on the app repo. That means any commit to the master branch will trigger a build.
-
-Make a code change and push to GitHub. Provide your access token at the prompt.
+To trigger a rebase, update the Stack resource with an updated run image, and apply the change to the cluster.
 
 ```
-cd /workspace/go-sample-app
+sed -i 's/run:0.0.19-base-cnb/run:0.0.20-base-cnb/g' custom-builder.yaml
 
-sed -i 's/sunshine/friends/g' hello-server.go
-
-git add -A
-git commit -m "Hello, friends!"
-git push origin master
+kubectl apply -f custom-builder.yaml
 ```{{execute}}
 
-Use the commands above or go to Docker Hub to validate that kpack builds a new image. Keep in mind it may take up to 5 minutes for kpack to detect the change. 
+Monitor builds again, and notice that kpack automatically updates the image using the updated stack.
+
+You can validate that `kpack` is rebasing rather than rebuilding in a couple of ways. The build log specifically reflects a rebase rather than a build:
+
+```
+logs -image go-sample-app-1 -build 2
+```{{copy}}
+
+In addition, the reason reported in the Build resource is "STACK". Run the command below and find the Annotation stating the build reason was "STACK".
+
+```
+kubectl describe build <BUILD_NAME>
+```{{copy}}
+
+When a stack update occurs, kpack rebases all images that use the corresponding run image. In other words, with the simple single Stack resource update command you executed above, you could patch the operating system on any number of images on a registry in a matter of seconds.
