@@ -77,7 +77,6 @@ sed -i "s/go-sample-app.git/go-sample-app-ops.git/g" go-sample-app-ops/cicd/argo
 ```{{execute}}
 
 Let's commit the changes to the source code repository first.
-Note that `git push` will need a [Personal Access Token](https://github.com/settings/tokens) as password to authenticate.
 
 ```
 cd go-sample-app
@@ -87,7 +86,6 @@ git push origin master
 ```{{execute}}
 
 You can create the new ops repository on GitHub using `hub`.
-Enter your GitHub username and access token at the prompt to authenticate against GitHub.
 
 ```
 cd ../go-sample-app-ops

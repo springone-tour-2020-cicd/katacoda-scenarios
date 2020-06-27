@@ -28,11 +28,11 @@ images:
 EOF
 ```{{execute}}
 
-Push the change to GitHub so Argo CD can detect it. Provide your [access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) at the password prompt:
+Push the change to GitHub so Argo CD can detect it.
 
 ```
 git commit -am "Switched back to 1.0.0"
-git push
+git push origin master
 ```{{execute}}
 
 Now sit back and watch Argo CD update the deployment.

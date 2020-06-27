@@ -11,7 +11,7 @@ In this step, you will:
 
 ## Fork the sample repo
 
-Use the `hub` CLI to fork the sample repo to your GitHub account. You will need to provide your GitHub username and access token at the prompt to authenticate `hub` against GitHub.
+Use the `hub` CLI to fork the sample repo to your GitHub account.
 
 ```
 hub fork --remote-name origin
@@ -19,7 +19,7 @@ hub fork --remote-name origin
 
 ## Push your changes to GitHub
 
-Commit and push the changes you made throughout this scenario to your new fork. You will need to provide your GitHub username and access token at the prompt to authenticate `git` against GitHub.
+Commit and push the changes you made throughout this scenario to your new fork.
 
 ```
 git add -A

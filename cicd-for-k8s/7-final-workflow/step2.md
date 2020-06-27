@@ -49,7 +49,7 @@ cd /workspace/go-sample-app
 sed -i 's/friends/pipeline/g' hello-server.go
 git add hello-server.go
 git commit -m "Hello pipeline!"
-git push
+git push origin master
 ```{{execute}}
 
 Store the pushed commit for the simulated webhook.
