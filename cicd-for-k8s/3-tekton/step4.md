@@ -12,21 +12,18 @@ To use these tasks there are a few things we need to set up in the Kubernetes cl
 1. Create a secret that contains your Docker Hub credentials.
 1. Create a service account that will execute the pipeline and be able to access the Docker Hub credentials.
 
-## Clone repo
+## Create a Persistent Volume
 
-Start by cloning the GitHub repo you created in the [intro](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow) scenario.
+Create a new directory to store Tekton configuration manifests.
 
 ```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git && cd go-sample-app
-```{{execute}}
-
-## Create a Persistent Volume
+mkdir -p /workdir/go-sample-app/cicd/tekton
+cd /workdir/go-sample-app/cicd/tekton
+```
 
 First we need to create a Persistent Volume.
 
 ```
-mkdir -p cicd/tekton
-cd cicd/tekton
 cat <<EOF >pv.yaml
 apiVersion: v1
 kind: PersistentVolume
