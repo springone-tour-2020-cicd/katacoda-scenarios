@@ -40,8 +40,8 @@ git clone https://github.com/$GITHUB_NS/go-sample-app.git
 Alternatively, you can fork a "shortcut" repo that will allow you to start without completing the previous scenarios. To do this, run the following commands instead.
 
 ```
-BRANCH=scenario-6-finished
-source fork-repos.sh
+source fork-repos.sh go-sample-app scenario-6-finished
+source fork-repos.sh go-sample-app-ops scenario-6-finished
 ```{{execute}}
 
 ## Create namespaces

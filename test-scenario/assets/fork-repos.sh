@@ -2,9 +2,6 @@
 
 function fork-and-promote() {
   # Clone and fork repo. Set branch as master.
-  REPO_NAME="${1}"
-  rm -rf ${REPO_NAME}
-  REPO="${GITHUB_NS}/${REPO_NAME}"
   hub clone https://github.com/springone-tour-2020-cicd/${REPO_NAME}.git && cd "${REPO_NAME}"
   hub fork --remote-name origin
   git checkout --track origin/$BRANCH
@@ -20,18 +17,23 @@ function fork-and-promote() {
   cd ..
 }
 
-if [[ "${GITHUB_NS}" == "" ]] || [[ "${IMG_NS}" == "" ]]; then
-  echo "Missing GitHub account information. Please run set-credentials.sh script first"
-elif [ $(git ls-remote https://github.com/${REPO} &>/dev/null) -ne 0 ]; then
-  echo "Repository exists. Please delete and re-run this script. [Repository: https://github.com/${REPO}]"
-  echo "You can delete the repo from the GitHub UI, or using hub at the command line [hub delete ${REPO}]"
+REPO_NAME="${1}"
+BRANCH="${2}"
+REPO="${GITHUB_NS}/${REPO_NAME}"
+
+if [[ "${REPO_NAME}" == "" ]]; then
+  echo "Expected argument: repo-name. Got [${1}]"
 elif [[ "${BRANCH}" == "" ]]; then
-  echo "Expected argument: branch-name. Got []"
+  echo "Expected argument: branch-name. Got [${2}]"
+elif [[ "${GITHUB_NS}" == "" ]] || [[ "${IMG_NS}" == "" ]]; then
+  echo "Missing GitHub/Docker Hub account info. Run 'source set-credentials.sh' first"
+fi
+
+git ls-remote https://github.com/${REPO} &>/dev/null
+exit_code=$?
+if [[ $exit_code == 0 ]]; then
+  echo "Repository https://github.com/${REPO} exists. Please delete it, and then re-run this script."
+  echo "You can delete the repo from the GitHub UI"
 else
-  # app repo
-  REPO_NAME=go-sample-app
-  fork-and-promote $BRANCH
-  # ops repo
-  REPO_NAME=go-sample-app-ops
-  fork-and-promote $BRANCH
+  fork-and-promote
 fi
