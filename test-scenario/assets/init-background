@@ -28,9 +28,28 @@ curl -L https://github.com/github/hub/releases/download/v$HUB_VERSION/hub-linux-
      rm -rf hub-linux-amd64-$HUB_VERSION
 echo "### Finished installing hub CLI"
 
-echo "### Installing some other required tool"
-# ... install/configure the necessary tool
-echo "### Finished installing some other required tool"
+echo "### Installing Tekton CLI (tkn)"
+git clone https://github.com/springone-tour-2020-cicd/tekton-labs.git /root/tekton-labs
+curl -LO https://github.com/tektoncd/cli/releases/download/v0.10.0/tkn_0.10.0_Linux_x86_64.tar.gz
+sudo tar xvzf tkn_0.10.0_Linux_x86_64.tar.gz -C /usr/local/bin/ tkn
+echo "### Finished installing Tekton CLI (tkn)"
+
+echo "### Installing pack CLI"
+curl -L https://github.com/buildpacks/pack/releases/download/v0.11.2/pack-v0.11.2-linux.tgz | tar zx && \
+    chmod +x pack && \
+    mv pack /usr/local/bin/pack
+echo "### Finished installing pack CLI"
+
+echo "### Installing kpack logs CLI"
+curl -L https://github.com/pivotal/kpack/releases/download/v0.0.9/logs-v0.0.9-linux.tgz | tar zx && \
+    chmod +x logs && \
+    mv logs /usr/local/bin/logs
+echo "### Finished installing kpack logs CLI"
+
+echo "### Installing yq CLI"
+wget -o- -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64
+chmod +x /usr/local/bin/yq
+echo "### Finished installing yq CLI"
 
 # Leave this as the last task in this script
 echo "### Waiting for Kubernetes nodes 'ready' status"
