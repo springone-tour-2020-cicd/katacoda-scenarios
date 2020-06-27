@@ -52,8 +52,8 @@ kubectl api-resources --api-group build.pivotal.io
 Create a new directory to store the kpack yaml manifests.
 
 ```
-mkdir ../kpack
-cd ../kpack
+mkdir -p /workspace/go-sample-app-ops/cicd/kpack
+cd /workspace/go-sample-app-ops/cicd/kpack
 ```{{execute}}
 
 Create a Builder resource that specifies the same Paketo Buildpacks builder you used in previous steps.
@@ -92,7 +92,7 @@ spec:
     git:
       url: https://github.com/$GITHUB_NS/go-sample-app
       revision: master
-  tag: $IMG_NS/go-sample-app:kpack
+  tag: $IMG_NS/go-sample-app
 EOF
 ```{{execute}}
 
@@ -149,7 +149,7 @@ The Build creates a Pod in order to execute the build and produce the image.
 kubectl get pods | grep go-sample-app-build-1
 ```{{execute}}
 
-The Pod comprises a separate _init_ container for each phase of the lifecycle, and a simple `kubectl logs` command will not expose the logs of each init container. Therefor, kpack provides a `logs` CLI to make it easy to extract the logs for a build.
+You should see evidence of _init_ containers in the results (something like: "Init:1/6"). kpack orchestrates the CNB lifecycle using _init_ containers - a prepare container, plus containers for each lifecycle step: detect, analyze, restore, build, export. (These should sound familiar based on the logs that `pack` generated in the last step). A simple `kubectl logs` command will not stream the init container logs, so kpack provides a `logs` CLI to make it easy to extract the logs from all init containers:
 
 ```
 logs -image go-sample-app -build 1
@@ -159,11 +159,9 @@ You should see logging similar to the logging you saw with `pack`, since the und
 
 When the log shows that the build is done, check your [Docker Hub](https://hub.docker.com) to validate that an image has been published. The image will have a tag as specified in your Image configuration, as well as an auto-generated tag. Both tags are aliasing the same image digest.
 
-If necessary, `Send Ctrl+C`{{execute interrupt T1}} to stop tailing the log.
-
 ## Trigger a new build
 
-By default, kpack will poll the source code repo, the builder image, and the run image every 5 minutes, and will automatically rebuild - or rebase, as apporpriate - if it detects a new commit.
+By default, kpack will poll the source code repo, the builder image, and the run image every 5 minutes, and will automatically rebuild - or rebase, as approrpriate - if it detects a new commit.
 
 Notice that the Image resource is configured to poll the master branch on the app repo. That means any commit to the master branch will trigger a build.
 
