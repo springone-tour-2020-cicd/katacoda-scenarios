@@ -10,10 +10,10 @@ In this step, you will:
 
 ## Reconfigure the Builder resource
 
-In the last step, you configured a Builder that points to the Paketo Buildpacks at `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`. 
+In the last step, you configured a Builder that points to the Paketo Buildpacks at `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`.
 If that builder is updated, or if the run image that it references is updated, `kpack` will rebuild (or rebase) the go-sample-app image.
 
-Since these builder and run images are controlled by the Paketo Buildpacks project, we cannot influence the release of an update in order to catalyze a rebase. 
+Since these builder and run images are controlled by the Paketo Buildpacks project, we cannot influence the release of an update in order to catalyze a rebase.
 However, we can reconfigure our Builder in such a way that we can trigger a rebase.
 
 Create a new CustomBuilder in which you can separately define the building blocks of a builder:
@@ -141,7 +141,7 @@ You can validate that `kpack` is rebasing rather than rebuilding in a couple of 
 logs -image go-sample-app-1 -build 2
 ```{{copy}}
 
-In addition, the reason reported in the Build resource is "STACK". Run the command belwo and find the Annotation stating the build reason was "STACK".
+In addition, the reason reported in the Build resource is "STACK". Run the command below and find the Annotation stating the build reason was "STACK".
 
 ```
 kubectl describe build <BUILD_NAME>

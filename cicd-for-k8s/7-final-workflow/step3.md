@@ -6,7 +6,7 @@ Note that `git push` will need a [Personal Access Token](https://github.com/sett
 
 ```
 git add -A
-git commit -m 'Changes from the Buildpacks scenario'
+git commit -m 'Changes from the final workflow scenario'
 git push origin master
 ```{{execute}}
 
