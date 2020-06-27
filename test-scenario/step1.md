@@ -83,7 +83,7 @@ kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/relea
 
 ## Configure access to Docker Hub from Kubernetes
 
-Create a Secret in Kubernets so that Tekton and kpack can publish images to Docker Hub.
+Create a Secret in Kubernetes so that Tekton and kpack can publish images to Docker Hub.
 
 ```
 kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
