@@ -37,10 +37,15 @@ If you completed the previous scenario and have an existing fork of the [sample 
 git clone https://github.com/$GITHUB_NS/go-sample-app.git
 ```{{execute}}
 
-Alternatively, you can fork a "shortcut" repo that will allow you to start without completing the previous scenarios. To do this, run the following commands instead.
+Alternatively, you can fork "shortcut" repos that will allow you to start without completing the previous scenarios. To do this, run the following commands instead.
 
+Fork the "shortcut" app repo:
 ```
 source fork-repos.sh go-sample-app scenario-6-finished
+```{{execute}}
+
+Fork the "shortcut" ops repo:
+```
 source fork-repos.sh go-sample-app-ops scenario-6-finished
 ```{{execute}}
 
