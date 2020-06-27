@@ -108,7 +108,7 @@ metadata:
 spec:
   builder:
     name: paketo-custom-builder
-    kind: ClusterBuilder
+    kind: CustomBuilder
   serviceAccount: kpack-bot
   #cacheSize: "1.5Gi"
   source:
@@ -134,13 +134,13 @@ kubectl get builds
 ```{{execute}}
 
 ```
-kubectl describe build <BUILD_NAME>
+kubectl describe build <BUILD_NAME> | grep rebase-demo
 ```{{copy}}
 
 Notice that the `kubectl describe build` output includes an Annotation stating that the reason for build was "CONFIG".
 
 ```
-logs -image go-sample-app-1 -build 1
+logs -image rebase-demo-app-1 -build 1
 ```{{copy}}
 
 ## Rebase the image
@@ -158,7 +158,7 @@ Monitor builds again, and notice that kpack automatically updates the image usin
 You can validate that `kpack` is rebasing rather than rebuilding in a couple of ways. The build log specifically reflects a rebase rather than a build:
 
 ```
-logs -image go-sample-app-1 -build 2
+logs -image rebase-demo-app-1 -build 2
 ```{{copy}}
 
 In addition, the reason reported in the Build resource is "STACK". Run the command below and find the Annotation stating the build reason was "STACK".
