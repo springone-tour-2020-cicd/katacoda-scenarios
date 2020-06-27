@@ -41,12 +41,12 @@ git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git
 
 Fork the "shortcut" app repo:
 ```
-source fork-repos.sh go-sample-app scenario-6-finished
+source fork-repos.sh go-sample-app scenario-5-finished
 ```{{execute}}
 
 Fork the "shortcut" ops repo:
 ```
-source fork-repos.sh go-sample-app-ops scenario-6-finished
+source fork-repos.sh go-sample-app-ops scenario-5-finished
 ```{{execute}}
 
 ## Create namespaces

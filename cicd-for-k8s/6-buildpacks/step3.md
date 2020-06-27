@@ -147,7 +147,7 @@ EOF
 
 ## Apply the updated Tekton resources
 
-You should see four Tasks available in your Tekton installation, and no Pipelines yet:
+You should the Tasks you installed in step 1, and no Pipelines yet:
 
 ```
 tkn task list

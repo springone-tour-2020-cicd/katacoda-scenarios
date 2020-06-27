@@ -46,7 +46,7 @@ Now we can make a change in our application and push it straight through our ent
 
 ```
 cd /workspace/go-sample-app
-sed -i 's/sunshine/pipeline/g' hello-server.go
+sed -i 's/friends/pipeline/g' hello-server.go
 git add hello-server.go
 git commit -m "Hello pipeline!"
 git push
