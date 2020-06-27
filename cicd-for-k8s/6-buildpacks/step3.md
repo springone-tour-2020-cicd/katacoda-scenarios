@@ -178,3 +178,15 @@ git push origin master
 ```{{execute}}
 
 Use the commands above or go to Docker Hub to validate that kpack builds a new image. Keep in mind it may take up to 5 minutes for kpack to detect the change. 
+
+## Save changes
+
+Before continuing, save the new kpack files to GitHub
+
+Save changes to the ops repo
+```
+cd /workspace/go-sample-app-ops
+git add -A
+git commit -m 'Changes from the Buildpacks scenario'
+git push origin master
+```{{execute}}

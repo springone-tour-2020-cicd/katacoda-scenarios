@@ -33,6 +33,8 @@ You can use the `git diff` command to reiview/validate the changes.
 git diff
 ```{{execute}}
 
+Press the space bar bar to get to the end of the diff, and then `q` to quit.
+
 ## Configure Tekton to push a change to the ops repo (`cicd/kpack/image.yaml` file)
 
 The `image.yaml` file is located in the `ops/cicd/kpack` directory of the `go-sample-app-**ops**` repository.
@@ -136,7 +138,7 @@ spec:
     script: |
       apk add tree
       tree
-      git remote set-url origin https://${GITHUB_USER}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
+      git remote set-url origin https://${GITHUB_USERNAME:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
       git config user.name build-bot
       git config user.email build-bot@bots.bot
       git checkout -b temp-branch

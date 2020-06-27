@@ -22,48 +22,12 @@ kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/gola
 kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
 ```{{execute}}
 
-### Set up Git
+### Provide Tekton with access to push to GitHub
 
-You'll need your GitHub username to be able to push to this repo.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
-
-```
-# Fill this in with your GitHub login
-GITHUB_USER=
-```{{copy}}
-
-Note: If your GitHub login is the same as the GitHub username or org which contains the `go-sample-app`, you can simply execute the following command instead.
-
-```
-GITHUB_USER=$GITHUB_NS
-```{{execute}}
-
-You will also need your GitHub access token to authenticate with the Git server.
-You can copy and paste the following command into the terminal window, then append your GitHub login:
-
-```
-# Fill this in with your GitHub access token
-GITHUB_TOKEN=
-```{{copy}}
-
-Use this token to create a new `Secret`.
+Your GitHub token is stored in environment variable GITHUB_TOKEN from step 1, so you can simply run the following command to create a Secret for Tekton:
 
 ```
 kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
-```{{execute}}
-
-### Log into Docker Hub
-
-Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
-
-```
-docker login -u ${IMG_NS}
-```{{execute}}
-
-We can now create the registry `Secret`.
-
-```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```{{execute}}
 
 ## Trigger workflow
