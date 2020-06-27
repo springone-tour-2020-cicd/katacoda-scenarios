@@ -27,13 +27,13 @@ elif [[ "${BRANCH}" == "" ]]; then
   echo "Expected argument: branch-name. Got [${2}]"
 elif [[ "${GITHUB_NS}" == "" ]] || [[ "${IMG_NS}" == "" ]]; then
   echo "Missing GitHub/Docker Hub account info. Run 'source set-credentials.sh' first"
-fi
-
-git ls-remote https://github.com/${REPO} &>/dev/null
-exit_code=$?
-if [[ $exit_code == 0 ]]; then
-  echo "Repository https://github.com/${REPO} exists. Please delete it, and then re-run this script."
-  echo "You can delete the repo from the GitHub UI"
 else
-  fork-and-promote
+    git ls-remote https://github.com/${REPO} &>/dev/null
+    exit_code=$?
+    if [[ $exit_code == 0 ]]; then
+      echo "Repository https://github.com/${REPO} exists. Please delete it, and then re-run this script."
+      echo "You can delete the repo from the GitHub UI"
+    else
+      fork-and-promote
+    fi
 fi
