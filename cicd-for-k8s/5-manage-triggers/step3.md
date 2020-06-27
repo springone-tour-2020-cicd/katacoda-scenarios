@@ -132,6 +132,14 @@ kubectl apply \
     -f build-event-listener.yaml
 ```{{execute}}
 
+## Provide access to Docker Hub from Kubernetes
+
+Finally, create a Secret in Kubernetes so that Tekton can publish images to Docker Hub. You already authenticated with Docker Hub in step 1 so you can simply run the following command:
+
+```
+kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+```{{execute}}
+
 ## Test it out
 
 Wait for the deployment to finish.
