@@ -35,6 +35,7 @@ If you completed the previous scenario and have an existing fork of the [sample 
 
 ```
 git clone https://github.com/$GITHUB_NS/go-sample-app.git
+git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git
 ```{{execute}}
 
 **ALTERNATIVELY:** you can fork "shortcut" repos that will allow you to start without completing the previous scenarios. To do this, run the following commands instead.

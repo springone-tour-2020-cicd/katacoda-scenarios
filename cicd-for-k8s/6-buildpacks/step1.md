@@ -6,10 +6,11 @@ Prepare your local environment.
 
 In this step, you will:
 - Validate that the environment is initialized
-- Configure setup for using GitHub and Docker Hub in the scenario
-- Create `dev` and `prod` namespaces in the Kubernetes cluster to represent deployment environments
-- Clone your GitHub repo (or the reference sample repo if you skipped the previous scenario)
-- Install Tekton and provide it write access to Docker Hub
+- Set up access to GitHub and Docker Hub
+- Clone sample repos
+- Create Kubernetes namespaces
+- Install Tekton
+- Provide access to Docker Hub from Kubernetes
 
 ## Validate environment initialization
 
@@ -20,44 +21,32 @@ Please wait until `Environment ready!` appears in the terminal window.
 You will use your GitHub account to create/update repos, and you will use your Docker Hub account to push images.
 
 Run the following script and provide your account details at the prompts. It is better practice to use an access token than a password. For more information, see [GitHub access tokens](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) (select "repo" access rights) and [Docker Hub access tokens](https://docs.docker.com/docker-hub/access-tokens).
-
+    
 ```
 source set-credentials.sh
 ```{{execute}}
 
-## Install Tekton and provide it write access to Docker Hub
+As a convenience, your GitHub and Docker Hub namespaces (org names) are now stored in env vars `$GITHUB_NS` and `$IMG_NS`, respectively. These variables will be used througout the scenario.
 
-Install Tekton, along with the additional Tekton resources that you will need in this scenario.
+## Clone repos
+
+If you completed the previous scenario and have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git) and an ops repo, clone your forks.
 
 ```
-# Install Tekton CRDs
-kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
-kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
-
-# Install Tasks to clone app repo, lint and test the Go app (skip Kaniko as it is not needed for this scenario)
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
-#kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
-
-# Install new buildpacks Task to build image
-kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
+git clone https://github.com/$GITHUB_NS/go-sample-app.git
+git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git
 ```{{execute}}
 
-## Write access to Docker Hub
+**ALTERNATIVELY:** you can fork "shortcut" repos that will allow you to start without completing the previous scenarios. To do this, run the following commands instead.
 
-Several steps in this scenario require publishing images to Docker Hub. 
-You need to authenticate through the `docker` CLI and also create a Secret in Kubernetes.
-Enter your Docker Hub access token at the prompt.
-
+Fork the "shortcut" app repo:
 ```
-docker login -u ${IMG_NS}
+source fork-repos.sh go-sample-app scenario-6-finished
 ```{{execute}}
 
-Create the `Secret`.
-
+Fork the "shortcut" ops repo:
 ```
-kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+source fork-repos.sh go-sample-app-ops scenario-6-finished
 ```{{execute}}
 
 ## Create namespaces
@@ -69,78 +58,24 @@ kubectl create ns dev
 kubectl create ns prod
 ```{{execute}}
 
-## Clone repos
+## Install Tekton
 
-If you completed the previous scenario, clone your sample repos and skip ahead to the next step.
+Install Tekton (pipelines and triggers) and Tekton catalog tasks
 
 ```
-git clone https://github.com/$GITHUB_NS/go-sample-app.git
-git clone https://github.com/$GITHUB_NS/go-sample-app-ops.git
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.13.2/release.yaml
+kubectl apply -f https://storage.googleapis.com/tekton-releases/triggers/latest/release.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/git/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/lint.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/golang/tests.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/kaniko/kaniko.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
 ```{{execute}}
 
-## ALTERNATIVE: Clone the "short-cut" reference sample repo
+## Provide access to Docker Hub from Kubernetes
 
-If you have not completed the previous scenario and want to skip ahead to this one, you can create a fork from the reference sample corresponding to this scenario.
-
-If you have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git), you can skip this next command block. Otherwise, clone and fork the sample repo. Enter your GitHub user name and access token at the prompt.
+Create a Secret in Kubernets so that Tekton can publish images to Docker Hub.
 
 ```
-hub clone https://github.com/springone-tour-2020-cicd/go-sample-app.git && cd go-sample-app
-hub fork --remote-name origin
-```{{execute}}
-
-Check out the "short-cut" branch.
-```
-BRANCH=scenario-5-finished
-git checkout --track origin/$BRANCH
-```{{execute}}
-
-Replace the `springone-tour-2020-cicd` namespace with your namespaces:
-
-```
-find . -name *.yaml -exec sed -i "s/\/springone-tour-2020-cicd/\/${GITHUB_NS}/g" {} +
-find . -name *.yaml -exec sed -i "s/ springone-tour-2020-cicd/ ${IMG_NS}/g" {} +
-```{{execute}}
-
-Commit your changes:
-```
-git add -A
-git commit -m "Reset from branch $BRANCH, updated namespaces"
-```{{execute}}
-
-Rename branches so that the scenario branch becomes the master branch:
-
-```
-git branch -m master scenario-1-start
-git branch -m $BRANCH master
-```{{execute}}
-
-Push the new master branch to GitHub. Authenticate at the prompt.
-```
-git push -f -u origin master
-```{{execute}}
-
-Optionally, save the old master to GitHub as well and delete the local copy (ignore the warning):
-```
-git push -f origin scenario-1-start
-git branch -d scenario-1-start
-```{{execute}}
-
-Repeat the same steps for the ops repo:
-
-```
-cd ..
-hub clone https://github.com/springone-tour-2020-cicd/go-sample-app-ops.git && cd go-sample-app-ops
-hub fork --remote-name origin
-git checkout --track origin/$BRANCH
-find . -name *.yaml -exec sed -i "s/\/springone-tour-2020-cicd/\/${GITHUB_NS}/g" {} +
-find . -name *.yaml -exec sed -i "s/ springone-tour-2020-cicd/ ${IMG_NS}/g" {} +
-git add -A
-git commit -m "Reset from branch $BRANCH, updated namespaces"
-git branch -m master scenario-1-start
-git branch -m $BRANCH master
-git push -f -u origin master
-git push -f origin scenario-1-start
-git branch -d scenario-1-start
-cd ..
+kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```{{execute}}

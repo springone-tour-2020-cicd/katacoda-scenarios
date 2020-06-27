@@ -2,12 +2,11 @@
 
 Objective:
 
-
 Prepare your local environment.
 
 In this step, you will:
 - Validate that the environment is initialized
-- Configure setup for using GitHub and Docker Hub in the scenario
+- Set up access to GitHub and Docker Hub
 
 ## Validate environment initialization
 
@@ -22,3 +21,5 @@ Run the following script and provide your account details at the prompts. It is 
 ```
 source set-credentials.sh
 ```{{execute}}
+
+As a convenience, your GitHub and Docker Hub namespaces (org names) are now stored in env vars `$GITHUB_NS` and `$IMG_NS`, respectively. These variables will be used througout the scenario.
