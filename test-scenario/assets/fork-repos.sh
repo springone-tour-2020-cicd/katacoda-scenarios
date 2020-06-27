@@ -21,18 +21,22 @@ REPO_NAME="${1}"
 BRANCH="${2}"
 REPO="${GITHUB_NS}/${REPO_NAME}"
 
+RESET_FONT="\033[0m"
+BOLD="\033[1m"
+RED="\033[0;31m"
+
 if [[ "${REPO_NAME}" == "" ]]; then
-  echo "Expected argument: repo-name. Got [${1}]"
+  echo -e "${BOLD}${RED}Expected argument: repo-name. Got [${1}]${RESET_FONT}"
 elif [[ "${BRANCH}" == "" ]]; then
-  echo "Expected argument: branch-name. Got [${2}]"
+  echo -e "${BOLD}${RED}Expected argument: branch-name. Got [${2}]${RESET_FONT}"
 elif [[ "${GITHUB_NS}" == "" ]] || [[ "${IMG_NS}" == "" ]]; then
-  echo "Missing GitHub/Docker Hub account info. Run 'source set-credentials.sh' first"
+  echo -e "${BOLD}${RED}Missing GitHub/Docker Hub account info. Run 'source set-credentials.sh' first.${RESET_FONT}"
 else
     git ls-remote https://github.com/${REPO} &>/dev/null
     exit_code=$?
     if [[ $exit_code == 0 ]]; then
-      echo "Repository https://github.com/${REPO} exists. Please delete it, and then re-run this script."
-      echo "You can delete the repo from the GitHub UI"
+      echo -e "${BOLD}${RED}Repository https://github.com/${REPO} exists. Please delete it, and then re-run this script.${RESET_FONT}"
+      echo -e "${BOLD}${RED}You can delete the repo from the GitHub UI.${RESET_FONT}"
     else
       fork-and-promote
     fi
