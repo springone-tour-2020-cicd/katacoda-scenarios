@@ -22,7 +22,7 @@ tree
 Apply all manifests.
 
 ```
-kubectl apply -f ./argocd -n argocd
+kubectl apply -f ./argo -n argocd
 ```{{execute}}
 
 ```
