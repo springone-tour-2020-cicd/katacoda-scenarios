@@ -19,7 +19,7 @@ Create a new directory to store Tekton configuration manifests.
 ```
 mkdir -p /workdir/go-sample-app/cicd/tekton
 cd /workdir/go-sample-app/cicd/tekton
-```
+```{{execute}}
 
 First we need to create a Persistent Volume.
 
