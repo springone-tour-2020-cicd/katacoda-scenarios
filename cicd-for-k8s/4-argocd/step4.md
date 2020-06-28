@@ -21,6 +21,8 @@ Since "Hello, sunshine!" is currently deployed, let's update the tag to deploy v
 Change the tag value in the dev overlay configuration:
 
 ```
+cd /workspace/go-sample-app
+
 yq m -i -x ops/overlays/dev/kustomization.yaml - <<EOF
 images:
   - name: ${IMG_NS}/go-sample-app  # used for Kustomize matching
