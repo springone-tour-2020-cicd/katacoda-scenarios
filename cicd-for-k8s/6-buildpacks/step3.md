@@ -32,19 +32,19 @@ Install kpack to the kubernetes cluster.
 kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/release-0.0.9.yaml
 ```{{execute}}
 
-The installation includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`.
+The installation includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack. 
+Notice the "KIND" column. In this step, we will configure a Builder and an Image.
+
+```
+kubectl api-resources --api-group build.pivotal.io
+```{{execute}}
+
+The installation also includes two deployments (`kpack-controller` and `kpack-webhook`) in a namespace called `kpack`.
 Use the following commands to wait until the deployment "rollouts" succeed:
 
 ```
 kubectl rollout status deployment/kpack-controller -n kpack
 kubectl rollout status deployment/kpack-webhook -n kpack
-```{{execute}}
-
-The installation also includes several Custom Resource Definitions (CRDs) that provide the Kubernetes primitives to configure kpack. 
-Notice the "KIND" column. In this step, we will configure a Builder and an Image.
-
-```
-kubectl api-resources --api-group build.pivotal.io
 ```{{execute}}
 
 ## Configure kpack
@@ -126,7 +126,7 @@ kubectl apply -f builder.yaml \
 ## Validate that an image was built
 
 Within a short time, you should see a new image in your [Docker Hub](https://hub.docker.com) account. 
-In the meantime, continue reading to learn how kpack works behind the scenes and how you can trace progress and results.
+In the meantime, continue reading to learn how kpack works behind the scenes and how you can track progress and results.
 
 ## Behind the scenes
 

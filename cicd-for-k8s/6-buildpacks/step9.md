@@ -6,7 +6,9 @@ If you are curious to know how you you can configure Tekton to use the [Buildpac
 This implements Option 2 discusses in Step 5.
 
 In this step, you will:
+- Reset the ops repo by cloning the "shortcut" sample
 - Remove Tekton configuration used for the Dockerfile workflow
+- Install Buildpacks Task from the Tekton catalog
 - Add Tekton configuration needed for a Buildpacks workflow
 - Apply the updated Tekton resources
 - Test the new workflow
@@ -44,6 +46,14 @@ yq d -i build-pipeline.yaml "spec.tasks.(name==verify-digest)"
 yq d -i build-pipeline.yaml "spec.tasks.(name==build-image)"
 yq d -i build-pipeline.yaml "spec.params.(name==image)"
 yq d -i build-trigger-template.yaml 'spec.resourcetemplates[0].spec.params.(name==image)'
+```{{execute}}
+
+## Install Buildpacks Task from the Tekton catalog
+
+Apply the Buildpacks manifest from the Tekton catalog
+
+```
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/v1beta1/buildpacks/buildpacks-v3.yaml
 ```{{execute}}
 
 ## Add Tekton configuration needed for a Buildpacks workflow

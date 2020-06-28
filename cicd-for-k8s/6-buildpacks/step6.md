@@ -138,7 +138,7 @@ spec:
     script: |
       apk add tree
       tree
-      git remote set-url origin https://${GITHUB_USERNAME:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
+      git remote set-url origin https://\${GITHUB_USERNAME}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
       git config user.name build-bot
       git config user.email build-bot@bots.bot
       git checkout -b temp-branch

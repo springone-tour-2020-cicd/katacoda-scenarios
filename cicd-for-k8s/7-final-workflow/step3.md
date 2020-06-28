@@ -57,7 +57,7 @@ Open Argo CD UI using the browser tab in the scenario and navigate to the Argo C
 
 As soon as Argo CD applies the update image.yaml to the cluster, kpack will build an image for that app code revision.
 
-Use the 'kubectl get builds`{{execute}} or 'kubectl describe build <build-name>`{{copy}} commands you learned in the previous lesson, or use the logs CLI, to trace progress. For example:
+Use the 'kubectl get builds`{{execute}} or 'kubectl describe build <build-name>`{{copy}} commands you learned in the previous lesson, or use the logs CLI, to track progress. For example:
 
 ```
 logs -image go-sample-app -build 1

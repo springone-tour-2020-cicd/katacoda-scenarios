@@ -133,5 +133,5 @@ For the purposes of this scenario, however, our goal is simply to appreciate the
 - The simple `pack build` and `pack rebase` commands above would work for applications written in a variety of languages (e.g. Go, Java, Node.js, .NET Core, etc), and Paketo Buildpacks implement best practices particular to each language.
 - Any platform (pack, Tekton, Spring Boot, etc) that builds an image from the same inputs (including source code and buildpack versions) would produce an identical image.
 - Builders make it trivial to manage and share buildpacks and base images.
-- The same benefits of apply for any custom buildpacks you may want to use or author yourself.
+- The same benefits apply for any custom buildpacks you may want to use or author yourself.
 - Rebasing images, wherein the base image layers of an existing image can be updated within seconds or milliseconds without rebuilding the image, is a powerful and efficient security feature not possible with Dockerfile.

@@ -65,7 +65,7 @@ cat <<EOF >>ops-dev-task.yaml
     image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1
     workingDir: \$(workspaces.source.path)
     script: |
-      git remote set-url origin https://${GITHUB_USERNAME:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
+      git remote set-url origin https://\${GITHUB_USERNAME}:\${GITHUB_TOKEN}@github.com/${GITHUB_NS}/go-sample-app-ops.git
       git config user.name build-bot
       git config user.email build-bot@bots.bot
       git checkout -b temp-branch
