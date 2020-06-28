@@ -12,6 +12,7 @@ In this step, you will:
 - Install Tekton
 - Install kpack
 - Provide access to Docker Hub from Kubernetes
+- Install Argo CD
 
 ## Validate environment initialization
 
@@ -52,7 +53,7 @@ source fork-repos.sh go-sample-app-ops scenario-6-finished
 
 ## Create namespaces
 
-To simulate the dev an prod environments into which we will be deploying the sample app, create dev and prod namepsaces.
+To simulate the dev and prod environments into which you will be deploying the sample app, create dev and prod namepsaces.
 
 ```
 kubectl create ns dev
@@ -89,4 +90,31 @@ Create a Secret in Kubernetes so that Tekton and kpack can publish images to Doc
 kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```{{execute}}
 
+# Install Argo CD
 
+Run the following commands to install ArgoCD, disable the kustomize load-restrictor, and wait for the Argo CD installation to complete.
+
+```
+kubectl create ns argocd
+
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+yq m <(kubectl get cm argocd-cm -o yaml -n argocd) <(cat << EOF
+data:
+  kustomize.buildOptions: --load_restrictor none
+EOF
+) | kubectl apply -f -
+
+kubectl rollout status deployment/argocd-server -n argocd
+```{{execute}}
+
+Run the following command to set up port-forwarding. The command will automatically run in separate terminal window.
+```
+kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &
+```{{execute T2}}
+
+The following commands will log you in through the `argocd` CLI.
+```
+ARGOCD_PASSWORD="$(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2)"
+argocd login localhost:8080 --insecure --username admin --password "${ARGOCD_PASSWORD}"
+```{{execute T1}}

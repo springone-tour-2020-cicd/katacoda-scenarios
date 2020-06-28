@@ -42,7 +42,7 @@ source fork-repos.sh go-sample-app scenario-2-finished
 
 ## Create namespaces
 
-To simulate the dev an prod environments into which we will be deploying the sample app, create dev and prod namepsaces.
+To simulate the dev and prod environments into which you will be deploying the sample app, create dev and prod namepsaces.
 
 ```
 kubectl create ns dev

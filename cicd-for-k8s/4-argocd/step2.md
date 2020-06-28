@@ -39,9 +39,9 @@ kubectl get applications,appprojects -n argocd
 
 ## Disable the Kustomize load restrictor
 
-Kustomize v3 allows us to disable the [security check introduced in Kustomize v2](https://kubernetes-sigs.github.io/kustomize/faq/#security-file-foo-is-not-in-or-below-bar) that prevents kustomizations from reading files outside their own directory root.
-This was meant to help protect the person inclined to download kustomization directories from the web and use them without inspection to control their production cluster.
-In our case we can safely disable this feature and preserve our folder structure.
+By default, kustomize restricts kustomizations from reading files outside of their own directory root (more info [here](https://kubernetes-sigs.github.io/kustomize/faq/#security-file-foo-is-not-in-or-below-bar)).
+This security check is meant to encourage people to inspect kustomization directories they may download from the internet before incorporating them into their deployments.
+In our case, we can safely disable this feature and preserve our folder structure. To ensure this configuration is applied when we reinstall Argo CD, save it as a declarative manifest:
 
 ```
 yq m <(kubectl get cm argocd-cm -o yaml -n argocd) <(cat << EOF
@@ -59,7 +59,7 @@ Wait until Argo CD is fully initialized. This may take a few minutes.
 kubectl rollout status deployment/argocd-server -n argocd
 ```{{execute}}
 
-In order to expose the Argo CD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwaring:
+In order to expose the Argo CD API endpoint (`argocd-server`) so that you can reach it using the argocd CLI and UI, set up port-forwarding:
 
 ```
 kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &

@@ -21,7 +21,7 @@ Please wait until `Environment ready!` appears in the terminal window.
 You will use your GitHub account to create/update repos, and you will use your Docker Hub account to push images.
 
 Run the following script and provide your account details at the prompts. It is better practice to use an access token than a password. For more information, see [GitHub access tokens](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) (select "repo" access rights) and [Docker Hub access tokens](https://docs.docker.com/docker-hub/access-tokens).
-    
+
 ```
 source set-credentials.sh
 ```{{execute}}
@@ -51,7 +51,7 @@ source fork-repos.sh go-sample-app-ops scenario-5-finished
 
 ## Create namespaces
 
-To simulate the dev an prod environments into which we will be deploying the sample app, create dev and prod namepsaces.
+To simulate the dev and prod environments into which you will be deploying the sample app, create dev and prod namepsaces.
 
 ```
 kubectl create ns dev
