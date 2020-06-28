@@ -32,7 +32,7 @@ curl \
     -H 'X-GitHub-Event: pull_request' \
     -H 'Content-Type: application/json' \
     -d '{
-      "repository": {"clone_url": "'"https://github.com/${IMG_NS}/go-sample-app"'"},
+      "repository": {"clone_url": "'"https://github.com/${GITHUB_NS}/go-sample-app"'"},
       "pull_request": {"head": {"sha": "'"${SHA}"'"}}
     }' \
 localhost:8081
