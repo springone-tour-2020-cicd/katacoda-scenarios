@@ -51,7 +51,7 @@ cat <<EOF >>ops-dev-task.yaml
         cd ops/overlays/dev
         yq m -i -x kustomization.yaml - <<EOD
         images:
-          - name: ${GITHUB_NS}/go-sample-app  # used for Kustomize matching
+          - name: ${IMG_NS}/go-sample-app  # used for Kustomize matching
             newTag: \$(params.TAG)
         EOD
 EOF
