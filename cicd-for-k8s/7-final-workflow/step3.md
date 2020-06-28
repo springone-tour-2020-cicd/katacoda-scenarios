@@ -57,29 +57,41 @@ Open Argo CD UI using the browser tab in the scenario and navigate to the Argo C
 
 As soon as Argo CD applies the update image.yaml to the cluster, kpack will build an image for that app code revision.
 
-Use the 'kubectl get builds`{{execute}} or 'kubectl describe build <build-name>`{{copy}} commands you learned in the previous lesson, or use the logs CLI, to track progress. For example:
+A new build should kick off automatically.
 
 ```
-logs -image go-sample-app -build 1
+kubectl get builds
 ```{{execute}}
 
-For example, take a look at the details of the latest build. Specifically, get the name and the revision (aka the corresponding git commit id):
+You can also track the progress of the build using the commands you used earlier:
 
+Update the LATEST_BUILD and BUILD_NR env vars
 ```
-echo "Latest build: "
-kubectl describe build $(kubectl get builds -o yaml | yq r - "items[-1].metadata.name")
-
-echo "App repo commit id: "
-kubectl describe build $(kubectl get builds -o yaml | yq r - "items[-1].metadata.name") | grep Revision
-```{{execute}}
-
-Us the kpack logs CLI to track progress of the kpack build:
-```
+LATEST_BUILD=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.name") \
+             && echo "Latest build: ${LATEST_BUILD}"
 BUILD_NR=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.labels.[image.build.pivotal.io/buildNumber]")
-logs -image go-sample-app -build $BUILD_NR
+echo "LATEST_BUILD=${LATEST_BUILD}"
+echo "BUILD_NR=${BUILD_NR}"
 ```{{execute}}
 
-Once kpack's finisheds building the image, you should see a new image in your Docker Hub account.
+```
+kubectl describe build ${LATEST_BUILD}
+```{{copy}}
+
+```
+kubectl describe build ${LATEST_BUILD} | grep Revision
+kubectl describe build ${LATEST_BUILD} | grep reason | head -1
+```{{execute}}
+
+```
+kubectl get pods | grep ${LATEST_BUILD}
+```{{execute}}
+
+```
+logs -image go-sample-app -build ${BUILD_NR}
+```{{execute}}
+
+When the build completes, you should see a new image on your [Docker Hub](https://hub.docker.com) account.
 
 ## Simulate a webhook from Docker Hub
 

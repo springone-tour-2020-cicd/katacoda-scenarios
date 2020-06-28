@@ -125,34 +125,48 @@ kubectl apply -f builder.yaml \
 
 ## Validate that an image was built
 
-Within a short time, you should see a new image in your [Docker Hub](https://hub.docker.com) account. 
-In the meantime, continue reading to learn how kpack works behind the scenes and how you can track progress and results.
-
-## Behind the scenes
-
-To understand some of the mechanics of how the image is created, notice that the Image resource creates a Build resource for each build that it does. At the moment you should see one Build resoure:
+The Image resource detects that there is a code revision to build and creates a corresponding Build resource. You should immediately see a Build resource:
 
 ```
 kubectl get builds
 ```{{execute}}
 
+When the build completes, you will see a new image on your [Docker Hub](https://hub.docker.com) account.
+In the meantime, continue reading to learn how you can track the build progress and results.
 
-You can use `kubectl describe` to get more information about the build, including, for example, the git commit id of the source code (see the `Revision` node).
+## Behind the scenes
+
+For convenience, store the build name and number of the latest build in env vars.
+```
+LATEST_BUILD=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.name") \
+             && echo "Latest build: ${LATEST_BUILD}"
+BUILD_NR=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.labels.[image.build.pivotal.io/buildNumber]")
+echo "LATEST_BUILD=${LATEST_BUILD}"
+echo "BUILD_NR=${BUILD_NR}"
+```{{execute}}
+
+You can use `kubectl describe` to get more information about the build.
 
 ```
-kubectl describe build go-sample-app-build-1-
-```{{copy}}
+kubectl describe build ${LATEST_BUILD}
+```{{execute}}
+
+Notice that the build description includes such details as the source commit id and the reson for the build:
+```
+kubectl describe build ${LATEST_BUILD} | grep Revision
+kubectl describe build ${LATEST_BUILD} | grep reason | head -1
+```{{execute}}
 
 The Build creates a Pod in order to execute the build and produce the image.
 
 ```
-kubectl get pods | grep go-sample-app-build-1
+kubectl get pods | grep ${LATEST_BUILD}
 ```{{execute}}
 
 You should see evidence of _init_ containers in the results (something like: "Init:1/6"). kpack orchestrates the CNB lifecycle using _init_ containers - a prepare container, plus containers for each lifecycle step: detect, analyze, restore, build, export. (These should sound familiar based on the logs that `pack` generated in the last step). A simple `kubectl logs` command will not stream the init container logs, so kpack provides a `logs` CLI to make it easy to extract the logs from all init containers:
 
 ```
-logs -image go-sample-app -build 1
+logs -image go-sample-app -build ${BUILD_NR}
 ```{{execute}}
 
 You should see logging similar to the logging you saw with `pack`, since the underlying process using the Paketo Builder is the same.
@@ -177,13 +191,12 @@ git commit -m "Hello, friends!"
 git push origin master
 ```{{execute}}
 
-Use the commands above or go to Docker Hub to validate that kpack builds a new image. Keep in mind it may take up to 5 minutes for kpack to detect the change. 
+Use the commands above (make sure to update the LATEST_BUILD and BUILD_NR vars) or go to Docker Hub to validate that kpack builds a new image. Keep in mind it may take up to 5 minutes for kpack to detect the change on GitHub. 
 
 ## Save changes
 
-Before continuing, save the new kpack files to GitHub
+Save the new kpack files to the ops repo in GitHub
 
-Save changes to the ops repo
 ```
 cd /workspace/go-sample-app-ops
 git add -A

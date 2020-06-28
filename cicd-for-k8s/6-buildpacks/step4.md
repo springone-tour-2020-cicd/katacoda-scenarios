@@ -125,23 +125,41 @@ Apply the new Image manifest.
 kubectl apply -f rebase-demo-image.yaml
 ```{{execute}}
 
-After a short time, you should see a image repository on your Docker Hub account. Notice the digest of the image.
-
-You can also track the progress of the builds using the commands you used earlier:
+A new build should kick off automatically.
 
 ```
 kubectl get builds
 ```{{execute}}
 
+You can also track the progress of the build using the commands you used earlier:
+
+Update the LATEST_BUILD and BUILD_NR env vars
 ```
-kubectl describe build <BUILD_NAME> | grep rebase-demo
+LATEST_BUILD=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.name") \
+             && echo "Latest build: ${LATEST_BUILD}"
+BUILD_NR=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.labels.[image.build.pivotal.io/buildNumber]")
+echo "LATEST_BUILD=${LATEST_BUILD}"
+echo "BUILD_NR=${BUILD_NR}"
+```{{execute}}
+
+```
+kubectl describe build ${LATEST_BUILD}
 ```{{copy}}
 
-Notice that the `kubectl describe build` output includes an Annotation stating that the reason for build was "CONFIG".
+```
+kubectl describe build ${LATEST_BUILD} | grep Revision
+kubectl describe build ${LATEST_BUILD} | grep reason | head -1
+```{{execute}}
 
 ```
-logs -image rebase-demo-app-1 -build 1
-```{{copy}}
+kubectl get pods | grep ${LATEST_BUILD}
+```{{execute}}
+
+```
+logs -image go-sample-app -build ${BUILD_NR}
+```{{execute}}
+
+When the build completes, you should see a new image on your [Docker Hub](https://hub.docker.com) account.
 
 ## Rebase the image
 
@@ -153,18 +171,28 @@ sed -i 's/run:0.0.19-base-cnb/run:0.0.20-base-cnb/g' custom-builder.yaml
 kubectl apply -f custom-builder.yaml
 ```{{execute}}
 
-Monitor builds again, and notice that kpack automatically updates the image using the updated stack.
+Monitor builds again and validate that kpack automatically updates the image using the updated stack.
 
-You can validate that `kpack` is rebasing rather than rebuilding in a couple of ways. The build log specifically reflects a rebase rather than a build:
+First, update the LATEST_BUILD and BUILD_NR env vars
+```
+LATEST_BUILD=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.name") \
+             && echo "Latest build: ${LATEST_BUILD}"
+BUILD_NR=$(kubectl get builds -o yaml | yq r - "items[-1].metadata.labels.[image.build.pivotal.io/buildNumber]")
+echo "LATEST_BUILD=${LATEST_BUILD}"
+echo "BUILD_NR=${BUILD_NR}"
+```{{execute}}
+
+You can confirm that `kpack` is rebasing rather than rebuilding in a couple of ways. The build log specifically reflects a rebase rather than a build:
 
 ```
-logs -image rebase-demo-app-1 -build 2
-```{{copy}}
+logs -image rebase-demo-app-1 -build ${BUILD_NR}
+```{{execute}}
 
-In addition, the reason reported in the Build resource is "STACK". Run the command below and find the Annotation stating the build reason was "STACK".
+In addition, the reason reported in the Build resource is "STACK", and the revision should be unchanged. Run the command below and find the Annotation stating the build reason was "STACK".
 
 ```
-kubectl describe build <BUILD_NAME>
-```{{copy}}
+kubectl describe build ${LATEST_BUILD} | grep Revision
+kubectl describe build ${LATEST_BUILD} | grep reason | head -1
+```{{execute}}
 
 When a stack update occurs, kpack rebases all images that use the corresponding run image. In other words, with the simple single Stack resource update command you executed above, you could patch the operating system on any number of images on a registry in a matter of seconds.
