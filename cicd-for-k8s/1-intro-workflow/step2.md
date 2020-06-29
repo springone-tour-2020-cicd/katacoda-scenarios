@@ -73,16 +73,10 @@ In order to deploy the image to the cluster, you must publish the image to a reg
 For this purpose, we will use Docker Hub.
 
 To publish the image to a registry, you need to assign it an alias (aka a tag) that includes the fully-qualified repository name (e.g. _docker.io/some_namespace/image_name_). 
-The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace to the image name, which is already saved in $IMG_NS. 
+The Docker Hub registry address (docker.io) is the default, so you simply need to add your namespace to the image name, which is already saved in $IMG_NS when we set our credentials in step 1. 
 It is also good practice to tag the image with a version.
 
-Log in to Docker Hub. At the prompt, enter your access token.
-
-```
-docker login -u $IMG_NS
-```{{execute}}
-
-Now, use the `docker tag` and `docker push` commands to publish the image to Docker Hub. 
+Use the `docker tag` and `docker push` commands to publish the image to Docker Hub. 
 Notice that we are assigning a version of `1.0.0` to the image.
 
 ```
