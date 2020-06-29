@@ -69,13 +69,8 @@ kubectl get pvc
 
 ## Create a ServiceAccount
 
-Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
-
-```
-docker login -u $IMG_NS
-```{{execute}}
-
-This creates a `config.json` file that caches your Docker Hub credentials.
+After a successful login to Docker Hub when setting up your credentials a `config.json` file that caches your Docker Hub credentials was created.
+We'll use these credentials to push the newly built image to Docker Hub from our Tekton task.
 
 ```
 cat /root/.docker/config.json
