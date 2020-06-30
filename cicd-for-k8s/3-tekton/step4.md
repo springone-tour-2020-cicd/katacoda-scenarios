@@ -17,8 +17,8 @@ To use these tasks there are a few things we need to set up in the Kubernetes cl
 Create a new directory to store Tekton configuration manifests.
 
 ```
-mkdir -p /workdir/go-sample-app/cicd/tekton
-cd /workdir/go-sample-app/cicd/tekton
+mkdir -p /workspace/go-sample-app/cicd/tekton
+cd /workspace/go-sample-app/cicd/tekton
 ```{{execute}}
 
 First we need to create a Persistent Volume.
