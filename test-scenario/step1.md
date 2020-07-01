@@ -6,12 +6,13 @@ Prepare your local environment.
 
 In this step, you will:
 - Validate that the environment is initialized
-- Configure setup for using GitHub and Docker Hub in the scenario
-- Clone your GitHub repo (or the reference sample repo if you skipped the previous scenario)
-- Create `dev` and `prod` namespaces in the Kubernetes cluster to represent deployment environments
+- Set up access to GitHub and Docker Hub
+- Clone sample repos
+- Create Kubernetes namespaces
 - Install Tekton
 - Install kpack
-- Provide access to Docker Hub from Kubernetes for Tekton and kpack
+- Provide access to Docker Hub from Kubernetes
+- Install Argo CD
 
 ## Validate environment initialization
 
@@ -29,9 +30,9 @@ source set-credentials.sh
 
 As a convenience, your GitHub and Docker Hub namespaces (org names) are now stored in env vars `$GITHUB_NS` and `$IMG_NS`, respectively. These variables will be used througout the scenario.
 
-## Clone repo
+## Clone repos
 
-If you completed the previous scenario and have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git), clone your fork.
+If you completed the previous scenario and have an existing fork of the [sample app repo](https://github.com/springone-tour-2020-cicd/go-sample-app.git) and an ops repo, clone your forks.
 
 ```
 git clone https://github.com/$GITHUB_NS/go-sample-app.git
@@ -81,10 +82,50 @@ Install kpack to the kubernetes cluster.
 kubectl apply -f https://github.com/pivotal/kpack/releases/download/v0.0.9/release-0.0.9.yaml
 ```{{execute}}
 
-## Configure access to Docker Hub from Kubernetes
+## Provide access to Docker Hub from Kubernetes
 
 Create a Secret in Kubernetes so that Tekton and kpack can publish images to Docker Hub.
 
 ```
 kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```{{execute}}
+
+# Install Argo CD
+
+Run the following commands to install ArgoCD, disable the kustomize load-restrictor, and wait for the Argo CD installation to complete.
+
+```
+kubectl create ns argocd
+
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+yq m <(kubectl get cm argocd-cm -o yaml -n argocd) <(cat << EOF
+data:
+  kustomize.buildOptions: --load_restrictor none
+EOF
+) | kubectl apply -f -
+
+kubectl rollout status deployment/argocd-server -n argocd
+```{{execute}}
+
+Run the following command to set up port-forwarding. The command will automatically run in separate terminal window.
+```
+kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 > /dev/null &
+```{{execute T2}}
+
+The following commands will log you in through the `argocd` CLI.
+```
+ARGOCD_PASSWORD="$(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2)" && echo -e "Your ArgoCD password is:\n${ARGOCD_PASSWORD}"
+argocd login localhost:8080 --insecure --username admin --password "${ARGOCD_PASSWORD}"
+```{{execute T1}}
+
+You will also need to use the UI in this scenario. 
+Click on the tab titled `Argo CD UI`. 
+This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI. 
+Click the refresh icon at the top of the tab if it does not load automatically.
+
+Alternatively, you can click on the link below and open in a separate tab in your browser:
+
+https://[[HOST_SUBDOMAIN]]-8080-[[KATACODA_HOST]].environments.katacoda.com
+
+Log in using the username _admin_ and password that was echoed to the terminal.
