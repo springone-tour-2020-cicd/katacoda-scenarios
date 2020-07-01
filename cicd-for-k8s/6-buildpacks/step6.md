@@ -66,7 +66,7 @@ spec:
 EOF
 ```{{execute}}
 
-This task has a dependency on a new workspace (`shared-ops-workspace`), which will be used for the repo clone. 
+This task has a dependency on a new workspace (`shared-ops-workspace`), which will be used for the repo clone.
 Add the new workspace to the list of workspaces for the pipeline.
 
 ```
@@ -184,6 +184,7 @@ spec:
       type: string
       description: Name of the secret holding the github-token.
     - name: github-token-secret-key
+      type: string
       description: Name of the secret key holding the github-token.
   tasks:
     - name: update-image-revision

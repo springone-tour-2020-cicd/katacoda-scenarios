@@ -90,6 +90,14 @@ Create a Secret in Kubernetes so that Tekton and kpack can publish images to Doc
 kubectl create secret generic regcred  --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```{{execute}}
 
+## Provide GitHub write access from Kubernetes
+
+Your GitHub token is stored in environment variable GITHUB_TOKEN, so you can simply run the following command to create a Secret for Tekton:
+
+```
+kubectl create secret generic github-token --from-literal=GITHUB_TOKEN=${GITHUB_TOKEN}
+```{{execute}}
+
 # Install Argo CD
 
 Run the following commands to install ArgoCD, disable the kustomize load-restrictor, and wait for the Argo CD installation to complete.
@@ -119,9 +127,9 @@ ARGOCD_PASSWORD="$(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-s
 argocd login localhost:8080 --insecure --username admin --password "${ARGOCD_PASSWORD}"
 ```{{execute T1}}
 
-You will also need to use the UI in this scenario. 
-Click on the tab titled `Argo CD UI`. 
-This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI. 
+You will also need to use the UI in this scenario.
+Click on the tab titled `Argo CD UI`.
+This tab is pointing to localhost:8080, so it should open the Argo CD dashboard UI.
 Click the refresh icon at the top of the tab if it does not load automatically.
 
 Alternatively, you can click on the link below and open in a separate tab in your browser:

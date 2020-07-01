@@ -17,8 +17,8 @@ To use these tasks there are a few things we need to set up in the Kubernetes cl
 Create a new directory to store Tekton configuration manifests.
 
 ```
-mkdir -p /workdir/go-sample-app/cicd/tekton
-cd /workdir/go-sample-app/cicd/tekton
+mkdir -p /workspace/go-sample-app/cicd/tekton
+cd /workspace/go-sample-app/cicd/tekton
 ```{{execute}}
 
 First we need to create a Persistent Volume.
@@ -69,13 +69,8 @@ kubectl get pvc
 
 ## Create a ServiceAccount
 
-Login to your Docker Hub account using the `docker` CLI (your username has to be lowercase):
-
-```
-docker login -u $IMG_NS
-```{{execute}}
-
-This creates a `config.json` file that caches your Docker Hub credentials.
+After a successful login to Docker Hub when setting up your credentials a `config.json` file that caches your Docker Hub credentials was created.
+We'll use these credentials to push the newly built image to Docker Hub from our Tekton task.
 
 ```
 cat /root/.docker/config.json

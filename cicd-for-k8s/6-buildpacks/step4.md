@@ -95,7 +95,7 @@ kubectl get custombuilder
 
 ## Build image
 
-To show kpack building and rebasing an image, create a new Image manifest using the new CustomBuilder you just created. 
+To show kpack building and rebasing an image, create a new Image manifest using the new CustomBuilder you just created.
 
 Note the Image resource name and the image tag.
 
@@ -196,3 +196,7 @@ kubectl describe build ${LATEST_BUILD} | grep reason | head -1
 ```{{execute}}
 
 When a stack update occurs, kpack rebases all images that use the corresponding run image. In other words, with the simple single Stack resource update command you executed above, you could patch the operating system on any number of images on a registry in a matter of seconds.
+```
+**NOTE:** Katacoda doesn't allow containers to run in privileged mode.
+Hence, you might receive an error running the rebase build.
+You can skip this step.
