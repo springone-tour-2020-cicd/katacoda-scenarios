@@ -5,7 +5,7 @@ You are done with the  workflow!
 For fun, before concluding this scenario, create a new Application in Argo CD pointing to the `cicd/tekton` directory in the ops repo.
 
 ```
-cd /workspace/go-sample-app-ops/cicd/argocd
+cd /workspace/go-sample-app-ops/cicd/argo
 
 cat <<EOF >argo-deploy-tekton.yaml
 apiVersion: argoproj.io/v1alpha1

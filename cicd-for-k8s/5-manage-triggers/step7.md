@@ -142,3 +142,21 @@ Stop the port-forwarding process:
 pkill kubectl && wait $!
 ```{{execute}}
 
+## Bonus: Filtering the WebHook events
+
+Katacoda doesn't allow you to expose external IP addresses, which forces us to simulate push events.
+For now you're still using Kaniko, but in the next scenarios you'll be introduced to buildpacks.
+These buildpacks could generate both the intended tag, plus a `latest` tag as well.
+If you would be using WebHooks for real, you would notice two `PipelineRun`s would be triggered.
+In order to only update the dev overlay manifest with the intended tag, we need to filter out the `latest` tag event.
+
+This can be achieved with [CEL interceptors](https://github.com/tektoncd/triggers/blob/master/docs/cel_expressions.md).
+
+_As you're simulating WebHook calls, this is not required for the course._
+```
+cat <<EOF >>ops-dev-event-listener.yaml
+    interceptors:
+      - cel:
+          filter: (body.push_data.tag != 'latest')
+EOF
+```
