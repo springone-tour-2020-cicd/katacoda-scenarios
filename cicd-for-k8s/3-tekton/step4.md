@@ -42,6 +42,10 @@ spec:
 EOF
 ```{{execute}}
 
+**NOTE:** This `PersistentVolume` is of type `HostPath`, which implies it does not support `ReadWriteMany` policies.
+Therefore, containers who wish to write to this volume will have to wait turns, resulting in sequential execution.
+Look into file system storage to make parallel execution possible.
+
 Create the Persistent Volume Claim:
 
 ```
@@ -59,6 +63,24 @@ spec:
       storage: 500Mi
 EOF
 ```{{execute}}
+
+**NOTE:** This `PersistentVolumeClaim` is going to be reused for each run, meaning the Git repository inside of it will be cleaned out between `PipelineRun`s.
+This is a problem if you're having multiple builds at the same time.
+Instead of creating a dedicated `PersistentVolumeClaim`, the `PipelineRun` or `TriggerTemplate` you're going to create later on, has the ability to create `PersistentVolumeClaim`s on demand.
+
+_As you're not having simultaneous builds, you'll simply use the `PersistentVolumeClaim` mentioned above._
+```
+    workspaces:
+      - name: shared-workspace
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+            - ReadWriteOnce
+            storageClassName: local-storage
+            resources:
+              requests:
+                storage: 500Mi
+```
 
 Apply both and verify whether the Persistent Volume Claim is bound.
 
