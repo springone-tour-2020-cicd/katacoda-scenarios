@@ -51,9 +51,9 @@ pkill hello-server && wait $!
 In order to deploy the app to Kubernetes, it needs to be packaged as a container image.
 
 There are various ways to turn an app into an image, ranging from Dockerfile scripts to higher level abstractions. 
-In this step, you will use a Dockerfile script included in the app repo. 
-The `docker build` command will find the file called `Dockerfile` automatically. 
-The build will pull a base image called 'golang' from Docker Hub, build the app into a binary, and then copy the binary into a minimal _scratch_-based final image.
+In this step, you will use a Dockerfile script included in the app repo. We will review the contents of the Dockerfile later in this course, but you can take a quick glance now using `cat Dockerfile`{{execute}}. You can see that the Dockerfile script uses a base image called 'golang' to build the app into a binary, and then it copies the binary using a minimal base called _scratch_, which will be used to run the application.
+
+You will use the `docker build` command to execute the Dockerfile. The command finds the file called `Dockerfile` automatically. The build operation will pull the `golang` image from Docker Hub.
 
 ```
 docker build . -t go-sample-app
@@ -139,7 +139,7 @@ You can use the following command to wait until the deployment "rollout" succeed
 kubectl rollout status deployment/go-sample-app -n dev
 ```{{execute}}
 
-You can list the deployed resources using. At this point the deployment and pod `READY` column should show `1/1`.
+You can list the deployed resources using the following command. The deployment and pod `READY` column should show `1/1`.
 
 ```
 kubectl get all -n dev
