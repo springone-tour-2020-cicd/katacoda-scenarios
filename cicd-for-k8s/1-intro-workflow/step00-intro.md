@@ -1,6 +1,6 @@
 **Course Overview**
 
-This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd). 
+This scenario is part of a course on [CI/CD tooling for Kubernetes deployments](https://www.katacoda.com/springone-tour-2020-cicd/courses/cicd-for-k8s). 
 In this course, we explore some options for Kubernetes-centric tooling for Continuous Integration (CI) and Continuous Delivery (CD), including Kustomize, Tekton, Argo CD, Cloud Native Buildpacks, and kpack. 
 Through these excercises, we will also see how GitOps can be leveraged for CI/CD.
 
