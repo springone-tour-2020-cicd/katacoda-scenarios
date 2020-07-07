@@ -1,6 +1,6 @@
 In this step we will show how to use kustomize to setup support for multiple Kubernetes environments, e.g dev, staging and production.  We will create use the default namespace as the `dev` environment and create a new namespace `production` for the production environment.
 
-*Prerequisite:** Complete the tutorial [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/scenarios/1-intro-workflow)
+*Prerequisite:** Complete the tutorial [_Intro Workflow and Prerequisites_](https://www.katacoda.com/springone-tour-2020-cicd/courses/cicd-for-k8s/1-intro-workflow)
 
 
 Let's begin by changing into the home directory.
