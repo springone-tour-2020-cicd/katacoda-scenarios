@@ -37,26 +37,34 @@ sed -i '/namespace: dev/d' base/*.yaml
 
 Kustomize provides a declarative approach to re-using and customizing configuration. It gets its instructions about which Kubernetes API resource files to re-use and what customizations to "overlay" from a file called `kustomization.yaml`.
 
-Create an overlay subdirectory for each environment and create a `kustomization.yaml` file in each. Use the `kustomize` CLI to easily edit the `kustomization.yaml` to specify which base files to re-use, and which environment-specific namespace to overlay.
+In the next steps you will create an overlay subdirectory for each environment (dev and prod), with a `kustomization.yaml` file in each. 
 
-Start with the dev environment:
+Start by creating an empty `kustomization.yaml` dev overlay file:
 
 ```
 mkdir -p overlays/dev
 cd overlays/dev
 touch kustomization.yaml
-kustomize edit add base ../../base/deployment.yaml
-kustomize edit add base ../../base/service.yaml
-kustomize edit set namespace dev
 ```{{execute}}
 
-Review the dev `kustomization.yaml` file:
+Next, use the `kustomize` CLI to easily edit the `kustomization.yaml` to specify which base files to re-use. Review the changes to `kustomization.yaml`.
 
 ```
+kustomize edit add base ../../base/deployment.yaml
+kustomize edit add base ../../base/service.yaml
 cat kustomization.yaml
 ```{{execute}}
 
-The kustomization.yaml file is in itself a Kubernetes resource file, with a declaration of the `apiVersion` and `kind`. You should also see a `resources` section listing the base Kubernetes API resource files, and a namespace node specifying the customization to apply to this overlay:
+Notice that the kustomization.yaml file itself has the structure of a Kubernetes resource file, with a declaration of the `apiVersion` and `kind`. You should also see a `resources` section listing the base Kubernetes API resource files.
+
+Finally, specify which environment-specific namespace to overlay, and review the file again.
+
+```
+kustomize edit set namespace dev
+cat kustomization.yaml
+```{{execute}}
+
+You should now see a namespace node specifying the customization to apply to this overlay. The final file should look as follows.
                
 > ```
 > apiVersion: kustomize.config.k8s.io/v1beta1
