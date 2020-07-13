@@ -2,7 +2,8 @@
 This template is intended to help in creating new scenarios for this course.
 
 Files to update:
-- add title _index.json_ (used on intro page, each step page, and browser tab title)
+- rename _HIDE-index.json_ to _index.json_
+- add title to _index.json_ (used on intro page, each step page, and browser tab title)
 - add title, description and id (directory name) to _cicd-for-k8s-pathway.json_ (used in scenario tiles on profile home page, also determines tile order)
 - move scenario into _cicd-for-k8s_ directory
 - if necessary, update environment and backend sections in _index.json_
