@@ -121,7 +121,7 @@ kubectl port-forward --address 0.0.0.0 svc/argocd-server 8080:80 -n argocd 2>&1 
 
 The following commands will log you in through the `argocd` CLI.
 ```
-ARGOCD_PASSWORD="$(kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2)" && echo -e "Your ArgoCD password is:\n${ARGOCD_PASSWORD}"
+ARGOCD_PASSWORD="$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d)" && echo -e "Your ArgoCD password is:\n${ARGOCD_PASSWORD}"
 argocd login localhost:8080 --insecure --username admin --password "${ARGOCD_PASSWORD}"
 ```{{execute T1}}
 
