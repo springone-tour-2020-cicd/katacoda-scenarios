@@ -91,7 +91,7 @@ spec:
   triggers:
   - name: ops-dev-trigger
     template:
-      name: ops-dev-trigger-template
+      ref: ops-dev-trigger-template
     bindings:
     - ref: ops-dev-trigger-binding
 EOF

@@ -113,7 +113,7 @@ spec:
   triggers:
   - name: build-trigger
     template:
-      name: build-trigger-template
+      ref: build-trigger-template
     bindings:
     - ref: build-trigger-binding
 EOF
